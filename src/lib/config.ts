@@ -13,6 +13,6 @@ export const brand = {
   initials: "HP",
   headline: "Something is coming.",
   subline:
-    "A new home for the things I design, build, and break. Bookmark it — the good stuff lands soon.",
-  email: "harsh@proaibots.com",
+    "A new home for the things I design, build, and break. Bookmark it the good stuff lands soon.",
+  email: "harshp6421@gmail.com",
 } as const;

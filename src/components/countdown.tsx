@@ -14,8 +14,8 @@ const UNITS: { key: keyof Omit<TimeLeft, "isComplete">; label: string }[] = [
 ];
 
 /**
- * Presentation-only countdown. Feeds off `useCountdown`; renders either the four
- * ticking unit cards or, once the launch instant passes, the arrival state.
+ * Presentation-only countdown. Feeds off `useCountdown`; renders four uniform
+ * surface blocks or, once the launch instant passes, the arrival state.
  */
 export function Countdown({ target }: { target: string }) {
   const timeLeft = useCountdown(target);
@@ -23,12 +23,12 @@ export function Countdown({ target }: { target: string }) {
   if (timeLeft?.isComplete) {
     return (
       <motion.p
-        initial={{ opacity: 0, scale: 0.9 }}
+        initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="font-display text-3xl font-extrabold text-white sm:text-5xl"
+        className="font-display text-3xl font-black text-white sm:text-5xl"
       >
         It&rsquo;s live. Go look
-        <span className="text-[#FFB020]"> →</span>
+        <span className="text-white/50"> →</span>
       </motion.p>
     );
   }
@@ -38,26 +38,26 @@ export function Countdown({ target }: { target: string }) {
       {UNITS.map(({ key, label }, i) => (
         <motion.div
           key={key}
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 * i + 0.3, type: "spring", stiffness: 120, damping: 14 }}
-          className="relative flex flex-col items-center rounded-3xl border border-white/10 bg-white/[0.06] px-2 py-5 backdrop-blur-md sm:px-6 sm:py-7"
+          transition={{ delay: 0.07 * i + 0.35, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="flex aspect-4/3 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/3"
         >
-          <div className="relative h-[1em] font-display text-5xl font-black leading-none tabular-nums text-white sm:text-7xl">
+          <div className="relative h-[1em] font-display text-5xl font-black leading-none tabular-nums text-white sm:text-6xl">
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.span
-                key={timeLeft ? timeLeft[key] : "placeholder"}
-                initial={{ y: "40%", opacity: 0 }}
+                key={timeLeft ? timeLeft[key] : "init"}
+                initial={{ y: "45%", opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                exit={{ y: "-40%", opacity: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 26 }}
+                exit={{ y: "-45%", opacity: 0 }}
+                transition={{ type: "spring", stiffness: 320, damping: 26 }}
                 className="absolute inset-0 flex items-center justify-center"
               >
-                {timeLeft ? pad(timeLeft[key]) : "--"}
+                {timeLeft ? pad(timeLeft[key]) : "00"}
               </motion.span>
             </AnimatePresence>
           </div>
-          <span className="mt-3 text-[0.7rem] font-medium uppercase tracking-[0.25em] text-white/50 sm:text-xs">
+          <span className="mt-2.5 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/40 sm:text-xs">
             {label}
           </span>
         </motion.div>

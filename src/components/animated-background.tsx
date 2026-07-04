@@ -3,57 +3,50 @@
 import { motion, useReducedMotion } from "motion/react";
 
 /**
- * Ambient playful backdrop: three oversized blurred gradient blobs drifting
- * behind a fine grain/noise overlay. Purely decorative — no logic, no props.
- * When the visitor prefers reduced motion the blobs hold still.
+ * Restrained, near-monochrome backdrop: two very faint light pools that drift
+ * slowly over a charcoal base, plus fine grain and a vignette. Decorative only.
+ * Holds still when the visitor prefers reduced motion.
  */
 export function AnimatedBackground() {
   const reduce = useReducedMotion();
 
-  const blobs = [
+  const pools = [
     {
-      className: "left-[-15%] top-[-10%] h-[55vmax] w-[55vmax] bg-[#FF3D9A]",
-      drift: { x: [0, 60, -30, 0], y: [0, -40, 30, 0] },
-      duration: 22,
+      className: "left-[-10%] top-[-20%] h-[55vmax] w-[55vmax] bg-white",
+      drift: { x: [0, 40, -20, 0], y: [0, 30, -10, 0] },
+      duration: 34,
+      opacity: 0.05,
     },
     {
-      className: "right-[-20%] top-[10%] h-[50vmax] w-[50vmax] bg-[#FFB020]",
-      drift: { x: [0, -50, 40, 0], y: [0, 50, -20, 0] },
-      duration: 26,
-    },
-    {
-      className:
-        "bottom-[-25%] left-[20%] h-[60vmax] w-[60vmax] bg-[#7C5CFF]",
-      drift: { x: [0, 40, -50, 0], y: [0, -30, 40, 0] },
-      duration: 30,
+      className: "right-[-15%] bottom-[-25%] h-[50vmax] w-[50vmax] bg-white",
+      drift: { x: [0, -30, 20, 0], y: [0, -20, 25, 0] },
+      duration: 40,
+      opacity: 0.035,
     },
   ];
 
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#0B0710]"
+      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#0B0C0E]"
     >
-      {blobs.map((blob, i) => (
+      {pools.map((pool, i) => (
         <motion.div
           key={i}
-          className={`absolute rounded-full opacity-70 blur-[90px] mix-blend-screen ${blob.className}`}
-          animate={reduce ? undefined : blob.drift}
+          style={{ opacity: pool.opacity }}
+          className={`absolute rounded-full blur-[120px] ${pool.className}`}
+          animate={reduce ? undefined : pool.drift}
           transition={
             reduce
               ? undefined
-              : {
-                  duration: blob.duration,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }
+              : { duration: pool.duration, repeat: Infinity, ease: "easeInOut" }
           }
         />
       ))}
-      {/* Fine grain to kill gradient banding and add texture. */}
-      <div className="absolute inset-0 opacity-[0.04] [background-image:radial-gradient(#fff_1px,transparent_1px)] [background-size:3px_3px]" />
-      {/* Vignette so the type stays legible over bright blobs. */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,#0B0710_95%)]" />
+      {/* Fine grain to kill banding and add texture. */}
+      <div className="absolute inset-0 opacity-[0.025] bg-[radial-gradient(#fff_1px,transparent_1px)] bg-size-[3px_3px]" />
+      {/* Vignette to settle the edges. */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,#0B0C0E_95%)]" />
     </div>
   );
 }

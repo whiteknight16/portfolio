@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0B0710",
+  themeColor: "#0B0C0E",
 };
 
 export default function RootLayout({
@@ -45,7 +45,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-[#0B0710] text-white">{children}</body>
+      <body className="min-h-full bg-[#0B0C0E] text-white">{children}</body>
     </html>
   );
 }
