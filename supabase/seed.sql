@@ -134,7 +134,7 @@ insert into public.projects (
     '<p>AI-powered platform for job insights, AI resume building, cover letters, quizzes, and career analytics.</p><ul><li>Gemini API for resume generation, cover letter suggestions, and AI-driven career insights.</li><li>Next.js, PostgreSQL, Prisma ORM; Inngest for cron jobs and background tasks.</li><li>Interactive data visualizations with Recharts; form validation with Zod + React Hook Form.</li></ul>',
     null,
     '{"Next.js","PostgreSQL","Prisma","Gemini","Inngest","Recharts"}',
-    '{}'::jsonb,
+    '{"repo":"https://github.com/whiteknight16/interview-genie","live":"https://interview-genie-snowy.vercel.app"}'::jsonb,
     true,
     'published',
     1,
@@ -147,7 +147,7 @@ insert into public.projects (
     '<p>Comprehensive fitness tracking app built on the MERN stack.</p><ul><li>Role-based Admin and User panels.</li><li>Interactive charts for user progress and fitness metrics.</li><li>Secure authentication and authorization.</li></ul>',
     null,
     '{"MongoDB","Express","React","Node.js"}',
-    '{}'::jsonb,
+    '{"repo":"https://github.com/whiteknight16/Gymkhana"}'::jsonb,
     true,
     'published',
     2,
@@ -164,6 +164,19 @@ insert into public.projects (
     false,
     'published',
     3,
+    now()
+  ),
+  (
+    'Notes Nest',
+    'notes-nest',
+    'Next.js-powered note-taking web app with authentication, billing, and a Prisma/PostgreSQL backend.',
+    '<p>Your next-generation, Next.js-powered web-based note-taking app.</p><ul><li>Auth via Kinde; payments/billing via Stripe.</li><li>Next.js, TypeScript, Tailwind CSS, ShadCN/UI.</li><li>Prisma ORM with PostgreSQL.</li></ul>',
+    null,
+    '{"Next.js","TypeScript","Tailwind CSS","Prisma","PostgreSQL","Stripe"}',
+    '{"repo":"https://github.com/whiteknight16/Notes-Nest","live":"https://notes-nest.vercel.app"}'::jsonb,
+    false,
+    'published',
+    4,
     now()
   );
 
