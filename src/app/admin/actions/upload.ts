@@ -12,7 +12,6 @@ const EXT_BY_MIME: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/webp": "webp",
   "image/gif": "gif",
-  "image/svg+xml": "svg",
 };
 
 /**
@@ -41,7 +40,7 @@ export async function uploadImageAction(
   const ext = EXT_BY_MIME[file.type];
   if (!ext) {
     return {
-      error: "Unsupported file type. Use PNG, JPEG, WebP, GIF, or SVG.",
+      error: "Unsupported file type. Use PNG, JPEG, WebP, or GIF.",
     };
   }
   if (file.size > MAX_BYTES) {

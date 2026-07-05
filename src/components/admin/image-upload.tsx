@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ImagePlus, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { uploadImageAction } from "@/app/admin/actions/upload";
@@ -16,7 +16,11 @@ type ImageUploadProps = {
 };
 
 /** File input with preview that uploads to the `media` bucket and stores the
- * resulting public URL in a hidden input so it submits with the parent form. */
+ * resulting public URL in a hidden input so it submits with the parent form.
+ *
+ * The hidden input only ever holds a resolved, uploaded URL (or the empty
+ * string) — never the local `blob:` preview — so a form submitted while an
+ * upload is still in flight can't persist a meaningless object URL. */
 export function ImageUpload({
   name,
   folder,
@@ -24,17 +28,35 @@ export function ImageUpload({
   onUploaded,
 }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState<string | null>(defaultValue);
+  // The value that actually submits with the form. Only ever a resolved
+  // upload URL (or null), never a blob: object URL.
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(defaultValue);
+  // Local object URL used purely for the visual preview while an upload is
+  // in flight. Cleared (and revoked) once the upload settles.
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const localPreviewRef = useRef<string | null>(null);
+
+  // Revoke any outstanding object URL on unmount.
+  useEffect(() => {
+    return () => {
+      if (localPreviewRef.current) URL.revokeObjectURL(localPreviewRef.current);
+    };
+  }, []);
+
+  function setLocalPreviewUrl(url: string | null) {
+    if (localPreviewRef.current) URL.revokeObjectURL(localPreviewRef.current);
+    localPreviewRef.current = url;
+    setLocalPreview(url);
+  }
 
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
 
     setError(null);
-    const localPreview = URL.createObjectURL(file);
-    setPreview(localPreview);
+    setLocalPreviewUrl(URL.createObjectURL(file));
     setPending(true);
 
     try {
@@ -46,38 +68,42 @@ export function ImageUpload({
 
       if ("error" in result) {
         setError(result.error);
-        setPreview(defaultValue);
         return;
       }
 
-      setPreview(result.url);
+      setUploadedUrl(result.url);
       onUploaded?.(result.url);
     } catch {
       setError("Upload failed. Please try again.");
-      setPreview(defaultValue);
     } finally {
-      URL.revokeObjectURL(localPreview);
+      setLocalPreviewUrl(null);
       setPending(false);
       if (inputRef.current) inputRef.current.value = "";
     }
   }
 
   function handleRemove() {
-    setPreview(null);
+    setLocalPreviewUrl(null);
+    setUploadedUrl(null);
     setError(null);
     onUploaded?.("");
   }
 
+  // While an upload is in flight, prefer the local blob preview visually;
+  // otherwise show the last resolved URL. The hidden input below always
+  // reflects `uploadedUrl` only, regardless of `pending`.
+  const displayPreview = localPreview ?? uploadedUrl;
+
   return (
-    <div className="flex flex-col gap-2">
-      <input type="hidden" name={name} value={preview ?? ""} readOnly />
+    <div className="flex flex-col gap-2" data-uploading={pending || undefined}>
+      <input type="hidden" name={name} value={uploadedUrl ?? ""} readOnly />
       <div className="flex items-center gap-3">
-        {preview ? (
+        {displayPreview ? (
           // Preview source is either a blob: URL or a Supabase storage URL,
           // neither of which benefits from next/image's remote optimization.
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={preview}
+            src={displayPreview}
             alt=""
             className="size-20 shrink-0 rounded-lg object-cover ring-1 ring-border"
           />
@@ -90,8 +116,9 @@ export function ImageUpload({
           <input
             ref={inputRef}
             type="file"
-            accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+            accept="image/png,image/jpeg,image/webp,image/gif"
             className="hidden"
+            disabled={pending}
             onChange={handleFileChange}
           />
           <div className="flex gap-2">
@@ -103,9 +130,13 @@ export function ImageUpload({
               onClick={() => inputRef.current?.click()}
             >
               {pending ? <Loader2 className="size-4 animate-spin" /> : null}
-              {preview ? "Replace image" : "Upload image"}
+              {pending
+                ? "Uploading…"
+                : displayPreview
+                  ? "Replace image"
+                  : "Upload image"}
             </Button>
-            {preview ? (
+            {displayPreview ? (
               <Button
                 type="button"
                 variant="ghost"
