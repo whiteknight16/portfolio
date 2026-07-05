@@ -36,8 +36,11 @@ New dependencies:
 ## 3. Decisions (from brainstorming)
 
 - **Identity:** software engineer.
-- **Sections:** About/Bio, Projects, Experience/Résumé, Contact, Skills — all
-  admin-toggleable and reorderable.
+- **Sections:** About/Bio, Experience, Skills, Projects, Achievements, Education,
+  Contact — all admin-toggleable and reorderable. Blog is a top-level route.
+- **Identity content:** Full Stack Developer (MERN, Next.js, FastAPI, GenAI).
+  Real résumé content is **seeded** into the DB (see §5.3) so the site is live on
+  first run and fully editable in `/admin` — the DB is the single source of truth.
 - **Blog editor:** rich text (WYSIWYG, Tiptap).
 - **Admin:** single admin, Supabase Auth email/password locked to `ADMIN_EMAIL`.
 - **Supabase:** user provisions the project and pastes keys; we ship SQL
@@ -92,16 +95,20 @@ Delivered as `supabase/migrations/*.sql`. All tables in `public`. `id uuid defau
 gen_random_uuid()`, `created_at`/`updated_at timestamptz default now()`.
 
 - **`profile`** (singleton, enforced by a single fixed row / `check`): `full_name`,
-  `headline`, `bio` (text), `avatar_url`, `resume_url`, `location`, `email`,
-  `socials jsonb` (e.g. `{github, linkedin, x, website}`).
+  `title`, `headline`, `bio` (text), `avatar_url`, `resume_url`, `location`,
+  `email`, `phone`, `socials jsonb` (e.g. `{github, linkedin, x, website}`).
 - **`site_sections`**: `key` (unique: `about|projects|experience|skills|contact`),
   `label`, `enabled bool`, `sort_order int`. Seeded with defaults.
 - **`projects`**: `title`, `slug` (unique), `summary`, `content` (sanitized HTML),
   `cover_image_url`, `tags text[]`, `links jsonb` (`{live, repo}`), `featured bool`,
   `status` (`draft|published`), `sort_order int`, `published_at`.
 - **`experiences`**: `role`, `company`, `location`, `start_date date`,
-  `end_date date null`, `is_current bool`, `description`, `sort_order int`.
+  `end_date date null`, `is_current bool`, `highlights text[]` (bullet points),
+  `sort_order int`.
 - **`skills`**: `name`, `category`, `sort_order int`.
+- **`achievements`**: `title`, `description`, `sort_order int`.
+- **`education`**: `degree`, `institution`, `location`, `start_date date`,
+  `end_date date null`, `description`, `sort_order int`.
 - **`posts`**: `title`, `slug` (unique), `excerpt`, `content` (sanitized HTML),
   `cover_image_url`, `tags text[]`, `status` (`draft|published`),
   `reading_minutes int`, `published_at`.
@@ -113,14 +120,44 @@ gen_random_uuid()`, `created_at`/`updated_at timestamptz default now()`.
 - **Public/anon:** `SELECT` only, and only rows that are visible:
   - `projects`/`posts`: `status = 'published'`.
   - `site_sections`: `enabled = true`.
-  - `profile`, `experiences`, `skills`: `SELECT` allowed (public content).
+  - `profile`, `experiences`, `skills`, `achievements`, `education`: `SELECT`
+    allowed (public content).
   - `contact_messages`: **no** anon `SELECT`.
 - **Contact insert:** anon may `INSERT` into `contact_messages` only (rate/spam
   mitigated by honeypot + server action; no select-back).
 - **Admin (authenticated & email = ADMIN_EMAIL):** full CRUD on all tables. Admin
   identity enforced in server actions; a DB helper checks `auth.jwt()->>'email'`.
 
-### 5.2 Storage
+### 5.2 Seed content (`supabase/seed.sql`)
+
+Idempotent seed inserting Harsh's real content so the site is populated on first
+run. All editable later via `/admin`.
+
+- **profile:** name "Harsh Pandey"; title "Full Stack Developer"; location
+  "Dwarka, New Delhi, India"; email harshp6421@gmail.com; phone +91 7007157057;
+  socials `{github: github.com/whiteknight16, linkedin:
+  linkedin.com/in/harshpandey61}`; `resume_url` = `/resume.pdf`; headline/bio =
+  the MERN/Next.js/FastAPI/GenAI summary (agentic AI interview platform at
+  SkillSync, WebRTC/LiveKit, LangChain/LangGraph, end-to-end ownership).
+- **site_sections:** about, experience, skills, projects, achievements,
+  education, contact — all enabled, in that order.
+- **experiences (3):** SkillSync — Full Stack Engineer (Mar 2025–present,
+  current); EY Gurugram — Generative AI Intern (Jul–Aug 2024); Ransh Innovations
+  (Remote) — Full Stack Developer Intern (Nov 2023–May 2024). Bullets per the
+  provided content in `highlights[]`.
+- **skills:** grouped by category — Languages; Frontend; Backend; Databases &
+  ORMs; AI / GenAI; DevOps & Tooling — with the listed items.
+- **projects (3+):** Interview Genie (AI career platform — Next.js, PostgreSQL,
+  Prisma, Inngest, Gemini, Recharts, Zod+RHF); Gymkhana (MERN fitness tracker,
+  RBAC, charts); REC Mirzapur (official college site). Links added from GitHub
+  enrichment (see phase 1b). Seeded as `published`.
+- **achievements:** GSSoC Top 100; SIH college round 1st place (2023 & 2024); SIH
+  2024 Grand Finalist; Web Dev team member 2 yrs / final-year Team Lead; built
+  official REC Mirzapur site.
+- **education:** B.Tech CSE — Rajkiya Engineering College Sonbhadra (Sep 2021–Jun
+  2025).
+
+### 5.3 Storage
 
 One public bucket `media` (public read; write restricted to authenticated admin
 via storage policy). Holds project covers, blog covers, inline post images,
@@ -169,18 +206,25 @@ disabled in Auth settings); its email must equal `ADMIN_EMAIL`.
 
 ## 10. Build phases
 
-1. **Supabase foundation** — deps, clients, migrations + seed, storage bucket,
-   `.env.example`, auth settings notes.
+1. **Supabase foundation** — deps, clients, migrations (incl. `achievements`,
+   `education`), storage bucket, `.env.example`, auth settings notes.
+   - **1b. GitHub enrichment** — fetch public repos from github.com/whiteknight16
+     to attach live/repo links (and surface any strong additional projects), then
+     finalize `supabase/seed.sql` with all real content.
 2. **Admin shell + auth** — middleware, login, layout/nav, dashboard, sign-out.
 3. **Core content CRUD** — profile, sections (toggle/reorder), projects,
-   experience, skills; image upload.
-4. **Public site** — theme provider, nav/footer, data-driven home sections,
-   projects list/detail with tag filter, motion, responsive polish.
+   experience, skills, achievements, education; image upload.
+4. **Public site** — theme provider, nav/footer, data-driven home sections
+   (Hero, About, Experience, Skills, Projects, Achievements, Education, Contact),
+   projects list/detail with tag filter, "Download Résumé" button, motion,
+   responsive polish.
 5. **Blog** — Tiptap editor + upload, posts CRUD, public list/detail with tag
    filter, sanitized rendering.
-6. **Contact** — form + server action + Resend + messages admin view.
-7. **Polish** — SEO/metadata/OG, sitemap, `revalidate` wiring, a11y, tests,
-   README/env docs, flip `SiteHome` to render the real site.
+6. **Contact** — form (email, phone, GitHub, LinkedIn) + server action + Resend +
+   messages admin view.
+7. **Polish** — SEO/metadata/OG, `sitemap.ts`, `robots.ts`, favicon,
+   `revalidate` wiring, a11y, tests, README/env docs, flip `SiteHome` to render
+   the real site.
 
 ## 11. Risks / notes
 
