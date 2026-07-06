@@ -1,30 +1,54 @@
+import { getEnabledSections, getProfile } from "@/lib/content";
+import { Hero } from "@/components/sections/hero";
+import { About } from "@/components/sections/about";
+import { ExperienceSection } from "@/components/sections/experience";
+import { Skills } from "@/components/sections/skills";
+import { ProjectsPreview } from "@/components/sections/projects-preview";
+import { Achievements } from "@/components/sections/achievements";
+import { EducationSection } from "@/components/sections/education";
+import { Contact } from "@/components/sections/contact";
+import type { SiteSection } from "@/lib/types";
+
 /**
- * Placeholder for the real portfolio home.
- *
- * This is the seam the launch flag switches to. Build the actual site out here
- * (or restructure into route segments) on your `develop` branch. It renders
- * only when `LAUNCHED=true`, so it stays out of production until you flip the
- * switch.
+ * The real portfolio home. A server component: fetches the profile once
+ * (shared by `Hero`, `About`, and `Contact` to avoid duplicate reads) and
+ * the enabled `site_sections`, then renders `Hero` followed by each enabled
+ * section — in `sort_order` — mapped to its component. Sections not present
+ * in `getEnabledSections()` (disabled in the admin) are simply skipped;
+ * every section component additionally degrades to `null` on its own if it
+ * has no data, so a briefly-unreachable database never crashes the page.
  */
-export function SiteHome() {
+export async function SiteHome() {
+  const [profile, sections] = await Promise.all([getProfile(), getEnabledSections()]);
+
   return (
-    <main className="grid min-h-dvh place-items-center px-6 text-center">
-      <div className="max-w-md">
-        <h1 className="font-display text-4xl font-black tracking-tight sm:text-5xl">
-          The real site goes here.
-        </h1>
-        <p className="mt-4 text-white/60">
-          You&rsquo;re seeing this because{" "}
-          <code className="rounded bg-white/10 px-1.5 py-0.5 text-sm">
-            LAUNCHED=true
-          </code>
-          . Build out your portfolio in{" "}
-          <code className="rounded bg-white/10 px-1.5 py-0.5 text-sm">
-            src/components/site-home.tsx
-          </code>
-          .
-        </p>
-      </div>
-    </main>
+    <>
+      <Hero profile={profile} />
+      {sections.map((section) => renderSection(section, profile))}
+    </>
   );
+}
+
+function renderSection(
+  section: SiteSection,
+  profile: Awaited<ReturnType<typeof getProfile>>,
+) {
+  switch (section.key) {
+    case "about":
+      return <About key={section.id} profile={profile} />;
+    case "experience":
+      return <ExperienceSection key={section.id} />;
+    case "skills":
+      return <Skills key={section.id} />;
+    case "projects":
+      return <ProjectsPreview key={section.id} />;
+    case "achievements":
+      return <Achievements key={section.id} />;
+    case "education":
+      return <EducationSection key={section.id} />;
+    case "contact":
+      return <Contact key={section.id} profile={profile} />;
+    default:
+      return null;
+  }
 }
