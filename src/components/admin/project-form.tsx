@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import { ImageUpload } from "@/components/admin/image-upload";
 import { SubmitButton } from "@/components/admin/submit-button";
+import { RichTextEditor } from "@/components/editor/rich-text-editor";
 
 const initialState: ProjectFormState = {};
 
@@ -97,16 +98,7 @@ export function ProjectForm({ project }: { project?: Project | null }) {
         <CardContent>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="content">Content</Label>
-            {/* Plain textarea for now — Task 20 swaps this in for a
-             * <RichTextEditor name="content" .../>. The seam is this single
-             * field: whatever renders here just needs to keep submitting
-             * sanitized-on-save HTML under the "content" form field name. */}
-            <Textarea
-              id="content"
-              name="content"
-              rows={10}
-              defaultValue={project?.content ?? ""}
-            />
+            <RichTextEditor name="content" defaultValue={project?.content} />
           </div>
         </CardContent>
       </Card>
