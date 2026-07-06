@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { profileSchema } from "@/lib/validation";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/auth";
 
 export type ProfileFormState = {
   ok?: boolean;
@@ -20,6 +21,9 @@ export async function updateProfileAction(
   _prevState: ProfileFormState,
   formData: FormData,
 ): Promise<ProfileFormState> {
+  const user = await getSessionUser();
+  if (!user) return { error: "Not authorized." };
+
   const parsed = profileSchema.safeParse({
     full_name: formData.get("full_name"),
     title: formData.get("title"),

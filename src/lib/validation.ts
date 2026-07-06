@@ -34,6 +34,32 @@ const csvToArray = (val: unknown): string[] => {
 /** Optional nullable URL: `""`/missing -> `null`, otherwise must be a valid URL. */
 const optionalUrl = () => z.preprocess(nullifyEmpty, z.string().trim().url().nullable().default(null));
 
+/** A root-relative path, e.g. `/resume.pdf` (but not a protocol-relative `//...`). */
+const isRootRelativePath = (val: string) => val.startsWith("/") && !val.startsWith("//");
+
+/** A valid absolute `http(s)` URL. */
+const isAbsoluteHttpUrl = (val: string) => z.string().url().safeParse(val).success && /^https?:\/\//.test(val);
+
+/**
+ * Optional nullable URL-or-path: `""`/missing -> `null`, otherwise must be
+ * either an absolute http(s) URL or a root-relative path (e.g. `/resume.pdf`).
+ * Used for `profile.resume_url`, which the seed populates with a root-relative
+ * default served from `public/`.
+ */
+const optionalUrlOrPath = () =>
+  z.preprocess(
+    nullifyEmpty,
+    z
+      .string()
+      .trim()
+      .refine(
+        (val) => isAbsoluteHttpUrl(val) || isRootRelativePath(val),
+        "Enter a valid URL or a root-relative path (e.g. /resume.pdf)",
+      )
+      .nullable()
+      .default(null),
+  );
+
 /** Optional nullable plain text column. */
 const optionalText = () => z.preprocess(nullifyEmpty, z.string().trim().nullable().default(null));
 
@@ -63,7 +89,7 @@ export const profileSchema = z.object({
   headline: defaultedText(),
   bio: defaultedText(),
   avatar_url: optionalUrl(),
-  resume_url: optionalUrl(),
+  resume_url: optionalUrlOrPath(),
   location: optionalText(),
   email: z.preprocess(nullifyEmpty, z.email().nullable().default(null)),
   phone: optionalText(),

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { contactSchema, projectSchema, experienceSchema } from "./validation.ts";
+import { contactSchema, projectSchema, experienceSchema, profileSchema } from "./validation.ts";
 
 test("contactSchema accepts a valid submission with an empty honeypot", () => {
   const result = contactSchema.safeParse({
@@ -68,4 +68,37 @@ test("experienceSchema requires end_date unless is_current is true", () => {
     is_current: true,
   });
   assert.equal(current.success, true);
+});
+
+test("profileSchema accepts a root-relative resume_url (the seeded default)", () => {
+  const result = profileSchema.safeParse({
+    full_name: "Ada Lovelace",
+    resume_url: "/resume.pdf",
+  });
+  assert.equal(result.success, true);
+});
+
+test("profileSchema accepts an absolute https resume_url", () => {
+  const result = profileSchema.safeParse({
+    full_name: "Ada Lovelace",
+    resume_url: "https://x.com/cv.pdf",
+  });
+  assert.equal(result.success, true);
+});
+
+test("profileSchema accepts an empty resume_url", () => {
+  const result = profileSchema.safeParse({
+    full_name: "Ada Lovelace",
+    resume_url: "",
+  });
+  assert.equal(result.success, true);
+  assert.equal(result.data?.resume_url, null);
+});
+
+test("profileSchema rejects an invalid resume_url", () => {
+  const result = profileSchema.safeParse({
+    full_name: "Ada Lovelace",
+    resume_url: "not a url",
+  });
+  assert.equal(result.success, false);
 });
