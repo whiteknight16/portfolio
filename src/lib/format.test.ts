@@ -29,3 +29,7 @@ test("dateRange formats current role", () => {
 test("dateRange formats a closed range", () => {
   assert.equal(dateRange("2024-03-01", "2024-08-15", false), "Mar 2024 – Aug 2024");
 });
+
+test("dateRange formats an exact month range unaffected by timezone", () => {
+  assert.equal(dateRange("2024-07-01", "2024-08-31", false), "Jul 2024 – Aug 2024");
+});

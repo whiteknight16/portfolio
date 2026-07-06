@@ -27,3 +27,24 @@ test("sanitizeHtml drops disallowed tags like style/iframe but keeps their text 
   assert.ok(!clean.includes("<iframe"));
   assert.ok(clean.includes("<p>safe</p>"));
 });
+
+test("sanitizeHtml strips inline style attributes", () => {
+  const dirty = '<p style="color:red">text</p>';
+  const clean = sanitizeHtml(dirty);
+  assert.ok(!clean.includes("style="));
+  assert.ok(clean.includes("text"));
+});
+
+test("sanitizeHtml drops src on <a> but keeps href", () => {
+  const dirty = '<a href="https://x.com" src="https://evil.com">link</a>';
+  const clean = sanitizeHtml(dirty);
+  assert.ok(!clean.includes("src="));
+  assert.ok(clean.includes('href="https://x.com"'));
+});
+
+test("sanitizeHtml drops href on <p> since it is only allowed on <a>", () => {
+  const dirty = '<p href="https://evil.com">text</p>';
+  const clean = sanitizeHtml(dirty);
+  assert.ok(!clean.includes("href="));
+  assert.ok(clean.includes("text"));
+});

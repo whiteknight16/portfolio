@@ -3,7 +3,7 @@
  */
 
 import baseSlugify from "slugify";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 const WORDS_PER_MINUTE = 200;
 
@@ -30,7 +30,10 @@ const MONTH_YEAR = "MMM yyyy";
 
 /** Format a start/end date pair as "Mar 2025 – Present" or "Mar 2024 – Aug 2024". */
 export function dateRange(start: string, end: string | null, isCurrent: boolean): string {
-  const startLabel = format(new Date(start), MONTH_YEAR);
-  const endLabel = isCurrent || !end ? "Present" : format(new Date(end), MONTH_YEAR);
+  // parseISO (not `new Date()`) so date-only strings like "2025-03-01" are read
+  // as local midnight, not UTC midnight — avoiding a month shift in timezones
+  // behind UTC when `format` renders in process-local time.
+  const startLabel = format(parseISO(start), MONTH_YEAR);
+  const endLabel = isCurrent || !end ? "Present" : format(parseISO(end), MONTH_YEAR);
   return `${startLabel} – ${endLabel}`;
 }

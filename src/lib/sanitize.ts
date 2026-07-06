@@ -28,6 +28,19 @@ const ALLOWED_TAGS = [
 
 const ALLOWED_ATTR = ["href", "title", "target", "rel", "src", "alt"];
 
+/** Attributes allowed per tag — scopes href/target/rel to <a> and src/alt to <img>. */
+const ALLOWED_ATTR_BY_TAG: Record<string, string[]> = {
+  a: ["href", "title", "target", "rel"],
+  img: ["src", "alt"],
+};
+
+DOMPurify.addHook("uponSanitizeAttribute", (node, data) => {
+  const allowedForTag = ALLOWED_ATTR_BY_TAG[node.tagName.toLowerCase()] ?? [];
+  if (!allowedForTag.includes(data.attrName)) {
+    data.keepAttr = false;
+  }
+});
+
 /** Sanitize untrusted HTML down to a safe, presentational subset. */
 export function sanitizeHtml(html: string): string {
   return DOMPurify.sanitize(html, {
