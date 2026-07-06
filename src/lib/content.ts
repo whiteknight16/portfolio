@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type {
   Achievement,
@@ -19,8 +20,8 @@ import type {
  * because the database is briefly unreachable.
  */
 
-/** Fetches the singleton profile row. */
-export async function getProfile(): Promise<Profile | null> {
+/** Fetches the singleton profile row. Cached per-request to dedupe reads. */
+export const getProfile = cache(async (): Promise<Profile | null> => {
   try {
     const supabase = await createServerSupabase();
     const { data, error } = await supabase
@@ -34,7 +35,7 @@ export async function getProfile(): Promise<Profile | null> {
   } catch {
     return null;
   }
-}
+});
 
 /** Fetches enabled site sections, ordered by `sort_order`. */
 export async function getEnabledSections(): Promise<SiteSection[]> {
