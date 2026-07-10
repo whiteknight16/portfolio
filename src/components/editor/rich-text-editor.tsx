@@ -16,6 +16,8 @@ type RichTextEditorProps = {
   /** Existing HTML to load into the editor, if editing. */
   defaultValue?: string | null;
   placeholder?: string;
+  /** Storage bucket for inline image uploads. Defaults to "media"; blog uses "blog-images". */
+  bucket?: string;
 };
 
 /**
@@ -40,6 +42,7 @@ export function RichTextEditor({
   name,
   defaultValue,
   placeholder = "Write your post…",
+  bucket = "media",
 }: RichTextEditorProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -97,7 +100,7 @@ export function RichTextEditor({
         name={name}
         defaultValue={defaultValue ?? ""}
       />
-      <EditorToolbar editor={editor} />
+      <EditorToolbar editor={editor} bucket={bucket} />
       <EditorContent editor={editor} />
     </div>
   );

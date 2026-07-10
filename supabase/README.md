@@ -14,15 +14,14 @@ Migrations are applied in order:
 
 After running migrations, perform these steps once per Supabase project:
 
-### Step 1: Set the Admin Email GUC
+### Step 1: Admin email (baked into `is_admin()`)
 
-Connect to your Supabase database and run:
-
-```sql
-alter database postgres set app.admin_email = '<ADMIN_EMAIL>';
-```
-
-Replace `<ADMIN_EMAIL>` with the email address of your admin user (e.g., `harsh@proaibots.com`).
+The admin email is hardcoded in the `public.is_admin()` function in
+`0002_rls.sql` (currently `harshp6421@gmail.com`). Hosted Supabase's SQL-editor
+role cannot run `alter database ... set app.admin_email` (error `42501:
+permission denied`), so the GUC approach is not used. To change the admin, edit
+the email literal in `is_admin()` and re-run that function definition. Keep it
+in sync with `ADMIN_EMAIL` in `.env`.
 
 ### Step 2: Disable Public Sign-ups
 

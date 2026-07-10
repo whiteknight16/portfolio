@@ -95,7 +95,11 @@ export function PostForm({ post }: { post?: Post | null }) {
         <CardContent>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="content">Content</Label>
-            <RichTextEditor name="content" defaultValue={post?.content} />
+            <RichTextEditor
+              name="content"
+              defaultValue={post?.content}
+              bucket="blog-images"
+            />
           </div>
         </CardContent>
       </Card>
@@ -113,6 +117,7 @@ export function PostForm({ post }: { post?: Post | null }) {
             <ImageUpload
               name="cover_image_url"
               folder="blog"
+              bucket="blog-images"
               defaultValue={post?.cover_image_url}
             />
           </div>

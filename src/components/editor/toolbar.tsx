@@ -22,6 +22,8 @@ import { uploadImageAction } from "@/app/admin/actions/upload";
 
 type EditorToolbarProps = {
   editor: Editor | null;
+  /** Storage bucket for inline image uploads. Defaults to "media". */
+  bucket?: string;
 };
 
 type ToolbarButtonProps = {
@@ -66,7 +68,7 @@ function ToolbarDivider() {
  * underline/strike/table buttons, since that markup would just get stripped
  * on save.
  */
-export function EditorToolbar({ editor }: EditorToolbarProps) {
+export function EditorToolbar({ editor, bucket = "media" }: EditorToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,6 +85,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
       const formData = new FormData();
       formData.set("file", file);
       formData.set("folder", "posts");
+      formData.set("bucket", bucket);
 
       const result = await uploadImageAction(formData);
       if ("error" in result) {

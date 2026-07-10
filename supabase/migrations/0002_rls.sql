@@ -1,11 +1,12 @@
 -- helper: is the caller the single admin?
 create or replace function public.is_admin() returns boolean
 language sql stable as $$
-  select coalesce(auth.jwt() ->> 'email', '') =
-         current_setting('app.admin_email', true);
+  select coalesce(auth.jwt() ->> 'email', '') = 'harshp6421@gmail.com';
 $$;
--- NOTE: set the GUC once per project:  alter database postgres set app.admin_email = 'harshp6421@gmail.com';
--- (documented in supabase/README; the user runs it with their ADMIN_EMAIL.)
+-- NOTE: the admin email is hardcoded above. Supabase's SQL-editor role cannot
+-- run `alter database ... set app.admin_email` (permission denied: 42501), so
+-- the GUC approach isn't usable on hosted Supabase. Change the literal here if
+-- the admin email changes, and keep it in sync with ADMIN_EMAIL in .env.
 
 alter table public.profile          enable row level security;
 alter table public.site_sections    enable row level security;

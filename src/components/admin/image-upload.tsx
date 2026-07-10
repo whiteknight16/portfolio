@@ -8,15 +8,18 @@ import { uploadImageAction } from "@/app/admin/actions/upload";
 type ImageUploadProps = {
   /** Name of the hidden input the resulting URL is submitted under. */
   name: string;
-  /** Storage sub-folder within the `media` bucket, e.g. "projects". */
+  /** Storage sub-folder within the bucket, e.g. "projects". */
   folder: string;
+  /** Storage bucket to upload into. Defaults to "media"; blog uses "blog-images". */
+  bucket?: string;
   /** Existing image URL to preview, if editing. */
   defaultValue?: string | null;
   onUploaded?: (url: string) => void;
 };
 
-/** File input with preview that uploads to the `media` bucket and stores the
- * resulting public URL in a hidden input so it submits with the parent form.
+/** File input with preview that uploads to the given `bucket` (default
+ * `media`) and stores the resulting public URL in a hidden input so it submits
+ * with the parent form.
  *
  * The hidden input only ever holds a resolved, uploaded URL (or the empty
  * string) — never the local `blob:` preview — so a form submitted while an
@@ -24,6 +27,7 @@ type ImageUploadProps = {
 export function ImageUpload({
   name,
   folder,
+  bucket = "media",
   defaultValue = null,
   onUploaded,
 }: ImageUploadProps) {
@@ -63,6 +67,7 @@ export function ImageUpload({
       const formData = new FormData();
       formData.set("file", file);
       formData.set("folder", folder);
+      formData.set("bucket", bucket);
 
       const result = await uploadImageAction(formData);
 
