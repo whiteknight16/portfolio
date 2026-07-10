@@ -20,6 +20,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { signOutAction } from "@/app/admin/login/actions";
 import { cn } from "@/lib/utils";
 
@@ -49,15 +50,18 @@ function isActivePath(pathname: string, href: string) {
 
 function NavLinks({
   pathname,
+  unreadMessageCount,
   onNavigate,
 }: {
   pathname: string;
+  unreadMessageCount?: number;
   onNavigate?: () => void;
 }) {
   return (
     <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
       {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
         const active = isActivePath(pathname, href);
+        const showUnreadBadge = href === "/admin/messages" && !!unreadMessageCount;
         return (
           <Link
             key={href}
@@ -73,6 +77,7 @@ function NavLinks({
           >
             <Icon className="size-4 shrink-0" />
             {label}
+            {showUnreadBadge ? <Badge className="ml-auto">{unreadMessageCount}</Badge> : null}
           </Link>
         );
       })}
@@ -96,7 +101,13 @@ function SignOutForm() {
   );
 }
 
-export function AdminShell({ children }: { children: React.ReactNode }) {
+export function AdminShell({
+  children,
+  unreadMessageCount,
+}: {
+  children: React.ReactNode;
+  unreadMessageCount?: number;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -109,7 +120,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             Admin
           </span>
         </div>
-        <NavLinks pathname={pathname} />
+        <NavLinks pathname={pathname} unreadMessageCount={unreadMessageCount} />
         <div className="border-t border-sidebar-border p-3">
           <SignOutForm />
         </div>
@@ -138,7 +149,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 <X className="size-4" />
               </button>
             </div>
-            <NavLinks pathname={pathname} onNavigate={() => setOpen(false)} />
+            <NavLinks
+              pathname={pathname}
+              unreadMessageCount={unreadMessageCount}
+              onNavigate={() => setOpen(false)}
+            />
             <div className="border-t border-sidebar-border p-3">
               <SignOutForm />
             </div>
