@@ -1,6 +1,11 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import { LoginForm } from "@/components/admin/login-form";
+
+// Per-request session check (redirects already-authed admins), so this page
+// is dynamic and must not be prerendered at build time. See the note in
+// `(dashboard)/layout.tsx` for the full rationale.
+export const dynamic = "force-dynamic";
 import {
   Card,
   CardHeader,
