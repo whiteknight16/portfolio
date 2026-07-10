@@ -2,6 +2,15 @@ import { requireAdmin } from "@/lib/auth";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { AdminShell } from "@/components/admin/shell";
 
+/**
+ * The admin area is authenticated and per-request by nature, so it must never
+ * be statically prerendered. Forcing dynamic rendering also keeps the build
+ * from evaluating `readPublicEnv()` at build time (before the `cookies()`
+ * dynamic bailout is reached), which would otherwise fail the build in
+ * environments where the public Supabase env vars are absent at build time.
+ */
+export const dynamic = "force-dynamic";
+
 /** Unread contact message count for the nav badge. Degrades to `0` on any
  * failure rather than breaking every admin page over a single stat. */
 async function getUnreadMessageCount(): Promise<number> {
