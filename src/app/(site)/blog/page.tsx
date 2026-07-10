@@ -3,18 +3,12 @@ import { getPublishedPosts } from "@/lib/content";
 import { Reveal } from "@/components/public/reveal";
 import { BlogGrid } from "@/components/public/blog-grid";
 import { brand } from "@/lib/config";
-import { isLaunched } from "@/lib/flags";
 
 // Reads published posts straight from the database on every request —
 // there's nothing here worth prerendering or caching.
 export const dynamic = "force-dynamic";
 
 export function generateMetadata(): Metadata {
-  // Pre-launch, defer to the root layout's static coming-soon metadata —
-  // exposing the real title/description here would leak it in `<head>`
-  // even though the launch gate in `(site)/layout.tsx` keeps the body hidden.
-  if (!isLaunched) return {};
-
   return {
     title: `Blog — ${brand.name}`,
     description: "Writing on things I've built, learned, and broken — filterable by tag.",

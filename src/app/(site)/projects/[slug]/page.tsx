@@ -8,7 +8,6 @@ import { Prose } from "@/components/public/prose";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/config";
-import { isLaunched } from "@/lib/flags";
 
 // Reads the live project row on every request — never prerender it.
 export const dynamic = "force-dynamic";
@@ -18,11 +17,6 @@ type ProjectPageProps = {
 };
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
-  // Pre-launch, defer to the root layout's static coming-soon metadata —
-  // fetching and exposing the real project here would leak it in `<head>`
-  // even though the launch gate in `(site)/layout.tsx` keeps the body hidden.
-  if (!isLaunched) return {};
-
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) return {};

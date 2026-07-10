@@ -3,18 +3,12 @@ import { getPublishedProjects } from "@/lib/content";
 import { Reveal } from "@/components/public/reveal";
 import { ProjectsGrid } from "@/components/public/projects-grid";
 import { brand } from "@/lib/config";
-import { isLaunched } from "@/lib/flags";
 
 // Reads published projects straight from the database on every request —
 // there's nothing here worth prerendering or caching.
 export const dynamic = "force-dynamic";
 
 export function generateMetadata(): Metadata {
-  // Pre-launch, defer to the root layout's static coming-soon metadata —
-  // exposing the real title/description here would leak it in `<head>`
-  // even though the launch gate in `(site)/layout.tsx` keeps the body hidden.
-  if (!isLaunched) return {};
-
   return {
     title: `Projects — ${brand.name}`,
     description: "Selected projects, filterable by tag.",

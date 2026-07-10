@@ -21,34 +21,29 @@ const bricolage = Bricolage_Grotesque({
   weight: ["600", "700", "800"],
 });
 
-// This root default stays coming-soon-oriented on purpose: pre-launch, every
-// `(site)` route defers to it (see `(site)/page.tsx`'s `generateMetadata`,
-// which returns `{}` and lets this fallback show through), so it must never
-// leak real profile data into `<head>` before launch. Once `LAUNCHED=true`,
-// per-page `generateMetadata` (home/projects/blog) overrides this with the
-// richer, real copy. Deliberately a plain string `title` (not a
-// `{ default, template }` object) — the detail pages already build their own
-// full "X — Harsh Pandey" titles, and a parent template would double-suffix
-// them.
-const comingSoonTitle = `${brand.name} — Something is coming`;
-const comingSoonDescription =
-  "A new personal portfolio is on the way. Countdown to launch, then the good stuff.";
+// This root default is a real fallback: per-page `generateMetadata`
+// (home/projects/blog) overrides this with the richer, live profile/content
+// copy. Deliberately a plain string `title` (not a `{ default, template }`
+// object) — the detail pages already build their own full "X — Harsh Pandey"
+// titles, and a parent template would double-suffix them.
+const defaultTitle = `${brand.name} — ${brand.headline}`;
+const defaultDescription = brand.subline;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: comingSoonTitle,
-  description: comingSoonDescription,
+  title: defaultTitle,
+  description: defaultDescription,
   openGraph: {
-    title: comingSoonTitle,
-    description: comingSoonDescription,
+    title: defaultTitle,
+    description: defaultDescription,
     type: "website",
     url: siteUrl,
     siteName: brand.name,
   },
   twitter: {
     card: "summary_large_image",
-    title: comingSoonTitle,
-    description: comingSoonDescription,
+    title: defaultTitle,
+    description: defaultDescription,
   },
 };
 

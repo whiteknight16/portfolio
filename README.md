@@ -15,8 +15,6 @@ needed to update content.
   incoming contact messages.
 - **Contact form**: submissions are stored in Supabase and emailed to you
   via Resend.
-- **Launch gate**: the whole public site can be hidden behind a
-  coming-soon page via one environment variable — see [Launch](#launch).
 
 ## Prerequisites
 
@@ -34,9 +32,8 @@ cp .env.example .env.local   # then fill in the values, see below
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). With `LAUNCHED=false`
-(the default) you'll see the coming-soon page; the real site and `/admin`
-still work underneath — see [Launch](#launch).
+Open [http://localhost:3000](http://localhost:3000) to see the live site;
+`/admin` is reachable at [http://localhost:3000/admin](http://localhost:3000/admin).
 
 ## Environment variables
 
@@ -45,7 +42,6 @@ gitignored; never commit real secrets.
 
 | Variable | What it is | Where to get it |
 |---|---|---|
-| `LAUNCHED` | Launch kill-switch. `true` shows the real site; anything else shows the coming-soon page. | Set by you. See [Launch](#launch). |
 | `NEXT_PUBLIC_SITE_URL` | Public origin of the site, no trailing slash. Used for SEO metadata, sitemap, and absolute links. | Your domain (e.g. `https://harshpandey.dev`), or `http://localhost:3000` in dev. |
 | `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project's API URL. Safe to expose to the browser. | Supabase dashboard → Project Settings → API. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous/publishable key. Safe to expose to the browser; RLS policies restrict what it can do. | Supabase dashboard → Project Settings → API. |
@@ -110,26 +106,6 @@ elsewhere, set `resume_url` on the profile in `/admin` to a full URL.
      published/draft state.
    - **Messages** — contact-form submissions.
 
-## Launch
-
-The public site is gated by the `LAUNCHED` environment variable
-(`src/lib/flags.ts`):
-
-- `LAUNCHED` unset or anything other than the string `"true"` → the
-  coming-soon page is shown for every route under `(site)`.
-- `LAUNCHED=true` → the real site renders, with nav and footer.
-
-The gate itself lives in `src/app/(site)/layout.tsx`: when `isLaunched` is
-false it renders only `<ComingSoon />`; when true it fetches the profile and
-renders `<SiteNav />` + the page content + `<SiteFooter />`. `/admin` is
-unaffected by this flag either way — it's always reachable so you can manage
-content before going live.
-
-Treat `LAUNCHED` as a rollback kill-switch: if something goes wrong after
-launch, flip it back to `false` on your host and redeploy (or just restart,
-depending on your host) to fall back to the coming-soon page without
-touching git.
-
 ## Scripts
 
 | Command | Does |
@@ -147,6 +123,4 @@ touching git.
    settings (Production, and Preview if you want previews working too).
 3. Set `NEXT_PUBLIC_SITE_URL` to your production domain (e.g.
    `https://harshpandey.dev`), not `localhost`.
-4. Deploy with `LAUNCHED=false` to ship the coming-soon page first if you
-   want a soft launch; flip it to `true` (and redeploy, or update the env
-   var and redeploy) when you're ready to go live.
+4. Deploy — the site is always live, no additional switch to flip.

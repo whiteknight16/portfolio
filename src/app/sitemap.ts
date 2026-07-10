@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getPublishedPosts, getPublishedProjects } from "@/lib/content";
 import { siteUrl } from "@/lib/config";
-import { isLaunched } from "@/lib/flags";
 
 /**
  * Generated at request time (content.ts fetchers hit Supabase live) and
@@ -10,13 +9,6 @@ import { isLaunched } from "@/lib/flags";
  * yields a sitemap with just the static routes instead of a crash.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Pre-launch, the whole `(site)` route group is gated behind the
-  // coming-soon page — don't leak real project/blog slugs to crawlers by
-  // fetching and listing them here.
-  if (!isLaunched) {
-    return [{ url: siteUrl, changeFrequency: "monthly", priority: 1 }];
-  }
-
   const [projects, posts] = await Promise.all([
     getPublishedProjects(),
     getPublishedPosts(),
