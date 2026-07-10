@@ -19,10 +19,10 @@ export async function sendContactAction(
   formData: FormData,
 ): Promise<ContactFormState> {
   const parsed = contactSchema.safeParse({
-    name: formData.get("name"),
-    email: formData.get("email"),
-    message: formData.get("message"),
-    honeypot: formData.get("honeypot"),
+    name: (formData.get("name") ?? "").toString(),
+    email: (formData.get("email") ?? "").toString(),
+    message: (formData.get("message") ?? "").toString(),
+    honeypot: (formData.get("honeypot") ?? "").toString(),
   });
 
   if (!parsed.success) {
@@ -45,7 +45,14 @@ export async function sendContactAction(
     return { error: "Something went wrong. Please try again." };
   }
 
-  await sendContactEmail({ name, email, message });
+  try {
+    await sendContactEmail({ name, email, message });
+  } catch (err) {
+    // Belt-and-suspenders: sendContactEmail is documented to never throw,
+    // but a future regression there must not fail a request whose DB
+    // insert already succeeded.
+    console.error("sendContactAction: unexpected error sending notification email", err);
+  }
 
   return { ok: true };
 }

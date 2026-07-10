@@ -12,6 +12,24 @@ test("contactSchema accepts a valid submission with an empty honeypot", () => {
   assert.equal(result.success, true);
 });
 
+test("contactSchema accepts honeypot: '' with a valid name/email/message, and rejects honeypot: 'spam'", () => {
+  const accepted = contactSchema.safeParse({
+    name: "Ada Lovelace",
+    email: "ada@example.com",
+    message: "Hello there",
+    honeypot: "",
+  });
+  assert.equal(accepted.success, true);
+
+  const rejected = contactSchema.safeParse({
+    name: "Ada Lovelace",
+    email: "ada@example.com",
+    message: "Hello there",
+    honeypot: "spam",
+  });
+  assert.equal(rejected.success, false);
+});
+
 test("contactSchema rejects a submission when the honeypot is filled in", () => {
   const result = contactSchema.safeParse({
     name: "Bot",
