@@ -7,6 +7,8 @@ This directory contains database migrations for the portfolio + admin CMS.
 Migrations are applied in order:
 1. `0001_schema.sql` — Creates the 9 core tables: `profile`, `site_sections`, `projects`, `experiences`, `skills`, `achievements`, `education`, `posts`, `contact_messages`
 2. `0002_rls.sql` — Enables Row Level Security (RLS) with policies for public read, admin full CRUD, and anonymous contact message insertion
+3. `0003_storage.sql` — Creates the `media` storage bucket used for project/post images and uploads
+4. `0004_updated_at.sql` — Adds `updated_at` triggers
 
 ## Manual Setup Steps
 
