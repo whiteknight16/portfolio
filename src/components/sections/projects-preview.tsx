@@ -40,7 +40,7 @@ export async function ProjectsPreview() {
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((project, i) => (
             <Reveal key={project.id} delay={Math.min(i * 0.08, 0.24)} className="h-full">
-              <Card className="h-full justify-between gap-4 ring-1 ring-foreground/10 transition-shadow hover:shadow-md">
+              <Card className="h-full justify-between gap-4 transition-shadow hover:shadow-md">
                 <CardHeader>
                   <CardTitle className="text-lg">{project.title}</CardTitle>
                   <CardDescription className="mt-1.5 line-clamp-3 text-sm">
