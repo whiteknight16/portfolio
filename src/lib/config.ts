@@ -16,3 +16,9 @@ export const brand = {
     "A new home for the things I design, build, and break. Bookmark it the good stuff lands soon.",
   email: "harshp6421@gmail.com",
 } as const;
+
+// Public site origin — used for `metadataBase`, absolute OG image URLs, and
+// the sitemap/robots file conventions. Falls back to localhost in dev so
+// nothing crashes when the env var isn't set (e.g. running tests).
+export const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";

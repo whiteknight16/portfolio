@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
-import { brand } from "@/lib/config";
+import { brand, siteUrl } from "@/lib/config";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
@@ -21,14 +21,34 @@ const bricolage = Bricolage_Grotesque({
   weight: ["600", "700", "800"],
 });
 
+// This root default stays coming-soon-oriented on purpose: pre-launch, every
+// `(site)` route defers to it (see `(site)/page.tsx`'s `generateMetadata`,
+// which returns `{}` and lets this fallback show through), so it must never
+// leak real profile data into `<head>` before launch. Once `LAUNCHED=true`,
+// per-page `generateMetadata` (home/projects/blog) overrides this with the
+// richer, real copy. Deliberately a plain string `title` (not a
+// `{ default, template }` object) — the detail pages already build their own
+// full "X — Harsh Pandey" titles, and a parent template would double-suffix
+// them.
+const comingSoonTitle = `${brand.name} — Something is coming`;
+const comingSoonDescription =
+  "A new personal portfolio is on the way. Countdown to launch, then the good stuff.";
+
 export const metadata: Metadata = {
-  title: `${brand.name} — Something is coming`,
-  description:
-    "A new personal portfolio is on the way. Countdown to launch, then the good stuff.",
+  metadataBase: new URL(siteUrl),
+  title: comingSoonTitle,
+  description: comingSoonDescription,
   openGraph: {
-    title: `${brand.name} — Something is coming`,
-    description: "A new personal portfolio is on the way.",
+    title: comingSoonTitle,
+    description: comingSoonDescription,
     type: "website",
+    url: siteUrl,
+    siteName: brand.name,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: comingSoonTitle,
+    description: comingSoonDescription,
   },
 };
 
