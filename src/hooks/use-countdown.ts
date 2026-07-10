@@ -14,14 +14,18 @@ export function useCountdown(target: Date | string | number): TimeLeft | null {
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
 
   useEffect(() => {
-    // Paint the first real value immediately on mount.
-    setTimeLeft(computeTimeLeft(target));
-
-    const id = setInterval(() => {
+    // Shared tick: recomputes and syncs React state from the system clock
+    // (the external source of truth). Used both as the interval callback
+    // and for the immediate first paint below, so the initial value never
+    // waits a full second to appear.
+    const tick = () => {
       const next = computeTimeLeft(target);
       setTimeLeft(next);
       if (next.isComplete) clearInterval(id);
-    }, 1000);
+    };
+
+    const id = setInterval(tick, 1000);
+    tick();
 
     return () => clearInterval(id);
   }, [target]);
