@@ -56,7 +56,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           // eslint-disable-next-line @next/next/no-img-element -- remote Supabase URL.
           <img
             src={project.cover_image_url}
-            alt=""
+            alt={project.title}
             className="mt-8 aspect-video w-full rounded-xl border border-border object-cover"
           />
         ) : (

@@ -56,7 +56,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           // eslint-disable-next-line @next/next/no-img-element -- remote Supabase URL.
           <img
             src={post.cover_image_url}
-            alt=""
+            alt={post.title}
             className="mt-8 aspect-video w-full rounded-xl border border-border object-cover"
           />
         ) : (

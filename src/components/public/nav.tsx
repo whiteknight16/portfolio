@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/config";
@@ -31,6 +31,7 @@ type SiteNavProps = {
  */
 export function SiteNav({ name = brand.name, resumeUrl = "/resume.pdf" }: SiteNavProps) {
   const [open, setOpen] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const close = () => setOpen(false);
 
@@ -101,7 +102,7 @@ export function SiteNav({ name = brand.name, resumeUrl = "/resume.pdf" }: SiteNa
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: "easeOut" }}
             className="overflow-hidden border-b border-border/60 bg-background md:hidden"
           >
             <div className="flex flex-col gap-1 px-4 py-3 sm:px-6">

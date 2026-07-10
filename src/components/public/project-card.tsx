@@ -12,13 +12,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
  */
 export function ProjectCard({ project }: { project: Project }) {
   return (
-    <Card className="h-full justify-between gap-4 ring-1 ring-foreground/10 transition-shadow hover:shadow-md">
+    <Card className="h-full justify-between gap-4 transition-shadow hover:shadow-md">
       <Link href={`/projects/${project.slug}`} className="block overflow-hidden">
         {project.cover_image_url ? (
           // eslint-disable-next-line @next/next/no-img-element -- remote Supabase URL; see comment above.
           <img
             src={project.cover_image_url}
-            alt=""
+            alt={project.title}
             loading="lazy"
             className="aspect-video w-full object-cover"
           />

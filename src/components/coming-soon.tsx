@@ -1,13 +1,14 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { AnimatedBackground } from "@/components/animated-background";
 import { Countdown } from "@/components/countdown";
 import { brand, LAUNCH_DATE } from "@/lib/config";
 
 const block = "rounded-2xl border border-white/10 bg-white/[0.025]";
 
-// Shared entrance feel for every tile.
+// Shared entrance feel for every tile. Visitors who prefer reduced motion get
+// the tile immediately, with no animation — same pattern as `Reveal`.
 function Tile({
   className = "",
   delay = 0,
@@ -17,6 +18,12 @@ function Tile({
   delay?: number;
   children: React.ReactNode;
 }) {
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
