@@ -35,7 +35,8 @@ export interface SiteSection {
     | "projects"
     | "achievements"
     | "education"
-    | "contact";
+    | "contact"
+    | "blog";
   label: string;
   enabled: boolean;
   sort_order: number;

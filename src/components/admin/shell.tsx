@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { signOutAction } from "@/app/admin/login/actions";
 import { cn } from "@/lib/utils";
 
@@ -115,10 +116,11 @@ export function AdminShell({
     <div className="flex min-h-svh bg-background text-foreground">
       {/* Desktop sidebar */}
       <aside className="hidden w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex">
-        <div className="flex h-14 items-center border-b border-sidebar-border px-4">
+        <div className="flex h-14 items-center justify-between border-b border-sidebar-border px-4">
           <span className="font-display text-sm font-semibold tracking-tight">
             Admin
           </span>
+          <ThemeToggle />
         </div>
         <NavLinks pathname={pathname} unreadMessageCount={unreadMessageCount} />
         <div className="border-t border-sidebar-border p-3">
@@ -174,6 +176,9 @@ export function AdminShell({
           <span className="font-display text-sm font-semibold tracking-tight">
             Admin
           </span>
+          <div className="ml-auto">
+            <ThemeToggle />
+          </div>
         </header>
         <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
       </div>

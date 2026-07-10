@@ -24,7 +24,7 @@ export async function ProjectsPreview() {
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <Reveal>
-            <SectionHeading eyebrow="04 — Projects" title="Selected work" />
+            <SectionHeading eyebrow="Projects" title="Selected work" />
           </Reveal>
           <Reveal delay={0.1}>
             <Link

@@ -21,6 +21,8 @@ type SiteNavProps = {
   name?: string;
   /** Where the "Résumé" button links. Defaults to a static file in `/public`. */
   resumeUrl?: string;
+  /** Show the Blog link. Controlled by the `blog` site section toggle. */
+  blogEnabled?: boolean;
 };
 
 /**
@@ -29,7 +31,11 @@ type SiteNavProps = {
  * link are passed in as props (or default to `brand`) rather than fetched
  * here, so this stays a plain client component with no data dependency.
  */
-export function SiteNav({ name = brand.name, resumeUrl = "/resume.pdf" }: SiteNavProps) {
+export function SiteNav({
+  name = brand.name,
+  resumeUrl = "/resume.pdf",
+  blogEnabled = true,
+}: SiteNavProps) {
   const [open, setOpen] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
@@ -57,12 +63,14 @@ export function SiteNav({ name = brand.name, resumeUrl = "/resume.pdf" }: SiteNa
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/blog"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Blog
-          </Link>
+          {blogEnabled ? (
+            <Link
+              href="/blog"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Blog
+            </Link>
+          ) : null}
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
@@ -116,13 +124,15 @@ export function SiteNav({ name = brand.name, resumeUrl = "/resume.pdf" }: SiteNa
                   {link.label}
                 </Link>
               ))}
-              <Link
-                href="/blog"
-                onClick={close}
-                className="rounded-md px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              >
-                Blog
-              </Link>
+              {blogEnabled ? (
+                <Link
+                  href="/blog"
+                  onClick={close}
+                  className="rounded-md px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  Blog
+                </Link>
+              ) : null}
               <a
                 href={resumeUrl}
                 target="_blank"

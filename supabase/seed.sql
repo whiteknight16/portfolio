@@ -20,8 +20,8 @@ insert into public.profile (
   '/resume.pdf',
   'Dwarka, New Delhi, India',
   'harshp6421@gmail.com',
-  '+91 7007157057',
-  '{"github":"https://github.com/whiteknight16","linkedin":"https://www.linkedin.com/in/harshpandey61/"}'::jsonb,
+  null,
+  '{"github":"https://github.com/whiteknight16","linkedin":"https://www.linkedin.com/in/harshpandey61/","instagram":"https://www.instagram.com/knightcoder19/"}'::jsonb,
   true
 );
 
@@ -37,7 +37,8 @@ insert into public.site_sections (key, label, enabled, sort_order) values
   ('projects',     'Projects',     true, 4),
   ('achievements', 'Achievements', true, 5),
   ('education',    'Education',    true, 6),
-  ('contact',      'Contact',      true, 7);
+  ('contact',      'Contact',      true, 7),
+  ('blog',         'Blog',         true, 8);
 
 -- ---------------------------------------------------------------------------
 -- experiences

@@ -1,4 +1,4 @@
-import { Download, Mail, Phone } from "lucide-react";
+import { Download, Mail } from "lucide-react";
 import { Reveal } from "@/components/public/reveal";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { SocialLinks } from "@/components/public/social-icons";
@@ -20,7 +20,7 @@ export function Contact({ profile }: { profile: Profile | null }) {
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <Reveal>
           <SectionHeading
-            eyebrow="07 — Contact"
+            eyebrow="Contact"
             title="Let's build something"
             description="Have a role, project, or idea in mind? I'd love to hear about it."
           />
@@ -35,15 +35,6 @@ export function Contact({ profile }: { profile: Profile | null }) {
               <Mail className="size-5 shrink-0" />
               {profile.email}
             </a>
-            {profile.phone ? (
-              <a
-                href={`tel:${profile.phone}`}
-                className="inline-flex items-center gap-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <Phone className="size-4 shrink-0" />
-                {profile.phone}
-              </a>
-            ) : null}
             <SocialLinks socials={profile.socials} className="mt-2" />
 
             {profile.resume_url ? (

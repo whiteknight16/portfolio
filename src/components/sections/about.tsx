@@ -12,7 +12,7 @@ export function About({ profile }: { profile: Profile | null }) {
     <section id="about" className="scroll-mt-24 border-t border-border py-20 sm:py-28">
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <Reveal>
-          <SectionHeading eyebrow="01 — About" title="About me" />
+          <SectionHeading eyebrow="About" title="About me" />
         </Reveal>
         <Reveal delay={0.1} className="mt-8 max-w-2xl">
           <p className="text-pretty text-lg leading-relaxed text-muted-foreground">

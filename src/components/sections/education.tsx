@@ -13,7 +13,7 @@ export async function EducationSection() {
     <section id="education" className="scroll-mt-24 border-t border-border py-20 sm:py-28">
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <Reveal>
-          <SectionHeading eyebrow="06 — Education" title="Academic background" />
+          <SectionHeading eyebrow="Education" title="Academic background" />
         </Reveal>
 
         <div className="mt-12 flex flex-col gap-8">

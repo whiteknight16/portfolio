@@ -54,6 +54,13 @@ export async function getEnabledSections(): Promise<SiteSection[]> {
   }
 }
 
+/** Whether the Blog is enabled (the `blog` row in `site_sections`). Controls
+ * the public Blog nav link and route visibility. */
+export async function isBlogEnabled(): Promise<boolean> {
+  const sections = await getEnabledSections();
+  return sections.some((section) => section.key === "blog");
+}
+
 /** Fetches published projects, ordered by `sort_order` then `created_at`. */
 export async function getPublishedProjects(): Promise<Project[]> {
   try {

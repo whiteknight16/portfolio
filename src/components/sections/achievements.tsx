@@ -13,7 +13,7 @@ export async function Achievements() {
     <section id="achievements" className="scroll-mt-24 border-t border-border py-20 sm:py-28">
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <Reveal>
-          <SectionHeading eyebrow="05 — Achievements" title="Recognition along the way" />
+          <SectionHeading eyebrow="Achievements" title="Recognition along the way" />
         </Reveal>
 
         <div className="mt-12 grid gap-5 sm:grid-cols-2">

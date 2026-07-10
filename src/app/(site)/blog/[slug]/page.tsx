@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { format, parseISO } from "date-fns";
 import { ArrowLeft, Newspaper } from "lucide-react";
-import { getPostBySlug } from "@/lib/content";
+import { getPostBySlug, isBlogEnabled } from "@/lib/content";
 import { Reveal } from "@/components/public/reveal";
 import { Prose } from "@/components/public/prose";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +35,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  if (!(await isBlogEnabled())) notFound();
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) notFound();

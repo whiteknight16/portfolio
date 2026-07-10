@@ -15,7 +15,7 @@ export async function ExperienceSection() {
     <section id="experience" className="scroll-mt-24 border-t border-border py-20 sm:py-28">
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <Reveal>
-          <SectionHeading eyebrow="02 — Experience" title="Where I've worked" />
+          <SectionHeading eyebrow="Experience" title="Where I've worked" />
         </Reveal>
 
         <div className="mt-12 flex flex-col gap-10 sm:gap-12">
@@ -31,7 +31,7 @@ export async function ExperienceSection() {
                     className={cn(
                       "absolute -left-[5px] top-1.5 size-2 rounded-full",
                       exp.is_current
-                        ? "bg-emerald-500 dark:bg-emerald-400"
+                        ? "bg-brand"
                         : "bg-border",
                     )}
                   />

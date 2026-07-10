@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getPublishedPosts } from "@/lib/content";
+import { notFound } from "next/navigation";
+import { getPublishedPosts, isBlogEnabled } from "@/lib/content";
 import { Reveal } from "@/components/public/reveal";
 import { BlogGrid } from "@/components/public/blog-grid";
 import { brand } from "@/lib/config";
@@ -16,13 +17,14 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function BlogPage() {
+  if (!(await isBlogEnabled())) notFound();
   const posts = await getPublishedPosts();
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24">
       <Reveal>
         <p className="flex items-center gap-2.5 font-mono text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-          <span className="size-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
+          <span className="size-1.5 rounded-full bg-brand" />
           Blog
         </p>
         <h1 className="mt-3 text-balance font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">

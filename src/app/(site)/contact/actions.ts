@@ -2,7 +2,6 @@
 
 import { contactSchema } from "@/lib/validation";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { sendContactEmail } from "@/lib/email";
 
 export type ContactFormState = { ok?: boolean; error?: string };
 
@@ -10,9 +9,9 @@ export type ContactFormState = { ok?: boolean; error?: string };
  * Handles a contact form submission.
  *
  * Bots that fill in the honeypot field are told "success" (so they don't
- * retry) but nothing is inserted or emailed. Real submissions are inserted
- * into `contact_messages` (the source of truth); the notification email is
- * best-effort and never fails the request.
+ * retry) but nothing is stored. Real submissions are inserted into
+ * `contact_messages` — the single source of truth, read from the admin
+ * Messages inbox. No email is sent (email notifications are disabled).
  */
 export async function sendContactAction(
   _prevState: ContactFormState,
@@ -43,15 +42,6 @@ export async function sendContactAction(
   } catch (err) {
     console.error("sendContactAction: failed to reach the database", err);
     return { error: "Something went wrong. Please try again." };
-  }
-
-  try {
-    await sendContactEmail({ name, email, message });
-  } catch (err) {
-    // Belt-and-suspenders: sendContactEmail is documented to never throw,
-    // but a future regression there must not fail a request whose DB
-    // insert already succeeded.
-    console.error("sendContactAction: unexpected error sending notification email", err);
   }
 
   return { ok: true };
