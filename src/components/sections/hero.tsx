@@ -108,7 +108,7 @@ export function Hero({ profile }: { profile: Profile | null }) {
                 }
               >
                 <Download className="size-4" />
-                Résumé
+                Resume
               </Button>
             ) : null}
             <Button size="lg" variant="ghost" render={<a href="#contact" />}>

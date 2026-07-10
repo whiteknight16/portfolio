@@ -15,7 +15,7 @@ insert into public.profile (
   'Harsh Pandey',
   'Full Stack Developer',
   'Full Stack Developer specializing in MERN, Next.js, FastAPI & Generative AI',
-  'Full Stack Developer specializing in the MERN stack, Next.js, FastAPI, and Generative AI. Currently building an agentic AI-powered interview platform at SkillSync. Experienced with real-time systems (WebRTC/LiveKit), LLM integrations (LangChain, LangGraph), and end-to-end product ownership from requirements to production.',
+  'Full Stack Developer specializing in the MERN stack, Next.js, FastAPI, and Generative AI. Currently building real-time AI voice & video tutoring agents at BerriBot. Experienced with real-time systems (WebRTC/LiveKit), LLM integrations (LangChain, LangGraph), and end-to-end product ownership from requirements to production.',
   null,
   '/resume.pdf',
   'Dwarka, New Delhi, India',
@@ -49,14 +49,24 @@ insert into public.experiences (
   role, company, location, start_date, end_date, is_current, highlights, sort_order
 ) values
   (
+    'Software Engineer',
+    'BerriBot',
+    null,
+    '2026-03-01',
+    null,
+    true,
+    '{"Building real-time AI voice and video tutoring agents.","Designed and implemented AI-powered learning modules including syllabus generation, planner bots, coding assessments, Karat mock interviews, verification pipelines, and automated course progression.","Developed backend services using FastAPI, PostgreSQL, and Supabase — scalable APIs, background jobs, retry mechanisms, database migrations, and deployment management.","Built AI-based proctoring systems with video recording, monitoring, secure storage, and candidate evaluation workflows.","Implemented reporting infrastructure including PDF report generation, progress analytics, certification workflows, deployment dashboards, and admin analytics.","Developed enterprise administration features: deployment creation, candidate enrollment, course assignment, syllabus management, restart workflows, scoring algorithms, and certification management.","Diagnosed and resolved production issues across AI agents, real-time voice pipelines, learning workflows, reporting systems, dashboards, and enterprise deployments, significantly improving platform reliability.","Collaborated closely with product, engineering, and enterprise stakeholders to deliver production-ready AI features from design through deployment."}',
+    1
+  ),
+  (
     'Full Stack Engineer',
     'SkillSync',
     null,
     '2025-03-01',
-    null,
-    true,
+    '2026-02-28',
+    false,
     '{"Designed, developed, and deployed a unified agentic AI-powered interview platform combining multi-round AI interviews with LiveKit-based WebRTC for real-time audio/video.","Implemented multi-agent interview orchestration — AI agents conducting screening, technical, and behavioral rounds within a single live interview flow.","Built the real-time interview experience with LiveKit (WebRTC): session lifecycle management, low-latency streaming, reconnections, and production reliability.","Integrated AI-generated interview questions and evaluation logic dynamically adapted to job roles, stages, and candidate responses.","Developed FastAPI backend services for interview sessions, agent coordination, scoring pipelines, and data persistence.","Led a database schema migration from legacy structure to optimized design with minimal production downtime.","Built background jobs and cron services for notifications, reporting, and data sync.","Owned features end-to-end, collaborating directly with founders and product stakeholders."}',
-    1
+    2
   ),
   (
     'Generative AI Intern',
@@ -66,7 +76,7 @@ insert into public.experiences (
     '2024-08-31',
     false,
     '{"Developed a Bench Management System (ERB portal) in React.js to optimize utilization of benched employees, reducing hiring costs.","Built an AI-powered chatbot using FastAPI, Gemini API, and fine-tuning to handle database queries and provide insights.","Integrated interactive data visualization (employee statistics, filterable graphs).","Hands-on with LLMs, LangChain, and model fine-tuning for real-world applications."}',
-    2
+    3
   ),
   (
     'Full Stack Developer Intern',
@@ -76,7 +86,7 @@ insert into public.experiences (
     '2024-05-31',
     false,
     '{"Full-Stack (MERN) developer at an early-stage startup.","Developed and optimized RESTful APIs for performance, scalability, and security.","Implemented secure authentication and data protection.","Translated Figma designs into functional UIs; wrote unit tests for front-end components.","Collaborated with the founder on schema design and HLD/LLD system architecture."}',
-    3
+    4
   );
 
 -- ---------------------------------------------------------------------------

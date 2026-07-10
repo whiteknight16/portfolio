@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import type { Profile } from "@/lib/types";
 
 /**
- * Heading, direct contact links (email/phone/socials), a résumé download,
+ * Heading, direct contact links (email/phone/socials), a resume download,
  * and the interactive contact form — two columns on desktop, stacked on
  * mobile. The `mailto:`/`tel:` links stay as a fallback alongside the form
  * so contact never breaks if a submission fails client-side.
@@ -45,7 +45,7 @@ export function Contact({ profile }: { profile: Profile | null }) {
                 render={<a href={profile.resume_url} target="_blank" rel="noopener noreferrer" />}
               >
                 <Download className="size-4" />
-                Download résumé
+                Download resume
               </Button>
             ) : null}
           </div>

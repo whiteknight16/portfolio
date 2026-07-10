@@ -9,7 +9,7 @@ import { getEnabledSections, getProfile } from "@/lib/content";
  * `src/app/admin/(dashboard)/layout.tsx`.
  *
  * Fetches the profile and the enabled sections once (server reads) and wires
- * the real brand name, résumé link, social URLs, and the Blog visibility
+ * the real brand name, resume link, social URLs, and the Blog visibility
  * toggle into `<SiteNav>`/`<SiteFooter>`, which stay client components
  * themselves (mobile menu, theme toggle).
  */

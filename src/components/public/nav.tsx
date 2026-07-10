@@ -19,7 +19,7 @@ const SECTION_LINKS = [
 type SiteNavProps = {
   /** Brand name shown in the nav. Defaults to the site-wide brand config. */
   name?: string;
-  /** Where the "Résumé" button links. Defaults to a static file in `/public`. */
+  /** Where the "Resume" button links. Defaults to a static file in `/public`. */
   resumeUrl?: string;
   /** Show the Blog link. Controlled by the `blog` site section toggle. */
   blogEnabled?: boolean;
@@ -79,7 +79,7 @@ export function SiteNav({
             variant="outline"
             render={<a href={resumeUrl} target="_blank" rel="noopener noreferrer" />}
           >
-            Résumé
+            Resume
           </Button>
           <ThemeToggle />
         </div>
@@ -140,7 +140,7 @@ export function SiteNav({
                 onClick={close}
                 className="mt-1 rounded-md border border-border px-2.5 py-2 text-center text-sm font-medium text-foreground transition-colors hover:bg-muted"
               >
-                Résumé
+                Resume
               </a>
             </div>
           </motion.nav>
