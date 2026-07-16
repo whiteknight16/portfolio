@@ -13,7 +13,11 @@ export const brand = {
 } as const;
 
 // Public site origin — used for `metadataBase`, absolute OG image URLs, and
-// the sitemap/robots file conventions. Falls back to localhost in dev so
-// nothing crashes when the env var isn't set (e.g. running tests).
-export const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+// the sitemap/robots file conventions. Prefers the env var; falls back to the
+// real production origin so absolute URLs stay correct even if the var is ever
+// missing in prod (and so localhost never leaks into a deployed sitemap).
+// Trailing slashes are stripped because callers build paths as `${siteUrl}/x`.
+const rawSiteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.knightdeveloper.com";
+
+export const siteUrl = rawSiteUrl.replace(/\/+$/, "");

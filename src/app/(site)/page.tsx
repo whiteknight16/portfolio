@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SiteHome } from "@/components/site-home";
+import { PersonJsonLd } from "@/components/seo/json-ld";
 import { getProfile } from "@/lib/content";
 import { brand } from "@/lib/config";
 
@@ -16,10 +17,18 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
+    alternates: { canonical: "/" },
     openGraph: { title, description, type: "website" },
   };
 }
 
-export default function HomePage() {
-  return <SiteHome />;
+export default async function HomePage() {
+  const profile = await getProfile();
+
+  return (
+    <>
+      <PersonJsonLd profile={profile} />
+      <SiteHome />
+    </>
+  );
 }
