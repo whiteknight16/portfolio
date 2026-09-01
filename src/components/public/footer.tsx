@@ -4,8 +4,9 @@ import { SocialLinks } from "@/components/public/social-icons";
 import type { Profile } from "@/lib/types";
 
 const BASE_NAV_LINKS = [
+  { href: "/#services", label: "Services" },
+  { href: "/#projects", label: "Work" },
   { href: "/#about", label: "About" },
-  { href: "/#projects", label: "Projects" },
   { href: "/blog", label: "Blog", blogOnly: true },
   { href: "/#contact", label: "Contact" },
 ] as const;

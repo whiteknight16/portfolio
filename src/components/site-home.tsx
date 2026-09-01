@@ -1,6 +1,7 @@
 import { getEnabledSections, getProfile } from "@/lib/content";
 import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
+import { Services } from "@/components/sections/services";
 import { ExperienceSection } from "@/components/sections/experience";
 import { Skills } from "@/components/sections/skills";
 import { ProjectsPreview } from "@/components/sections/projects-preview";
@@ -36,6 +37,8 @@ function renderSection(
   switch (section.key) {
     case "about":
       return <About key={section.id} profile={profile} />;
+    case "services":
+      return <Services key={section.id} />;
     case "experience":
       return <ExperienceSection key={section.id} />;
     case "skills":

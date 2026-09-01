@@ -6,9 +6,9 @@
 export const brand = {
   name: "Harsh Pandey",
   initials: "HP",
-  headline: "Full Stack Developer",
+  headline: "AI Product Engineer",
   subline:
-    "Full Stack Developer specializing in MERN, Next.js, FastAPI, and Generative AI.",
+    "I build AI systems that take over work a person used to do — tutors, interviewers, evaluators — live voice and video included, and everything around them.",
   email: "harshp6421@gmail.com",
 } as const;
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, useReducedMotion, type Variants } from "motion/react";
-import { ArrowUpRight, Download } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SocialLinks } from "@/components/public/social-icons";
 import { brand } from "@/lib/config";
@@ -33,17 +33,14 @@ export function Hero({ profile }: { profile: Profile | null }) {
   const [showPortrait, setShowPortrait] = useState(true);
 
   const name = profile?.full_name ?? brand.name;
-  const title = profile?.title ?? "Full Stack Developer";
-  const headline =
-    profile?.headline ??
-    "I design and build reliable, thoughtful software across the stack.";
-  const resumeUrl = profile?.resume_url;
+  const title = profile?.title ?? brand.headline;
+  const headline = profile?.headline ?? brand.subline;
   const location = profile?.location ?? "India";
 
   const specRows: { k: string; v: string }[] = [
-    { k: "ROLE", v: title },
-    { k: "FOCUS", v: "Full-stack · Real-time · GenAI" },
-    { k: "STACK", v: "Next.js · FastAPI · LiveKit" },
+    { k: "BUILDS", v: "AI agents & the systems around them" },
+    { k: "LIVE", v: "Voice & video over LiveKit / WebRTC" },
+    { k: "STACK", v: "FastAPI · Postgres · Next.js" },
     { k: "BASED", v: location },
   ];
 
@@ -73,7 +70,7 @@ export function Hero({ profile }: { profile: Profile | null }) {
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand opacity-60" />
               <span className="relative inline-flex size-2 rounded-full bg-brand" />
             </span>
-            Available for work
+            Available for new projects
           </Line>
 
           <Line
@@ -85,7 +82,14 @@ export function Hero({ profile }: { profile: Profile | null }) {
 
           <Line
             {...lineProps}
-            className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl"
+            className="mt-5 font-display text-xl font-medium tracking-[-0.01em] text-brand sm:text-2xl"
+          >
+            {title}
+          </Line>
+
+          <Line
+            {...lineProps}
+            className="mt-4 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl"
           >
             {headline}
           </Line>
@@ -94,25 +98,16 @@ export function Hero({ profile }: { profile: Profile | null }) {
             <Button
               size="lg"
               className="bg-brand text-brand-foreground hover:bg-brand/90"
-              render={<a href="#projects" />}
+              render={<a href="#contact" />}
             >
-              View work
+              Start a project
               <ArrowUpRight className="size-4" />
             </Button>
-            {resumeUrl ? (
-              <Button
-                size="lg"
-                variant="outline"
-                render={
-                  <a href={resumeUrl} target="_blank" rel="noopener noreferrer" />
-                }
-              >
-                <Download className="size-4" />
-                Resume
-              </Button>
-            ) : null}
-            <Button size="lg" variant="ghost" render={<a href="#contact" />}>
-              Contact
+            <Button size="lg" variant="outline" render={<a href="#services" />}>
+              What I build
+            </Button>
+            <Button size="lg" variant="ghost" render={<a href="#projects" />}>
+              Selected work
             </Button>
           </Line>
 

@@ -22,11 +22,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <SiteNav
-        name={profile?.full_name}
-        resumeUrl={profile?.resume_url ?? undefined}
-        blogEnabled={blogEnabled}
-      />
+      <SiteNav name={profile?.full_name} blogEnabled={blogEnabled} />
       <main className="flex-1">{children}</main>
       <SiteFooter
         name={profile?.full_name}

@@ -3,7 +3,6 @@ import { Reveal } from "@/components/public/reveal";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { SocialLinks } from "@/components/public/social-icons";
 import { ContactForm } from "@/components/sections/contact-form";
-import { Button } from "@/components/ui/button";
 import type { Profile } from "@/lib/types";
 
 /**
@@ -21,8 +20,8 @@ export function Contact({ profile }: { profile: Profile | null }) {
         <Reveal>
           <SectionHeading
             eyebrow="Contact"
-            title="Let's build something"
-            description="Have a role, project, or idea in mind? I'd love to hear about it."
+            title="Tell me about your project"
+            description="Describe what you're building and where it's stuck. I'll come back with whether I can help, how I'd approach it, and what it would take."
           />
         </Reveal>
 
@@ -38,15 +37,15 @@ export function Contact({ profile }: { profile: Profile | null }) {
             <SocialLinks socials={profile.socials} className="mt-2" />
 
             {profile.resume_url ? (
-              <Button
-                size="lg"
-                variant="outline"
-                className="mt-4 self-start"
-                render={<a href={profile.resume_url} target="_blank" rel="noopener noreferrer" />}
+              <a
+                href={profile.resume_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex items-center gap-1.5 self-start text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
               >
-                <Download className="size-4" />
-                Download resume
-              </Button>
+                <Download className="size-3.5" />
+                Resume, if you need the long version
+              </a>
             ) : null}
           </div>
 

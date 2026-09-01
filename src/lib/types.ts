@@ -30,6 +30,7 @@ export interface SiteSection {
   id: string;
   key:
     | "about"
+    | "services"
     | "experience"
     | "skills"
     | "projects"

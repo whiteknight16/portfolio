@@ -9,33 +9,29 @@ import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/config";
 
 const SECTION_LINKS = [
-  { href: "/#about", label: "About" },
+  { href: "/#services", label: "Services" },
+  { href: "/#projects", label: "Work" },
   { href: "/#experience", label: "Experience" },
-  { href: "/#projects", label: "Projects" },
-  { href: "/#skills", label: "Skills" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/#about", label: "About" },
 ] as const;
 
 type SiteNavProps = {
   /** Brand name shown in the nav. Defaults to the site-wide brand config. */
   name?: string;
-  /** Where the "Resume" button links. Defaults to a static file in `/public`. */
-  resumeUrl?: string;
   /** Show the Blog link. Controlled by the `blog` site section toggle. */
   blogEnabled?: boolean;
 };
 
 /**
  * Sticky top nav for the public site. A client component because the mobile
- * drawer and theme toggle both need interactivity; the brand name and resume
- * link are passed in as props (or default to `brand`) rather than fetched
- * here, so this stays a plain client component with no data dependency.
+ * drawer and theme toggle both need interactivity; the brand name is passed in
+ * as a prop (or defaults to `brand`) rather than fetched here, so this stays a
+ * plain client component with no data dependency.
+ *
+ * The primary action is "Start a project", not a resume download — this site
+ * is selling an engagement, and the resume lives quietly in the contact block.
  */
-export function SiteNav({
-  name = brand.name,
-  resumeUrl = "/resume.pdf",
-  blogEnabled = true,
-}: SiteNavProps) {
+export function SiteNav({ name = brand.name, blogEnabled = true }: SiteNavProps) {
   const [open, setOpen] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
@@ -76,10 +72,10 @@ export function SiteNav({
         <div className="hidden items-center gap-2 md:flex">
           <Button
             size="sm"
-            variant="outline"
-            render={<a href={resumeUrl} target="_blank" rel="noopener noreferrer" />}
+            className="bg-brand text-brand-foreground hover:bg-brand/90"
+            render={<Link href="/#contact" />}
           >
-            Resume
+            Start a project
           </Button>
           <ThemeToggle />
         </div>
@@ -133,15 +129,13 @@ export function SiteNav({
                   Blog
                 </Link>
               ) : null}
-              <a
-                href={resumeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/#contact"
                 onClick={close}
-                className="mt-1 rounded-md border border-border px-2.5 py-2 text-center text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                className="mt-1 rounded-md bg-brand px-2.5 py-2 text-center text-sm font-medium text-brand-foreground transition-opacity hover:opacity-90"
               >
-                Resume
-              </a>
+                Start a project
+              </Link>
             </div>
           </motion.nav>
         ) : null}

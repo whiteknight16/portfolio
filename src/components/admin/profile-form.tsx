@@ -48,7 +48,7 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
             <Input
               id="title"
               name="title"
-              placeholder="e.g. Full Stack Developer"
+              placeholder="e.g. Voice AI Engineer"
               defaultValue={profile?.title ?? ""}
             />
           </div>

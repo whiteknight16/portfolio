@@ -24,14 +24,18 @@ export async function ProjectsPreview() {
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <Reveal>
-            <SectionHeading eyebrow="Projects" title="Selected work" />
+            <SectionHeading
+              eyebrow="Work"
+              title="Selected work"
+              description="A sample of things I've shipped end to end."
+            />
           </Reveal>
           <Reveal delay={0.1}>
             <Link
               href="/projects"
               className="group inline-flex items-center gap-1 text-sm font-medium text-foreground transition-colors hover:text-muted-foreground"
             >
-              View all projects
+              View all work
               <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Link>
           </Reveal>

@@ -110,7 +110,16 @@ export type ProfileInput = z.infer<typeof profileSchema>;
 // ---------------------------------------------------------------------------
 
 export const sectionSchema = z.object({
-  key: z.enum(["about", "experience", "skills", "projects", "achievements", "education", "contact"]),
+  key: z.enum([
+    "about",
+    "services",
+    "experience",
+    "skills",
+    "projects",
+    "achievements",
+    "education",
+    "contact",
+  ]),
   label: z.string().trim().min(1, "Label is required"),
   enabled: z.boolean().default(true),
   sort_order: sortOrder(),

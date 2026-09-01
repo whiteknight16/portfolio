@@ -1,6 +1,13 @@
 -- Seed data: Harsh Pandey's real portfolio content.
 -- Idempotent: each table is cleared before re-inserting, so this file can be
 -- re-run safely against the same database. Wrapped in a single transaction.
+--
+-- The copy here is written for one reader: someone deciding whether to hire
+-- Harsh to hand a whole workflow over to an AI system. It states capability and
+-- scope of ownership, and deliberately claims no metrics that could not be
+-- defended in a sales call.
+--
+-- Requires the tables from `migrations/0001_schema.sql` to exist first.
 
 begin;
 
@@ -13,35 +20,45 @@ insert into public.profile (
   full_name, title, headline, bio, avatar_url, resume_url, location, email, phone, socials, singleton
 ) values (
   'Harsh Pandey',
-  'Full Stack Developer',
-  'Full Stack Developer specializing in MERN, Next.js, FastAPI & Generative AI',
-  'Full Stack Developer specializing in the MERN stack, Next.js, FastAPI, and Generative AI. Currently building real-time AI voice & video tutoring agents at BerriBot. Experienced with real-time systems (WebRTC/LiveKit), LLM integrations (LangChain, LangGraph), and end-to-end product ownership from requirements to production.',
+  'AI Product Engineer',
+  'I build AI systems that take over work a person used to do — tutors, interviewers, evaluators — live voice and video included, and everything around them.',
+  'The interesting AI work right now is not a chatbot bolted onto a product. It is a system that takes over a job a person used to do, end to end. That is what I build: an AI tutor that plans a syllabus, teaches live, sets the assessment, marks it, and moves the learner on. An AI interviewer that runs screening, technical, and behavioural rounds inside one live session and scores the result. It means the live voice and video layer over LiveKit and WebRTC, the agent orchestration and evaluation behind it, and the unglamorous rest — FastAPI and Postgres services, background jobs, retries, migrations, reporting, and the admin surfaces someone actually runs it from. I take this work from an ambiguous first conversation to something that still holds up on its thousandth session, and I stay for the part where it breaks.',
   null,
   '/resume.pdf',
-  'Dwarka, New Delhi, India',
+  'New Delhi, India · working with teams remotely',
   'harshp6421@gmail.com',
   null,
-  '{"github":"https://github.com/whiteknight16","linkedin":"https://www.linkedin.com/in/harshpandey61/","instagram":"https://www.instagram.com/knightcoder19/"}'::jsonb,
+  '{"github":"https://github.com/whiteknight16","linkedin":"https://www.linkedin.com/in/harshpandey61/","instagram":"https://www.instagram.com/whiteknight__19/"}'::jsonb,
   true
 );
 
 -- ---------------------------------------------------------------------------
 -- site_sections
+--
+-- Order is the argument the page makes: what can be bought, proof that it has
+-- been built, the depth behind it, who is behind it, then the ask.
+-- `achievements` and `education` are switched off rather than deleted — they
+-- are student credentials that undercut a consulting pitch, but they stay one
+-- click away in the admin.
 -- ---------------------------------------------------------------------------
 delete from public.site_sections;
 
 insert into public.site_sections (key, label, enabled, sort_order) values
-  ('about',        'About',        true, 1),
-  ('experience',   'Experience',   true, 2),
-  ('skills',       'Skills',       true, 3),
-  ('projects',     'Projects',     true, 4),
-  ('achievements', 'Achievements', true, 5),
-  ('education',    'Education',    true, 6),
-  ('contact',      'Contact',      true, 7),
-  ('blog',         'Blog',         true, 8);
+  ('services',     'Services',     true,  1),
+  ('projects',     'Work',         true,  2),
+  ('experience',   'Experience',   true,  3),
+  ('about',        'About',        true,  4),
+  ('skills',       'Capabilities', true,  5),
+  ('achievements', 'Recognition',  false, 6),
+  ('education',    'Education',    false, 7),
+  ('contact',      'Contact',      true,  8),
+  ('blog',         'Blog',         true,  9);
 
 -- ---------------------------------------------------------------------------
 -- experiences
+--
+-- Trimmed from exhaustive task lists to the work that demonstrates hard
+-- capability. Everything cut is still on the resume.
 -- ---------------------------------------------------------------------------
 delete from public.experiences;
 
@@ -55,7 +72,7 @@ insert into public.experiences (
     '2026-03-01',
     null,
     true,
-    '{"Building real-time AI voice and video tutoring agents.","Designed and implemented AI-powered learning modules including syllabus generation, planner bots, coding assessments, Karat mock interviews, verification pipelines, and automated course progression.","Developed backend services using FastAPI, PostgreSQL, and Supabase — scalable APIs, background jobs, retry mechanisms, database migrations, and deployment management.","Built AI-based proctoring systems with video recording, monitoring, secure storage, and candidate evaluation workflows.","Implemented reporting infrastructure including PDF report generation, progress analytics, certification workflows, deployment dashboards, and admin analytics.","Developed enterprise administration features: deployment creation, candidate enrollment, course assignment, syllabus management, restart workflows, scoring algorithms, and certification management.","Diagnosed and resolved production issues across AI agents, real-time voice pipelines, learning workflows, reporting systems, dashboards, and enterprise deployments, significantly improving platform reliability.","Collaborated closely with product, engineering, and enterprise stakeholders to deliver production-ready AI features from design through deployment."}',
+    '{"Build an AI tutor that does what a human tutor does: teaches live over voice and video, sets and marks assessments, and moves the learner through the syllabus.","Designed the learning core end to end: syllabus generation, planner agents, coding assessments, mock interviews, verification pipelines, and automated course progression.","Built the backend on FastAPI, PostgreSQL, and Supabase — APIs, background jobs, retry paths, migrations, and deployments.","Built AI proctoring with video capture, live monitoring, secure storage, and candidate evaluation.","Diagnose and fix production failures across voice pipelines, agents, and enterprise deployments — the work that turns a demo into a product teams rely on."}',
     1
   ),
   (
@@ -65,7 +82,7 @@ insert into public.experiences (
     '2025-03-01',
     '2026-02-28',
     false,
-    '{"Designed, developed, and deployed a unified agentic AI-powered interview platform combining multi-round AI interviews with LiveKit-based WebRTC for real-time audio/video.","Implemented multi-agent interview orchestration — AI agents conducting screening, technical, and behavioral rounds within a single live interview flow.","Built the real-time interview experience with LiveKit (WebRTC): session lifecycle management, low-latency streaming, reconnections, and production reliability.","Integrated AI-generated interview questions and evaluation logic dynamically adapted to job roles, stages, and candidate responses.","Developed FastAPI backend services for interview sessions, agent coordination, scoring pipelines, and data persistence.","Led a database schema migration from legacy structure to optimized design with minimal production downtime.","Built background jobs and cron services for notifications, reporting, and data sync.","Owned features end-to-end, collaborating directly with founders and product stakeholders."}',
+    '{"Designed and shipped an AI interviewer that replaces the human screening loop — multi-round spoken interviews conducted live over LiveKit and WebRTC.","Orchestrated several AI agents across screening, technical, and behavioural rounds inside a single live session.","Owned the real-time voice layer: session lifecycle, low-latency audio streaming, reconnection, and the failure modes that only appear in production.","Built FastAPI services for session coordination, adaptive question generation, and scoring pipelines.","Led a database migration off the legacy schema with minimal production downtime, working directly with the founders."}',
     2
   ),
   (
@@ -75,7 +92,7 @@ insert into public.experiences (
     '2024-07-01',
     '2024-08-31',
     false,
-    '{"Developed a Bench Management System (ERB portal) in React.js to optimize utilization of benched employees, reducing hiring costs.","Built an AI-powered chatbot using FastAPI, Gemini API, and fine-tuning to handle database queries and provide insights.","Integrated interactive data visualization (employee statistics, filterable graphs).","Hands-on with LLMs, LangChain, and model fine-tuning for real-world applications."}',
+    '{"Built a bench management portal in React to improve utilisation of unassigned staff and reduce hiring spend.","Built an AI assistant over the internal database using FastAPI, the Gemini API, and fine-tuning.","Shipped the interactive reporting layer — filterable workforce statistics and charts."}',
     3
   ),
   (
@@ -85,53 +102,64 @@ insert into public.experiences (
     '2023-11-01',
     '2024-05-31',
     false,
-    '{"Full-Stack (MERN) developer at an early-stage startup.","Developed and optimized RESTful APIs for performance, scalability, and security.","Implemented secure authentication and data protection.","Translated Figma designs into functional UIs; wrote unit tests for front-end components.","Collaborated with the founder on schema design and HLD/LLD system architecture."}',
+    '{"First engineering hire at an early-stage startup, building the product end to end.","Designed and hardened REST APIs for performance and security, with authentication and data protection.","Worked directly with the founder on schema design and system architecture."}',
     4
   );
 
 -- ---------------------------------------------------------------------------
 -- skills
+--
+-- Grouped by capability, AI first, with the real-time layer right behind it
+-- as the rarer differentiator. Deliberately omits HTML, CSS, Git,
+-- and GitHub: listing them reads as a beginner inventory, and their absence
+-- reads as seniority.
 -- ---------------------------------------------------------------------------
 delete from public.skills;
 
 insert into public.skills (name, category, sort_order) values
-  -- Languages
-  ('Python',               'Languages', 1),
-  ('JavaScript (ES6+)',    'Languages', 2),
-  ('TypeScript',           'Languages', 3),
-  -- Frontend
-  ('HTML5',                'Frontend', 4),
-  ('CSS3',                 'Frontend', 5),
-  ('Tailwind CSS',         'Frontend', 6),
-  ('React.js',             'Frontend', 7),
-  ('Next.js',              'Frontend', 8),
+  -- AI & Agents
+  ('LLMs',                        'AI & Agents', 1),
+  ('LangChain',                   'AI & Agents', 2),
+  ('LangGraph',                   'AI & Agents', 3),
+  ('Multi-agent orchestration',   'AI & Agents', 4),
+  ('Agentic workflows',           'AI & Agents', 5),
+  ('Evaluation & scoring',        'AI & Agents', 6),
+  ('Prompt engineering',          'AI & Agents', 7),
+  -- Real-time & Voice
+  ('LiveKit',                     'Real-time & Voice', 8),
+  ('WebRTC',                      'Real-time & Voice', 9),
+  ('Voice agent pipelines',       'Real-time & Voice', 10),
+  ('Session orchestration',       'Real-time & Voice', 11),
+  ('WebSockets',                  'Real-time & Voice', 12),
   -- Backend
-  ('Node.js',              'Backend', 9),
-  ('Express.js',           'Backend', 10),
-  ('FastAPI',              'Backend', 11),
-  ('REST APIs',            'Backend', 12),
-  ('Auth (JWT, OAuth, 2FA)', 'Backend', 13),
-  -- Databases & ORMs
-  ('PostgreSQL',           'Databases & ORMs', 14),
-  ('MongoDB',              'Databases & ORMs', 15),
-  ('Firebase',             'Databases & ORMs', 16),
-  ('Prisma ORM',           'Databases & ORMs', 17),
-  -- AI / GenAI
-  ('LLMs',                 'AI / GenAI', 18),
-  ('LangChain',            'AI / GenAI', 19),
-  ('LangGraph',            'AI / GenAI', 20),
-  ('Prompt Engineering',   'AI / GenAI', 21),
-  -- DevOps & Tooling
-  ('Git',                  'DevOps & Tooling', 22),
-  ('GitHub',               'DevOps & Tooling', 23),
-  ('Docker',               'DevOps & Tooling', 24),
-  ('Kubernetes',           'DevOps & Tooling', 25),
-  ('CI/CD',                'DevOps & Tooling', 26),
-  ('Cron Jobs',            'DevOps & Tooling', 27),
-  ('Inngest',              'DevOps & Tooling', 28);
+  ('Python',                      'Backend', 13),
+  ('FastAPI',                     'Backend', 14),
+  ('Node.js',                     'Backend', 15),
+  ('REST APIs',                   'Backend', 16),
+  ('Auth (JWT, OAuth, 2FA)',      'Backend', 17),
+  ('Background jobs & queues',    'Backend', 18),
+  -- Data
+  ('PostgreSQL',                  'Data', 19),
+  ('Supabase',                    'Data', 20),
+  ('MongoDB',                     'Data', 21),
+  ('Prisma',                      'Data', 22),
+  ('Schema migrations',           'Data', 23),
+  -- Frontend
+  ('TypeScript',                  'Frontend', 24),
+  ('React',                       'Frontend', 25),
+  ('Next.js',                     'Frontend', 26),
+  ('Tailwind CSS',                'Frontend', 27),
+  -- Infrastructure
+  ('Docker',                      'Infrastructure', 28),
+  ('Kubernetes',                  'Infrastructure', 29),
+  ('CI/CD',                       'Infrastructure', 30),
+  ('Inngest',                     'Infrastructure', 31);
 
 -- ---------------------------------------------------------------------------
 -- projects
+--
+-- Summaries state the problem before the stack. AI work leads; the delivered-
+-- for-a-real-organisation work comes second.
 -- ---------------------------------------------------------------------------
 delete from public.projects;
 
@@ -141,8 +169,8 @@ insert into public.projects (
   (
     'Interview Genie',
     'interview-genie',
-    'AI-powered career platform for job insights, AI resume building, cover letters, quizzes, and career analytics.',
-    '<p>AI-powered platform for job insights, AI resume building, cover letters, quizzes, and career analytics.</p><ul><li>Gemini API for resume generation, cover letter suggestions, and AI-driven career insights.</li><li>Next.js, PostgreSQL, Prisma ORM; Inngest for cron jobs and background tasks.</li><li>Interactive data visualizations with Recharts; form validation with Zod + React Hook Form.</li></ul>',
+    'Career advice is generic because it is cheap to produce. This turns one specific role into a tailored resume, cover letter, and practice set — and keeps the market data behind it fresh on a schedule.',
+    '<p>Career tooling is full of templates that ignore the role you are actually applying for. Interview Genie starts from the specific job and works backwards.</p><ul><li>Resume generation, cover letters, and role-adapted practice built on the Gemini API.</li><li>Next.js, PostgreSQL, and Prisma, with Inngest running the scheduled jobs that keep career insights current rather than frozen at signup.</li><li>Analytics rendered with Recharts; end-to-end validation with Zod and React Hook Form.</li></ul>',
     null,
     '{"Next.js","PostgreSQL","Prisma","Gemini","Inngest","Recharts"}',
     '{"repo":"https://github.com/whiteknight16/interview-genie","live":"https://interview-genie-snowy.vercel.app"}'::jsonb,
@@ -152,39 +180,39 @@ insert into public.projects (
     now()
   ),
   (
-    'Gymkhana',
-    'gymkhana',
-    'Comprehensive fitness tracking app built on the MERN stack with role-based admin and user panels.',
-    '<p>Comprehensive fitness tracking app built on the MERN stack.</p><ul><li>Role-based Admin and User panels.</li><li>Interactive charts for user progress and fitness metrics.</li><li>Secure authentication and authorization.</li></ul>',
+    'REC Mirzapur — Official College Website',
+    'rec-mirzapur',
+    'The official web presence for a state government engineering college, built and delivered solo — requirements gathered from faculty stakeholders, then handed over as a system they could run without me.',
+    '<p>A state government engineering college needed an official website and had no in-house engineering team. I took it from requirements to handover on my own.</p><ul><li>Sole developer: scoping with faculty stakeholders, build, launch, and handover.</li><li>Content structured so non-technical staff could maintain it after delivery.</li></ul>',
     null,
-    '{"MongoDB","Express","React","Node.js"}',
-    '{"repo":"https://github.com/whiteknight16/Gymkhana"}'::jsonb,
+    '{"Web Development","Solo delivery","Stakeholder management"}',
+    '{}'::jsonb,
     true,
     'published',
     2,
     now()
   ),
   (
-    'REC Mirzapur — Official College Website',
-    'rec-mirzapur',
-    'Official website for REC Mirzapur, a state government engineering college, built independently.',
-    '<p>Independently developed the official website for REC Mirzapur, a state government engineering college.</p>',
+    'Notes Nest',
+    'notes-nest',
+    'A note-taking app built as a complete commercial slice rather than a demo: real authentication, real subscription billing, and a typed Postgres backend behind the editor.',
+    '<p>Most side-project note apps stop at the editor. This one was built to prove out the parts that actually make a product sellable.</p><ul><li>Authentication via Kinde and subscription billing via Stripe.</li><li>Next.js and TypeScript on the front, Prisma and PostgreSQL behind it.</li></ul>',
     null,
-    '{"Web Development"}',
-    '{}'::jsonb,
+    '{"Next.js","TypeScript","Prisma","PostgreSQL","Stripe"}',
+    '{"repo":"https://github.com/whiteknight16/Notes-Nest","live":"https://notes-nest.vercel.app"}'::jsonb,
     false,
     'published',
     3,
     now()
   ),
   (
-    'Notes Nest',
-    'notes-nest',
-    'Next.js-powered note-taking web app with authentication, billing, and a Prisma/PostgreSQL backend.',
-    '<p>Your next-generation, Next.js-powered web-based note-taking app.</p><ul><li>Auth via Kinde; payments/billing via Stripe.</li><li>Next.js, TypeScript, Tailwind CSS, ShadCN/UI.</li><li>Prisma ORM with PostgreSQL.</li></ul>',
+    'Gymkhana',
+    'gymkhana',
+    'A fitness platform with genuinely separate admin and member surfaces — role-based access, progress tracking, and charts that make the numbers mean something.',
+    '<p>A fitness tracking platform built around two distinct audiences rather than one shared dashboard.</p><ul><li>Separate role-based admin and member experiences with enforced authorisation.</li><li>Progress and fitness metrics visualised for members, aggregate views for admins.</li></ul>',
     null,
-    '{"Next.js","TypeScript","Tailwind CSS","Prisma","PostgreSQL","Stripe"}',
-    '{"repo":"https://github.com/whiteknight16/Notes-Nest","live":"https://notes-nest.vercel.app"}'::jsonb,
+    '{"MongoDB","Express","React","Node.js"}',
+    '{"repo":"https://github.com/whiteknight16/Gymkhana"}'::jsonb,
     false,
     'published',
     4,
@@ -193,38 +221,32 @@ insert into public.projects (
 
 -- ---------------------------------------------------------------------------
 -- achievements
+--
+-- Section is disabled on the homepage (see site_sections). Kept here so the
+-- data survives and the section can be switched back on from the admin.
 -- ---------------------------------------------------------------------------
 delete from public.achievements;
 
 insert into public.achievements (title, description, sort_order) values
   (
-    'Top 100 — GirlScript Summer of Code',
-    'Achieved a Top 100 rank in GirlScript Summer of Code (open source program).',
+    'Smart India Hackathon — 2024 Grand Finalist',
+    'Reached the national Grand Finale of Smart India Hackathon 2024, after winning the college round in both 2023 and 2024.',
     1
   ),
   (
-    '1st Place — Smart India Hackathon (College Round)',
-    'Won 1st place in the college-level round of Smart India Hackathon (SIH) in both 2023 and 2024.',
+    'Top 100 — GirlScript Summer of Code',
+    'Finished in the top 100 contributors of GirlScript Summer of Code.',
     2
   ),
   (
-    'SIH 2024 Grand Finalist',
-    'Qualified for the Grand Finale of Smart India Hackathon 2024.',
-    3
-  ),
-  (
     'Web Development Team Lead',
-    'Web Development Team Member for 2 years; Team Lead in final year at college.',
-    4
-  ),
-  (
-    'Built REC Mirzapur Official Website',
-    'Independently built the official website for REC Mirzapur.',
-    5
+    'Two years on the college web development team, leading it in the final year.',
+    3
   );
 
 -- ---------------------------------------------------------------------------
 -- education
+-- Section is disabled on the homepage; the detail lives on the resume.
 -- ---------------------------------------------------------------------------
 delete from public.education;
 
