@@ -69,8 +69,8 @@ export function buildProfilePageJsonLd(siteUrl: string): Record<string, unknown>
   return {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
-    "@id": `${siteUrl}/#profilepage`,
-    url: siteUrl,
+    "@id": `${siteUrl}/about#profilepage`,
+    url: `${siteUrl}/about`,
     mainEntity: { "@id": `${siteUrl}/#person` },
   };
 }
@@ -158,6 +158,18 @@ export function buildLlmsTxt(args: {
   const blocks: string[] = [`# ${name} (${handle})`];
   if (profile?.headline) blocks.push(`> ${clean(profile.headline, years)}`);
   if (profile?.bio) blocks.push(clean(profile.bio, years));
+
+  const now = profile?.now ?? {};
+  const nowLines = (
+    [
+      ["Building", now.building],
+      ["Writing", now.writing],
+      ["Learning", now.learning],
+    ] as const
+  )
+    .filter(([, v]) => v && v.trim())
+    .map(([k, v]) => `- ${k}: ${clean(v as string, years)}`);
+  if (nowLines.length) blocks.push(["## Now", ...nowLines].join("\n"));
 
   blocks.push(
     [

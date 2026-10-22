@@ -4,6 +4,7 @@ import {
   buildBlogPostingJsonLd,
   buildLlmsTxt,
   buildPersonJsonLd,
+  buildProfilePageJsonLd,
   buildRssXml,
 } from "./seo.ts";
 import type { Post, Profile } from "./types.ts";
@@ -93,4 +94,26 @@ test("llms.txt leads with name and handle and lists notes", () => {
   assert.ok(txt.startsWith("# Harsh Pandey (Knight Developer)"));
   assert.ok(txt.includes(`- [${post.title}](https://k.dev/notes/${post.slug})`));
   assert.ok(!txt.includes("{years}"));
+});
+test("llms.txt states current focus from now, omitted when blank", () => {
+  const txt = buildLlmsTxt({ siteUrl: S, profile: { ...p, now: { building: "an AI tutor", learning: "ML" } }, years: null, posts: [], projects: [] });
+  assert.ok(txt.includes("## Now"));
+  assert.ok(txt.includes("- Building: an AI tutor"));
+  assert.ok(txt.includes("- Learning: ML"));
+  assert.ok(!txt.includes("Writing"));
+  assert.ok(!buildLlmsTxt({ siteUrl: S, profile: { ...p, now: {} }, years: null, posts: [], projects: [] }).includes("## Now"));
+});
+test("profile page JSON-LD lives on /about and points at the person", () => {
+  const ld = buildProfilePageJsonLd(S);
+  assert.equal(ld.url, "https://k.dev/about");
+  assert.equal(ld["@id"], "https://k.dev/about#profilepage");
+  assert.deepEqual(ld.mainEntity, { "@id": "https://k.dev/#person" });
+});
+test("profile text never leaks emphasis markers or {years}", () => {
+  const ld = buildPersonJsonLd({ siteUrl: S, profile: { ...p, title: "*AI* engineer {years}" }, skills: [], currentCompany: null, school: null });
+  for (const v of [ld.description, ld.jobTitle]) {
+    assert.ok(!String(v).includes("*") && !String(v).includes("{years}"));
+  }
+  const txt = buildLlmsTxt({ siteUrl: S, profile: { ...p, now: { building: "*x* {years}" } }, years: null, posts: [], projects: [] });
+  assert.ok(!txt.includes("*") && !txt.includes("{years}"));
 });
