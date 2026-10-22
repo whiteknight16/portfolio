@@ -19,25 +19,30 @@ export interface Profile {
     github?: string;
     linkedin?: string;
     twitter?: string;
+    youtube?: string;
+    instagram?: string;
     website?: string;
     [key: string]: string | undefined;
   };
+  handle: string | null;
+  tagline: string;
+  career_start_date: string | null;
+  now: NowCard;
+  now_updated_at: string | null;
+  highlights: Highlight[];
   singleton: boolean;
   updated_at: string;
 }
 
+/** The "now" card: what Harsh is building, writing and learning. */
+export type NowCard = { building?: string; writing?: string; learning?: string };
+
+/** A proof-strip stat, e.g. `{ value: "3", label: "products shipped" }`. */
+export type Highlight = { value: string; label: string };
+
 export interface SiteSection {
   id: string;
-  key:
-    | "about"
-    | "services"
-    | "experience"
-    | "skills"
-    | "projects"
-    | "achievements"
-    | "education"
-    | "contact"
-    | "blog";
+  key: "projects" | "blog" | "newsletter" | "experience";
   label: string;
   enabled: boolean;
   sort_order: number;
@@ -55,6 +60,7 @@ export interface Project {
     live?: string;
     repo?: string;
   };
+  label: string | null;
   featured: boolean;
   status: "draft" | "published";
   sort_order: number;
@@ -72,6 +78,7 @@ export interface Experience {
   end_date: string | null;
   is_current: boolean;
   highlights: string[];
+  tags: string[];
   sort_order: number;
 }
 
@@ -100,6 +107,10 @@ export interface Education {
   sort_order: number;
 }
 
+export type SourceKind = "video" | "article" | "paper" | "course" | "book" | "podcast" | "other";
+
+export const SOURCE_KINDS: SourceKind[] = ["video", "article", "paper", "course", "book", "podcast", "other"];
+
 export interface Post {
   id: string;
   title: string;
@@ -108,6 +119,10 @@ export interface Post {
   content: string;
   cover_image_url: string | null;
   tags: string[];
+  source_title: string | null;
+  source_url: string | null;
+  source_kind: SourceKind | null;
+  tldr: string[];
   status: "draft" | "published";
   reading_minutes: number;
   published_at: string | null;
@@ -121,5 +136,13 @@ export interface ContactMessage {
   email: string;
   message: string;
   is_read: boolean;
+  created_at: string;
+}
+
+export interface Subscriber {
+  id: string;
+  email: string;
+  status: "active" | "unsubscribed";
+  source: string | null;
   created_at: string;
 }

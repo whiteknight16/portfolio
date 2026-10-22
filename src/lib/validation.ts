@@ -14,6 +14,7 @@
  */
 
 import { z } from "zod";
+import { SOURCE_KINDS } from "./types.ts";
 
 // ---------------------------------------------------------------------------
 // Shared helpers
@@ -66,6 +67,9 @@ const optionalText = () => z.preprocess(nullifyEmpty, z.string().trim().nullable
 /** `not null default ''` text column: missing -> `""`. */
 const defaultedText = () => z.preprocess(undefineEmpty, z.string().trim().default(""));
 
+/** Optional trimmed string where `""` / missing -> `undefined` (for JSON object fields). */
+const optionalTrimmed = () => z.preprocess(undefineEmpty, z.string().trim().optional());
+
 /** Tags/highlights style `text[]` column. */
 const stringArray = () => z.preprocess(csvToArray, z.array(z.string()));
 
@@ -98,10 +102,27 @@ export const profileSchema = z.object({
       github: z.preprocess(undefineEmpty, z.string().trim().optional()),
       linkedin: z.preprocess(undefineEmpty, z.string().trim().optional()),
       twitter: z.preprocess(undefineEmpty, z.string().trim().optional()),
+      youtube: z.preprocess(undefineEmpty, z.string().trim().optional()),
+      instagram: z.preprocess(undefineEmpty, z.string().trim().optional()),
       website: z.preprocess(undefineEmpty, z.string().trim().optional()),
     })
     .catchall(z.string())
     .default({}),
+  handle: optionalText(),
+  tagline: defaultedText(),
+  career_start_date: optionalDate(),
+  now: z
+    .object({
+      building: optionalTrimmed(),
+      writing: optionalTrimmed(),
+      learning: optionalTrimmed(),
+    })
+    .default({}),
+  highlights: z
+    .array(z.object({ value: z.string().trim().default(""), label: z.string().trim().default("") }))
+    .transform((items) => items.filter((h) => h.value !== "" || h.label !== ""))
+    .pipe(z.array(z.object({ value: z.string(), label: z.string() })).max(3, "At most 3 highlights"))
+    .default([]),
 });
 export type ProfileInput = z.infer<typeof profileSchema>;
 
@@ -110,16 +131,7 @@ export type ProfileInput = z.infer<typeof profileSchema>;
 // ---------------------------------------------------------------------------
 
 export const sectionSchema = z.object({
-  key: z.enum([
-    "about",
-    "services",
-    "experience",
-    "skills",
-    "projects",
-    "achievements",
-    "education",
-    "contact",
-  ]),
+  key: z.enum(["projects", "blog", "newsletter", "experience"]),
   label: z.string().trim().min(1, "Label is required"),
   enabled: z.boolean().default(true),
   sort_order: sortOrder(),
@@ -141,6 +153,7 @@ export const projectSchema = z.object({
   slug: slugField,
   summary: defaultedText(),
   content: defaultedText(), // sanitized separately via sanitizeHtml() before persisting
+  label: optionalText(),
   cover_image_url: optionalUrl(),
   tags: stringArray(),
   links: z
@@ -169,6 +182,7 @@ export const experienceSchema = z
     end_date: optionalDate(),
     is_current: z.boolean().default(false),
     highlights: stringArray(),
+    tags: stringArray(),
     sort_order: sortOrder(),
   })
   .refine((data) => data.is_current || data.end_date !== null, {
@@ -225,6 +239,14 @@ export const postSchema = z.object({
   content: defaultedText(), // sanitized separately via sanitizeHtml() before persisting
   cover_image_url: optionalUrl(),
   tags: stringArray(),
+  source_title: optionalText(),
+  source_url: optionalUrl(),
+  source_kind: z.preprocess(nullifyEmpty, z.enum(SOURCE_KINDS).nullable().default(null)),
+  tldr: z.preprocess(
+    // Lines may contain commas, so only arrays are accepted (no CSV split).
+    (val) => (Array.isArray(val) ? val.map((s) => String(s).trim()).filter(Boolean).slice(0, 3) : []),
+    z.array(z.string()),
+  ),
   status: statusEnum(),
   published_at: optionalDate(),
 });
@@ -243,3 +265,18 @@ export const contactSchema = z.object({
   honeypot: z.string().max(0, "Spam check failed").default(""),
 });
 export type ContactInput = z.infer<typeof contactSchema>;
+
+// ---------------------------------------------------------------------------
+// subscribers (+ honeypot, not persisted)
+// ---------------------------------------------------------------------------
+
+export const subscribeSchema = z.object({
+  email: z.preprocess(
+    (val) => (typeof val === "string" ? val.trim().toLowerCase() : val),
+    z.email("Enter a valid email address"),
+  ),
+  // Spam-trap field, same contract as `contactSchema.honeypot`.
+  honeypot: z.string().max(0, "Spam check failed").default(""),
+  source: optionalText(),
+});
+export type SubscribeInput = z.infer<typeof subscribeSchema>;

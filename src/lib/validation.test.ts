@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { contactSchema, projectSchema, experienceSchema, profileSchema } from "./validation.ts";
+import { contactSchema, projectSchema, experienceSchema, profileSchema, postSchema, subscribeSchema } from "./validation.ts";
 
 test("contactSchema accepts a valid submission with an empty honeypot", () => {
   const result = contactSchema.safeParse({
@@ -119,4 +119,36 @@ test("profileSchema rejects an invalid resume_url", () => {
     resume_url: "not a url",
   });
   assert.equal(result.success, false);
+});
+
+test("subscribeSchema trims and lowercases the email", () => {
+  const r = subscribeSchema.parse({ email: "  Ada@Example.com ", honeypot: "" });
+  assert.equal(r.email, "ada@example.com");
+});
+
+test("subscribeSchema rejects a filled honeypot and a bad email", () => {
+  assert.equal(subscribeSchema.safeParse({ email: "a@b.co", honeypot: "x" }).success, false);
+  assert.equal(subscribeSchema.safeParse({ email: "nope" }).success, false);
+});
+
+test("postSchema drops blank tldr lines and caps at three", () => {
+  const r = postSchema.parse({ title: "T", slug: "t", tldr: ["a", " ", "b", "c", "d"] });
+  assert.deepEqual(r.tldr, ["a", "b", "c"]);
+});
+
+test("postSchema normalizes an empty source to nulls", () => {
+  const r = postSchema.parse({ title: "T", slug: "t", source_title: "", source_url: "", source_kind: "" });
+  assert.equal(r.source_url, null);
+  assert.equal(r.source_kind, null);
+});
+
+test("profileSchema keeps only highlights with a value or label, max three", () => {
+  const r = profileSchema.parse({
+    full_name: "H",
+    highlights: [
+      { value: "2", label: "x" },
+      { value: "", label: "" },
+    ],
+  });
+  assert.deepEqual(r.highlights, [{ value: "2", label: "x" }]);
 });

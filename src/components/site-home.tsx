@@ -1,13 +1,7 @@
 import { getEnabledSections, getProfile } from "@/lib/content";
 import { Hero } from "@/components/sections/hero";
-import { About } from "@/components/sections/about";
-import { Services } from "@/components/sections/services";
 import { ExperienceSection } from "@/components/sections/experience";
-import { Skills } from "@/components/sections/skills";
 import { ProjectsPreview } from "@/components/sections/projects-preview";
-import { Achievements } from "@/components/sections/achievements";
-import { EducationSection } from "@/components/sections/education";
-import { Contact } from "@/components/sections/contact";
 import type { SiteSection } from "@/lib/types";
 
 /**
@@ -25,32 +19,17 @@ export async function SiteHome() {
   return (
     <>
       <Hero profile={profile} />
-      {sections.map((section) => renderSection(section, profile))}
+      {sections.map((section) => renderSection(section))}
     </>
   );
 }
 
-function renderSection(
-  section: SiteSection,
-  profile: Awaited<ReturnType<typeof getProfile>>,
-) {
+function renderSection(section: SiteSection) {
   switch (section.key) {
-    case "about":
-      return <About key={section.id} profile={profile} />;
-    case "services":
-      return <Services key={section.id} />;
     case "experience":
       return <ExperienceSection key={section.id} />;
-    case "skills":
-      return <Skills key={section.id} />;
     case "projects":
       return <ProjectsPreview key={section.id} />;
-    case "achievements":
-      return <Achievements key={section.id} />;
-    case "education":
-      return <EducationSection key={section.id} />;
-    case "contact":
-      return <Contact key={section.id} profile={profile} />;
     default:
       return null;
   }
