@@ -98,3 +98,10 @@ export function formatNoteDate(iso: string | null): string | null {
   const date = new Date(iso);
   return Number.isNaN(date.getTime()) ? null : NOTE_DATE.format(date);
 }
+
+/** The first sentence of a text (whitespace collapsed, `*` markers removed); the whole text when it has no sentence end. */
+export function firstSentence(text: string): string {
+  const flat = stripEmphasis(text).replace(/\s+/g, " ").trim();
+  const match = flat.match(/^.*?[.!?](?=\s|$)/);
+  return match ? match[0] : flat;
+}

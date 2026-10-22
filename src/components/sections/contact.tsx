@@ -1,4 +1,3 @@
-import { Download, Mail } from "lucide-react";
 import { Reveal } from "@/components/public/reveal";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { SocialLinks } from "@/components/public/social-icons";
@@ -6,51 +5,37 @@ import { ContactForm } from "@/components/sections/contact-form";
 import type { Profile } from "@/lib/types";
 
 /**
- * Heading, direct contact links (email/phone/socials), a resume download,
- * and the interactive contact form — two columns on desktop, stacked on
- * mobile. The `mailto:`/`tel:` links stay as a fallback alongside the form
- * so contact never breaks if a submission fails client-side.
+ * About-page "Say hello" block: a short note, the email address and social
+ * links on the left, the contact form on the right (stacked on mobile). The
+ * `mailto:` link stays as a fallback so contact never depends on the form.
  */
 export function Contact({ profile }: { profile: Profile | null }) {
-  if (!profile?.email) return null;
+  const email = profile?.email?.trim();
 
   return (
-    <section id="contact" className="scroll-mt-24 border-t border-border py-20 sm:py-28">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        <Reveal>
-          <SectionHeading
-            title="Tell me about your project"
-            note="Describe what you're building and where it's stuck. I'll come back with whether I can help, how I'd approach it, and what it would take."
-          />
-        </Reveal>
+    <section id="contact" className="mx-auto max-w-5xl scroll-mt-24 px-4 pt-14 sm:px-6">
+      <Reveal>
+        <SectionHeading
+          title="Say hello"
+          note="A question, a thought on something I wrote, or just hi. I read everything."
+        />
+      </Reveal>
 
-        <Reveal delay={0.1} className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
-          <div className="flex flex-col gap-4">
+      <Reveal delay={0.08} className="mt-7 grid grid-cols-1 gap-9 lg:grid-cols-[1fr_1.15fr] lg:gap-14">
+        <div className="flex flex-col items-start gap-4">
+          {email ? (
             <a
-              href={`mailto:${profile.email}`}
-              className="group inline-flex items-center gap-2.5 font-display text-xl font-semibold text-foreground transition-colors hover:text-muted-foreground sm:text-2xl"
+              href={`mailto:${email}`}
+              className="font-display text-xl font-[450] tracking-[-0.01em] break-all text-foreground underline decoration-rule underline-offset-4 transition-colors hover:decoration-foreground sm:text-2xl"
             >
-              <Mail className="size-5 shrink-0" />
-              {profile.email}
+              {email}
             </a>
-            <SocialLinks socials={profile.socials} className="mt-2" />
+          ) : null}
+          <SocialLinks socials={profile?.socials ?? null} className="gap-4.5" iconClassName="size-4.5" />
+        </div>
 
-            {profile.resume_url ? (
-              <a
-                href={profile.resume_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 inline-flex items-center gap-1.5 self-start text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-              >
-                <Download className="size-3.5" />
-                Resume, if you need the long version
-              </a>
-            ) : null}
-          </div>
-
-          <ContactForm />
-        </Reveal>
-      </div>
+        <ContactForm />
+      </Reveal>
     </section>
   );
 }

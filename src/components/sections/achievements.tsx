@@ -1,39 +1,35 @@
-import { Award } from "lucide-react";
 import { getAchievements } from "@/lib/content";
 import { Reveal } from "@/components/public/reveal";
 import { SectionHeading } from "@/components/sections/section-heading";
 
-/** Grid of achievement title + description tiles. Self-fetches; renders
- * nothing when there are no achievements recorded yet. */
+/** About-page achievements: a ruled list of title + description.
+ * Self-fetches; renders nothing when there are none recorded yet. */
 export async function Achievements() {
   const achievements = await getAchievements();
   if (achievements.length === 0) return null;
 
   return (
-    <section id="achievements" className="scroll-mt-24 border-t border-border py-20 sm:py-28">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        <Reveal>
-          <SectionHeading title="Selected recognition" />
-        </Reveal>
+    <section className="mx-auto max-w-5xl px-4 pt-14 sm:px-6">
+      <Reveal>
+        <SectionHeading title="Achievements" />
+      </Reveal>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2">
-          {achievements.map((achievement, i) => (
-            <Reveal key={achievement.id} delay={Math.min(i * 0.06, 0.24)}>
-              <div className="flex gap-4 rounded-xl border border-border bg-card p-5">
-                <Award className="mt-0.5 size-5 shrink-0 text-muted-foreground" />
-                <div>
-                  <h3 className="font-display text-base font-semibold text-foreground">
-                    {achievement.title}
-                  </h3>
-                  <p className="mt-1.5 text-sm text-pretty text-muted-foreground">
-                    {achievement.description}
-                  </p>
-                </div>
-              </div>
+      <ul className="mt-2.5">
+        {achievements.map((achievement, i) => (
+          <li key={achievement.id} className="border-b border-rule">
+            <Reveal delay={Math.min(i * 0.06, 0.24)} className="py-5">
+              <h3 className="font-display text-[19px] leading-snug font-[450] tracking-[-0.01em] text-foreground">
+                {achievement.title}
+              </h3>
+              {achievement.description ? (
+                <p className="mt-1.5 max-w-170 text-[14.5px] leading-[1.55] text-pretty text-muted-foreground">
+                  {achievement.description}
+                </p>
+              ) : null}
             </Reveal>
-          ))}
-        </div>
-      </div>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

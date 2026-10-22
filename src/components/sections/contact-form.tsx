@@ -9,6 +9,11 @@ import { SubmitButton } from "@/components/admin/submit-button";
 
 const initialState: ContactFormState = {};
 
+// Notebook-style fields (mockup form look): card fill, rule border, 3px corners.
+const FIELD =
+  "rounded-[3px] border-rule bg-card px-3 text-[15px] shadow-none focus-visible:border-foreground focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring dark:bg-card";
+const LABEL = "font-mono text-[11.5px] font-medium tracking-[0.04em] text-muted-foreground";
+
 /**
  * Client-side contact form bound to `sendContactAction` via `useActionState`.
  * Includes a honeypot field that's invisible and unreachable for real
@@ -29,18 +34,18 @@ export function ContactForm() {
   return (
     <form ref={formRef} action={formAction} className="relative flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="contact-name">Name</Label>
-        <Input id="contact-name" name="name" type="text" autoComplete="name" required />
+        <Label htmlFor="contact-name" className={LABEL}>Name</Label>
+        <Input id="contact-name" name="name" type="text" autoComplete="name" required className={`h-10 ${FIELD}`} />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="contact-email">Email</Label>
-        <Input id="contact-email" name="email" type="email" autoComplete="email" required />
+        <Label htmlFor="contact-email" className={LABEL}>Email</Label>
+        <Input id="contact-email" name="email" type="email" autoComplete="email" required className={`h-10 ${FIELD}`} />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="contact-message">Message</Label>
-        <Textarea id="contact-message" name="message" rows={5} required />
+        <Label htmlFor="contact-message" className={LABEL}>Message</Label>
+        <Textarea id="contact-message" name="message" rows={5} required className={`py-2.5 ${FIELD}`} />
       </div>
 
       {/* Honeypot spam trap — mirrors contactSchema's `honeypot` field. Kept
@@ -63,12 +68,15 @@ export function ContactForm() {
         </p>
       ) : null}
       {state.ok ? (
-        <p role="status" className="text-sm text-muted-foreground">
+        <p role="status" className="font-display text-base text-foreground italic">
           Thanks for reaching out — I&apos;ll get back to you soon.
         </p>
       ) : null}
 
-      <SubmitButton pendingText="Sending…" className="self-start">
+      <SubmitButton
+        pendingText="Sending…"
+        className="h-auto self-start rounded-[3px] border-[1.5px] border-foreground bg-foreground px-3.75 py-2.5 font-mono text-[12.5px] font-medium text-background hover:bg-foreground hover:opacity-85"
+      >
         Send message
       </SubmitButton>
     </form>

@@ -1,17 +1,25 @@
 import type { Metadata } from "next";
-import { getPublishedProjects } from "@/lib/content";
+import { getProfile, getPublishedProjects } from "@/lib/content";
 import { Reveal } from "@/components/public/reveal";
 import { ProjectsGrid } from "@/components/public/projects-grid";
-import { brand } from "@/lib/config";
+import { brand, rssAlternateTypes } from "@/lib/config";
 
 // Reads published projects straight from the database on every request —
 // there's nothing here worth prerendering or caching.
 export const dynamic = "force-dynamic";
 
-export function generateMetadata(): Metadata {
+const SUB = "My own projects, built outside of work.";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const profile = await getProfile();
+  const name = profile?.full_name || brand.name;
+  const title = `Projects — ${name}`;
   return {
-    title: `Projects — ${brand.name}`,
-    description: "Selected projects, filterable by tag.",
+    title,
+    description: SUB,
+    alternates: { canonical: "/projects", types: rssAlternateTypes },
+    openGraph: { title, description: SUB, type: "website", url: "/projects", siteName: name },
+    twitter: { card: "summary_large_image", title, description: SUB },
   };
 }
 
@@ -19,24 +27,25 @@ export default async function ProjectsPage() {
   const projects = await getPublishedProjects();
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24">
+    <div className="mx-auto max-w-5xl px-4 pt-12 pb-4 sm:px-6 sm:pt-16">
       <Reveal>
-        <p className="flex items-center gap-2.5 font-mono text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-          <span className="size-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
-          Projects
-        </p>
-        <h1 className="mt-3 text-balance font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          Selected work
-        </h1>
-        <p className="mt-3 max-w-2xl text-pretty text-base text-muted-foreground">
-          Things I&apos;ve designed, built, and shipped — filter by tag to narrow it down.
-        </p>
+        <header className="border-b-[1.5px] border-foreground pb-6">
+          <p className="font-mono text-[11px] font-medium tracking-[0.12em] text-brand uppercase">
+            Projects
+          </p>
+          <h1 className="mt-3 font-display text-[44px] leading-none font-normal tracking-[-0.03em] text-foreground sm:text-[56px]">
+            Things I&apos;ve built
+          </h1>
+          <p className="mt-4 max-w-xl font-display text-lg leading-normal font-light text-muted-foreground sm:text-xl">
+            {SUB}
+          </p>
+        </header>
       </Reveal>
 
-      <div className="mt-12">
+      <div className="mt-6">
         {projects.length === 0 ? (
           <p className="py-16 text-center text-sm text-muted-foreground">
-            No projects published yet — check back soon.
+            No projects published yet. Check back soon.
           </p>
         ) : (
           <ProjectsGrid projects={projects} />

@@ -10,6 +10,7 @@ import {
   stripEmphasis,
   splitEmphasis,
   formatNoteDate,
+  firstSentence,
 } from "./format.ts";
 
 test("slugify lowercases and hyphenates", () => {
@@ -98,4 +99,15 @@ test("formatNoteDate uses the UTC calendar date so server and browser agree", ()
 test("formatNoteDate returns null when unset or unparseable", () => {
   assert.equal(formatNoteDate(null), null);
   assert.equal(formatNoteDate("not a date"), null);
+});
+
+test("firstSentence returns the first sentence, flattened and without emphasis marks", () => {
+  assert.equal(firstSentence("I build *AI*. Then more.\n\nAnd more."), "I build AI.");
+  assert.equal(firstSentence("Is it? Yes."), "Is it?");
+  assert.equal(firstSentence("Version 2.5 ships. Next."), "Version 2.5 ships.");
+});
+
+test("firstSentence falls back to the whole text, or empty", () => {
+  assert.equal(firstSentence("no full stop here"), "no full stop here");
+  assert.equal(firstSentence("   "), "");
 });

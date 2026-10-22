@@ -29,9 +29,9 @@ export function ProjectsGrid({ projects }: { projects: Project[] }) {
 
   return (
     <div>
-      {tags.length > 0 ? (
+      {tags.length > 1 ? (
         <Reveal>
-          <TagFilter tags={tags} value={tag} onChange={setTag} className="mb-10" />
+          <TagFilter tags={tags} value={tag} onChange={setTag} className="mb-6" />
         </Reveal>
       ) : null}
 
@@ -40,9 +40,9 @@ export function ProjectsGrid({ projects }: { projects: Project[] }) {
           No projects match that tag.
         </p>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4.5 md:grid-cols-2">
           {filtered.map((project, i) => (
-            <Reveal key={project.id} delay={Math.min(i * 0.06, 0.24)} className="h-full">
+            <Reveal key={project.id} delay={Math.min(i * 0.06, 0.24)} className="flex">
               <ProjectCard project={project} />
             </Reveal>
           ))}

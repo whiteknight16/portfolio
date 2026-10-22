@@ -1,86 +1,40 @@
 import Link from "next/link";
-import { ArrowUpRight, FolderGit2 } from "lucide-react";
+import { TagChip } from "@/components/public/tag-chip";
+import { projectKicker } from "@/lib/profile-view";
 import type { Project } from "@/lib/types";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+const MAX_TAGS = 4;
 
 /**
- * Cover image + title + summary + tags + links for one project, linking
- * through to `/projects/[slug]`. Plain `<img>` (not `next/image`) since
- * `cover_image_url` is a remote Supabase URL — this avoids having to
- * register a `remotePatterns` entry for a project-controlled hostname.
+ * Field notes project card (mockup `.wk.big`): mono kicker, Fraunces title,
+ * summary and tags on a card with a hard ink shadow, linking to
+ * `/projects/[slug]`. Shared by the homepage "Things I've built" and /projects.
  */
 export function ProjectCard({ project }: { project: Project }) {
+  const kicker = projectKicker(project.label, Boolean(project.links?.live));
+  const tags = project.tags.slice(0, MAX_TAGS);
+
   return (
-    <Card className="h-full justify-between gap-4 transition-shadow hover:shadow-md">
-      <Link href={`/projects/${project.slug}`} className="block overflow-hidden">
-        {project.cover_image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element -- remote Supabase URL; see comment above.
-          <img
-            src={project.cover_image_url}
-            alt={project.title}
-            loading="lazy"
-            className="aspect-video w-full object-cover"
-          />
-        ) : (
-          <div className="flex aspect-video w-full items-center justify-center bg-muted text-muted-foreground">
-            <FolderGit2 className="size-8" />
-          </div>
-        )}
-      </Link>
-
-      <CardHeader>
-        <CardTitle className="text-lg">
-          <Link
-            href={`/projects/${project.slug}`}
-            className="transition-colors hover:text-muted-foreground"
-          >
-            {project.title}
-          </Link>
-        </CardTitle>
-        <CardDescription className="mt-1.5 line-clamp-3 text-sm">
-          {project.summary}
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent className="flex flex-1 flex-col justify-between gap-4">
-        {project.tags.length > 0 ? (
-          <div className="flex flex-wrap gap-1.5">
-            {project.tags.map((tag) => (
-              <Badge key={tag} variant="secondary" className="font-normal">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        ) : null}
-
-        {project.links?.live || project.links?.repo ? (
-          <div className="flex gap-4 text-sm font-medium">
-            {project.links?.live ? (
-              <a
-                href={project.links.live}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Live
-                <ArrowUpRight className="size-3.5" />
-              </a>
-            ) : null}
-            {project.links?.repo ? (
-              <a
-                href={project.links.repo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Code
-                <ArrowUpRight className="size-3.5" />
-              </a>
-            ) : null}
-          </div>
-        ) : null}
-      </CardContent>
-    </Card>
+    <Link
+      href={`/projects/${project.slug}`}
+      className="group flex w-full flex-col rounded-[4px] border border-foreground bg-card px-5.5 py-5 shadow-ink transition-[translate,box-shadow] hover:-translate-x-px hover:-translate-y-px hover:shadow-ink-lg"
+    >
+      {kicker ? (
+        <p className="font-mono text-[11px] tracking-[0.08em] text-brand uppercase">{kicker}</p>
+      ) : null}
+      <h3 className="mt-1.5 font-display text-[22px] leading-[1.15] font-[450] tracking-[-0.015em] text-foreground group-hover:underline group-hover:decoration-1 group-hover:underline-offset-4">
+        {project.title}
+      </h3>
+      {project.summary ? (
+        <p className="mt-2 text-sm leading-[1.55] text-muted-foreground">{project.summary}</p>
+      ) : null}
+      {tags.length > 0 ? (
+        <div className="mt-auto flex flex-wrap gap-1.5 pt-3.5">
+          {tags.map((tag) => (
+            <TagChip key={tag}>{tag}</TagChip>
+          ))}
+        </div>
+      ) : null}
+    </Link>
   );
 }
