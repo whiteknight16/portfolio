@@ -24,6 +24,7 @@ const ALLOWED_TAGS = [
   "img",
   "hr",
   "br",
+  "mark",
 ];
 
 const ALLOWED_ATTR = ["href", "title", "target", "rel", "src", "alt"];

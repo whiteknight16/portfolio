@@ -1,26 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { Fraunces, Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { brand, siteUrl } from "@/lib/config";
 import { ThemeProvider } from "@/components/theme-provider";
 
-// Body: neutral, highly legible workhorse.
+// UI text: neutral, highly legible workhorse.
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
 });
 
-// Mono: structural device — section indices, dates, tags, metadata.
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains",
+// Mono: dates, labels, tags, metadata.
+const plexMono = IBM_Plex_Mono({
+  weight: ["400", "500"],
+  variable: "--font-plex-mono",
   subsets: ["latin"],
 });
 
-// Display: technical, geometric grotesk. Carries the engineering identity.
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space",
+// Display: warm serif for headings and note body (the "field notes" voice).
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  axes: ["opsz"],
 });
 
 // This root default is a real fallback: per-page `generateMetadata`
@@ -28,13 +29,20 @@ const spaceGrotesk = Space_Grotesk({
 // copy. Deliberately a plain string `title` (not a `{ default, template }`
 // object) — the detail pages already build their own full "X — Harsh Pandey"
 // titles, and a parent template would double-suffix them.
-const defaultTitle = `${brand.name} — ${brand.headline}`;
+const defaultTitle = `${brand.name} (${brand.handle}) — ${brand.headline}`;
 const defaultDescription = brand.subline;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: defaultTitle,
   description: defaultDescription,
+  alternates: {
+    types: {
+      "application/rss+xml": [
+        { url: "/notes/rss.xml", title: "Notes by Harsh Pandey" },
+      ],
+    },
+  },
   verification: {
     google: "Q8Q_CoQhtJKdaPAKaU4Boo3rNOyqEU_4Fl1i1HYZf0o",
   },
@@ -54,8 +62,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#f3eee4" },
+    { media: "(prefers-color-scheme: dark)", color: "#1a1814" },
   ],
 };
 
@@ -68,9 +76,9 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      className={`${inter.variable} ${plexMono.variable} ${fraunces.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-background text-foreground">
+      <body className="min-h-full bg-background bg-ruled text-foreground">
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

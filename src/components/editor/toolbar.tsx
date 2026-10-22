@@ -5,6 +5,7 @@ import type { Editor } from "@tiptap/react";
 import {
   Bold,
   Italic,
+  Highlighter,
   Heading2,
   Heading3,
   List,
@@ -128,6 +129,14 @@ export function EditorToolbar({ editor, bucket = "media" }: EditorToolbarProps) 
           active={editor?.isActive("italic")}
           disabled={!editor}
           onClick={() => editor?.chain().focus().toggleItalic().run()}
+        />
+
+        <ToolbarButton
+          label="Highlight"
+          icon={Highlighter}
+          active={editor?.isActive("highlight")}
+          disabled={!editor}
+          onClick={() => editor?.chain().focus().toggleHighlight().run()}
         />
 
         <ToolbarDivider />

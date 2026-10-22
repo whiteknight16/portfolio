@@ -5,6 +5,7 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
+import Highlight from "@tiptap/extension-highlight";
 import Placeholder from "@tiptap/extension-placeholder";
 import { cn } from "@/lib/utils";
 import { proseClassNames } from "@/components/public/prose";
@@ -29,7 +30,7 @@ type RichTextEditorProps = {
  * `name` on save. That HTML is re-sanitized server-side (`sanitizeHtml` in
  * `@/lib/sanitize.ts`) before persistence, so the extension set here is
  * deliberately scoped to the sanitizer's tag allowlist (headings h1-h4, p,
- * a, ul/ol/li, strong/em, code, pre, blockquote, img, hr, br) — underline
+ * a, ul/ol/li, strong/em, mark, code, pre, blockquote, img, hr, br) — underline
  * and strike are disabled since that markup isn't in the allowlist and
  * would just be stripped on save.
  *
@@ -70,6 +71,8 @@ export function RichTextEditor({
         inline: false,
         HTMLAttributes: { class: "rounded-lg border border-border" },
       }),
+      // Single-color highlight -> bare <mark> (allowlisted, no attributes).
+      Highlight,
       Placeholder.configure({ placeholder }),
     ],
     content: defaultValue ?? "",

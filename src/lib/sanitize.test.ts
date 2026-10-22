@@ -48,3 +48,7 @@ test("sanitizeHtml drops href on <p> since it is only allowed on <a>", () => {
   assert.ok(!clean.includes("href="));
   assert.ok(clean.includes("text"));
 });
+
+test("sanitizeHtml keeps <mark> highlights and strips their attributes", () => {
+  assert.equal(sanitizeHtml('<p>a <mark data-color="x" style="c">b</mark></p>'), "<p>a <mark>b</mark></p>");
+});
