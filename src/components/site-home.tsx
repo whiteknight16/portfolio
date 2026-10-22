@@ -52,7 +52,7 @@ export async function SiteHome() {
         return (
           <Fragment key={section.id}>
             {subscribeAnchor}
-            <NotesPreview posts={posts} />
+            <NotesPreview posts={posts} inlineSubscribe={!enabled.has("newsletter")} />
           </Fragment>
         );
       case "newsletter":
