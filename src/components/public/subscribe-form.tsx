@@ -12,9 +12,9 @@ type Variant = "ink" | "card";
 const styles: Record<Variant, { input: string; button: string; note: string; status: string }> = {
   // Dark ink panel (mockup `.sub`): dark input, highlighter-yellow button.
   ink: {
-    input: "border-[#4a443c] bg-[#2a2620] text-[#f6f1e7] placeholder:text-[#8a8074]",
-    button: "bg-highlight text-[#1c1812]",
-    note: "text-[#8a8074]",
+    input: "border-[#4a443c] bg-[#2a2620] text-[#f6f1e7] placeholder:text-[#a39a8c]",
+    button: "bg-[#fde68a] text-[#1d1a16]",
+    note: "text-[#a39a8c]",
     status: "text-[#b9b0a2]",
   },
   // Card on paper (mockup `.endsub`): paper input, solid ink button.
