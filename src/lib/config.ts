@@ -22,3 +22,11 @@ const rawSiteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.knightdeveloper.com";
 
 export const siteUrl = rawSiteUrl.replace(/\/+$/, "");
+
+/**
+ * The notes RSS feed. A page that sets `alternates` (e.g. a canonical) replaces
+ * the root layout's, so such pages set `types: rssAlternateTypes` to keep
+ * the feed advertised.
+ */
+export const rssFeed = { url: "/notes/rss.xml", title: `Notes by ${brand.name}` };
+export const rssAlternateTypes = { "application/rss+xml": [rssFeed] };

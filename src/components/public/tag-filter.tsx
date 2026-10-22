@@ -12,10 +12,11 @@ type TagFilterProps = {
 };
 
 /**
- * Toggle-chip tag filter with a leading "All" option. Controlled — the
- * caller owns `value`/`onChange` so it can be backed by local state (as on
- * the projects list) or URL search params (as a future blog list might
- * want) without this component knowing the difference.
+ * Toggle-chip tag filter with a leading "All" option, styled as the mockup's
+ * `.topics` row: mono chips on card, the active one solid ink. Controlled:
+ * the caller owns `value`/`onChange`, so it can be backed by local state (as
+ * on the notes and projects lists) or URL search params without this
+ * component knowing the difference.
  */
 export function TagFilter({ tags, value, onChange, className }: TagFilterProps) {
   return (
@@ -47,10 +48,10 @@ function Chip({
       aria-pressed={active}
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+        "rounded-[3px] border px-2.5 py-1 font-mono text-[11.5px] leading-normal transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         active
-          ? "border-transparent bg-foreground text-background"
-          : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground",
+          ? "border-foreground bg-foreground text-background"
+          : "border-rule bg-card text-muted-foreground hover:border-foreground/40 hover:text-foreground",
       )}
     >
       {label}

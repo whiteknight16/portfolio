@@ -34,12 +34,12 @@ export function NotesPreview({
         <Reveal delay={0.05}>
           {inlineSubscribe ? (
             <div className="mt-5 grid gap-5 rounded-[4px] border border-rule bg-card px-5 py-5 sm:px-6 md:grid-cols-[1fr_1.1fr] md:items-center md:gap-7.5">
-              <EmptyLine />
+              <NotesEmptyLine />
               <SubscribeForm variant="card" source="/" />
             </div>
           ) : (
             <div className="mt-5 rounded-[4px] border border-rule bg-card px-5 py-5 sm:px-6">
-              <EmptyLine />
+              <NotesEmptyLine />
               <a
                 href="#subscribe"
                 className="mt-2.5 inline-block font-mono text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
@@ -54,7 +54,8 @@ export function NotesPreview({
   );
 }
 
-function EmptyLine() {
+/** The "no notes yet" line, shared by the homepage and the `/notes` empty state. */
+export function NotesEmptyLine() {
   return (
     <p className="font-display text-xl leading-snug text-foreground italic">
       The first note is on its way. Subscribe and you&apos;ll get it the day it&apos;s out.

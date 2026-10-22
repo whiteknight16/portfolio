@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import { brand, siteUrl } from "@/lib/config";
+import { brand, rssAlternateTypes, siteUrl } from "@/lib/config";
 import { ThemeProvider } from "@/components/theme-provider";
 
 // UI text: neutral, highly legible workhorse.
@@ -36,13 +36,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: defaultTitle,
   description: defaultDescription,
-  alternates: {
-    types: {
-      "application/rss+xml": [
-        { url: "/notes/rss.xml", title: "Notes by Harsh Pandey" },
-      ],
-    },
-  },
+  alternates: { types: rssAlternateTypes },
   verification: {
     google: "Q8Q_CoQhtJKdaPAKaU4Boo3rNOyqEU_4Fl1i1HYZf0o",
   },

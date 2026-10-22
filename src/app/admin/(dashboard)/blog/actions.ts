@@ -92,7 +92,7 @@ export async function createPostAction(
   }
 
   revalidatePath("/");
-  revalidatePath("/blog");
+  revalidatePath("/notes");
   redirect("/admin/blog");
 }
 
@@ -153,8 +153,8 @@ export async function updatePostAction(
   }
 
   revalidatePath("/");
-  revalidatePath("/blog");
-  revalidatePath(`/blog/${slug}`);
+  revalidatePath("/notes");
+  revalidatePath(`/notes/${slug}`);
   redirect("/admin/blog");
 }
 
@@ -172,6 +172,6 @@ export async function deletePostAction(id: string): Promise<EntityActionResult> 
   }
 
   revalidatePath("/");
-  revalidatePath("/blog");
+  revalidatePath("/notes");
   return { ok: true };
 }

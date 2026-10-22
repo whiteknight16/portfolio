@@ -25,15 +25,16 @@ type SiteNavProps = {
 /**
  * Sticky Field notes nav. Client component for the mobile drawer, theme
  * toggle and active-link state. "Subscribe" points at `#subscribe`; the
- * homepage and each note page provide that anchor.
+ * homepage, the notes list and each note page provide that anchor.
  */
 export function SiteNav({ name = brand.name, handle = brand.handle }: SiteNavProps) {
   const [open, setOpen] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   const pathname = usePathname();
 
-  // Individual note pages carry their own in-page subscribe card.
-  const subscribeHref = pathname.startsWith("/notes/") ? "#subscribe" : "/#subscribe";
+  // The notes list and each note page carry their own in-page subscribe card.
+  const subscribeHref =
+    pathname === "/notes" || pathname.startsWith("/notes/") ? "#subscribe" : "/#subscribe";
 
   const close = () => setOpen(false);
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
