@@ -13,22 +13,24 @@ type RevealProps = {
 /**
  * Fades + translates children up into place the first time they scroll into
  * view. Visitors who prefer reduced motion get the content immediately, with
- * no animation — `useReducedMotion` is read on the client, so this must stay
- * a client component.
+ * no animation. Always renders the same `motion.div` (only its animation
+ * props change): the server can't know the preference, and swapping in a
+ * plain `<div>` on the client would leave the server's inline `opacity: 0` in
+ * place after hydration, hiding the content for exactly those visitors.
  */
 export function Reveal({ children, delay = 0, className }: RevealProps) {
   const shouldReduceMotion = useReducedMotion();
 
-  if (shouldReduceMotion) {
-    return <div className={className}>{children}</div>;
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
+      {...(shouldReduceMotion
+        ? { animate: { opacity: 1, y: 0 }, transition: { duration: 0 } }
+        : {
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true, margin: "-80px" },
+            transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as const },
+          })}
       className={className}
     >
       {children}
