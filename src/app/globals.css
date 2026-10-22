@@ -55,7 +55,7 @@
 }
 
 :root {
-  --brand: #c2410c;
+  --brand: #b53c0b;
   --brand-foreground: #fffaf0;
   --background: #f3eee4;
   --foreground: #1d1a16;
@@ -74,8 +74,8 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: #ddd3c2;
   --input: #ddd3c2;
-  --ring: #c2410c;
-  --faint: #8a8074;
+  --ring: #b53c0b;
+  --faint: #70665a;
   --rule: #ddd3c2;
   --highlight: #fde68a;
   --chart-1: oklch(0.87 0 0);
@@ -91,7 +91,7 @@
   --sidebar-accent: #e4dccd;
   --sidebar-accent-foreground: #1d1a16;
   --sidebar-border: #ddd3c2;
-  --sidebar-ring: #c2410c;
+  --sidebar-ring: #b53c0b;
   /* Ruled-line colour for `bg-ruled` (mockup `.p::before`). */
   --ruled-line: #e6dfd0;
 }
