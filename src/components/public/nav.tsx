@@ -2,83 +2,79 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/config";
+import { handleSlug } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
-const SECTION_LINKS = [
-  { href: "/#services", label: "Services" },
-  { href: "/#projects", label: "Work" },
-  { href: "/#experience", label: "Experience" },
-  { href: "/#about", label: "About" },
+const LINKS = [
+  { href: "/notes", label: "Notes" },
+  { href: "/projects", label: "Projects" },
+  { href: "/about", label: "About" },
 ] as const;
 
 type SiteNavProps = {
-  /** Brand name shown in the nav. Defaults to the site-wide brand config. */
   name?: string;
-  /** Show the Blog link. Controlled by the `blog` site section toggle. */
-  blogEnabled?: boolean;
+  handle?: string;
 };
 
 /**
- * Sticky top nav for the public site. A client component because the mobile
- * drawer and theme toggle both need interactivity; the brand name is passed in
- * as a prop (or defaults to `brand`) rather than fetched here, so this stays a
- * plain client component with no data dependency.
- *
- * The primary action is "Start a project", not a resume download — this site
- * is selling an engagement, and the resume lives quietly in the contact block.
+ * Sticky Field notes nav. Client component for the mobile drawer, theme
+ * toggle and active-link state. "Subscribe" points at `#subscribe`; the
+ * homepage and each note page provide that anchor.
  */
-export function SiteNav({ name = brand.name, blogEnabled = true }: SiteNavProps) {
+export function SiteNav({ name = brand.name, handle = brand.handle }: SiteNavProps) {
   const [open, setOpen] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+  const pathname = usePathname();
+
+  // Individual note pages carry their own in-page subscribe card.
+  const subscribeHref = pathname.startsWith("/notes/") ? "#subscribe" : "/#subscribe";
 
   const close = () => setOpen(false);
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 border-b border-rule bg-background/85 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
-        <Link
-          href="/"
-          onClick={close}
-          className="font-display text-base font-bold tracking-tight text-foreground"
-        >
-          {name}
+        <Link href="/" onClick={close} className="flex items-baseline">
+          <span className="font-display text-[19px] font-semibold tracking-tight text-foreground">
+            {name}
+          </span>
+          <small className="ml-2 hidden font-mono text-[11px] font-normal text-faint sm:inline">
+            @{handleSlug(handle)}
+          </small>
         </Link>
 
         {/* Desktop links */}
-        <nav className="hidden items-center gap-8 md:flex">
-          {SECTION_LINKS.map((link) => (
+        <nav className="hidden items-center gap-[26px] text-sm md:flex">
+          {LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              aria-current={isActive(link.href) ? "page" : undefined}
+              className={cn(
+                "transition-colors hover:text-foreground",
+                isActive(link.href) ? "font-medium text-foreground" : "text-muted-foreground",
+              )}
             >
               {link.label}
             </Link>
           ))}
-          {blogEnabled ? (
-            <Link
-              href="/blog"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Blog
-            </Link>
-          ) : null}
-        </nav>
-
-        <div className="hidden items-center gap-2 md:flex">
           <Button
             size="sm"
-            className="bg-brand text-brand-foreground hover:bg-brand/90"
-            render={<Link href="/#contact" />}
+            className="bg-foreground font-mono text-background hover:bg-foreground/85"
+            nativeButton={false}
+            render={<Link href={subscribeHref} />}
           >
-            Start a project
+            Subscribe
           </Button>
           <ThemeToggle />
-        </div>
+        </nav>
 
         {/* Mobile controls */}
         <div className="flex items-center gap-1 md:hidden">
@@ -107,34 +103,29 @@ export function SiteNav({ name = brand.name, blogEnabled = true }: SiteNavProps)
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: "easeOut" }}
-            className="overflow-hidden border-b border-border/60 bg-background md:hidden"
+            className="overflow-hidden border-b border-rule bg-background md:hidden"
           >
             <div className="flex flex-col gap-1 px-4 py-3 sm:px-6">
-              {SECTION_LINKS.map((link) => (
+              {LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={close}
-                  className="rounded-md px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  aria-current={isActive(link.href) ? "page" : undefined}
+                  className={cn(
+                    "rounded-md px-2.5 py-2 text-sm transition-colors hover:bg-muted hover:text-foreground",
+                    isActive(link.href) ? "font-medium text-foreground" : "text-muted-foreground",
+                  )}
                 >
                   {link.label}
                 </Link>
               ))}
-              {blogEnabled ? (
-                <Link
-                  href="/blog"
-                  onClick={close}
-                  className="rounded-md px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                >
-                  Blog
-                </Link>
-              ) : null}
               <Link
-                href="/#contact"
+                href={subscribeHref}
                 onClick={close}
-                className="mt-1 rounded-md bg-brand px-2.5 py-2 text-center text-sm font-medium text-brand-foreground transition-opacity hover:opacity-90"
+                className="mt-1 rounded-[3px] bg-foreground px-2.5 py-2 text-center font-mono text-sm font-medium text-background transition-opacity hover:opacity-90"
               >
-                Start a project
+                Subscribe
               </Link>
             </div>
           </motion.nav>

@@ -1,34 +1,55 @@
 import type { ReactNode } from "react";
 import { SiteNav } from "@/components/public/nav";
 import { SiteFooter } from "@/components/public/footer";
-import { getEnabledSections, getProfile } from "@/lib/content";
+import { JsonLd } from "@/components/seo/json-ld";
+import {
+  getCurrentExperience,
+  getEducation,
+  getProfile,
+  getSkillsByCategory,
+} from "@/lib/content";
+import { brand, siteUrl } from "@/lib/config";
+import { buildPersonJsonLd, buildWebsiteJsonLd } from "@/lib/seo";
 
 /**
- * Public site chrome. This route group wraps home/projects/blog pages with
- * the nav + footer, without touching `/admin`, whose layout lives at
- * `src/app/admin/(dashboard)/layout.tsx`.
- *
- * Fetches the profile and the enabled sections once (server reads) and wires
- * the real brand name, resume link, social URLs, and the Blog visibility
- * toggle into `<SiteNav>`/`<SiteFooter>`, which stay client components
- * themselves (mobile menu, theme toggle).
+ * Public site chrome. This route group wraps all public pages with the nav,
+ * footer and the site-wide Person/WebSite JSON-LD, without touching `/admin`
+ * (its layout lives at `src/app/admin/(dashboard)/layout.tsx`).
  */
 export default async function SiteLayout({ children }: { children: ReactNode }) {
-  const [profile, sections] = await Promise.all([
+  const [profile, skillGroups, currentExperience, education] = await Promise.all([
     getProfile(),
-    getEnabledSections(),
+    getSkillsByCategory(),
+    getCurrentExperience(),
+    getEducation(),
   ]);
-  const blogEnabled = sections.some((section) => section.key === "blog");
+
+  const name = profile?.full_name ?? brand.name;
+  const handle = profile?.handle || brand.handle;
+  const skills = skillGroups
+    .flatMap((group) => group.items.map((skill) => skill.name))
+    .slice(0, 8);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      buildPersonJsonLd({
+        siteUrl,
+        profile,
+        skills,
+        currentCompany: currentExperience?.company ?? null,
+        school: education[0]?.institution ?? null,
+      }),
+      buildWebsiteJsonLd(siteUrl, name),
+    ],
+  };
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <SiteNav name={profile?.full_name} blogEnabled={blogEnabled} />
+      <JsonLd data={jsonLd} />
+      <SiteNav name={name} handle={handle} />
       <main className="flex-1">{children}</main>
-      <SiteFooter
-        name={profile?.full_name}
-        socials={profile?.socials}
-        blogEnabled={blogEnabled}
-      />
+      <SiteFooter name={name} handle={handle} socials={profile?.socials} />
     </div>
   );
 }

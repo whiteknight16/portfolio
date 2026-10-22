@@ -3,64 +3,57 @@ import { brand } from "@/lib/config";
 import { SocialLinks } from "@/components/public/social-icons";
 import type { Profile } from "@/lib/types";
 
-const BASE_NAV_LINKS = [
-  { href: "/#services", label: "Services" },
-  { href: "/#projects", label: "Work" },
-  { href: "/#about", label: "About" },
-  { href: "/blog", label: "Blog", blogOnly: true },
-  { href: "/#contact", label: "Contact" },
+const FOOTER_LINKS = [
+  { href: "/notes", label: "notes" },
+  { href: "/notes/rss.xml", label: "rss", external: true },
+  { href: "/#subscribe", label: "subscribe" },
 ] as const;
 
 type SiteFooterProps = {
   name?: string;
+  handle?: string;
   socials?: Profile["socials"] | null;
-  /** Show the Blog link. Controlled by the `blog` site section toggle. */
-  blogEnabled?: boolean;
-  /** Copyright year. Defaults to the current year — pass a fixed value from
-   * a server component to keep output stable if that ever matters. */
   year?: number;
 };
 
-/**
- * Minimal footer: brand + copyright, a handful of nav links, and social
- * icons. A server component — nothing here needs interactivity, and
- * `new Date().getFullYear()` is safe to compute at request time.
- */
+/** Field notes footer: mono copyright left, links + socials right. Server component. */
 export function SiteFooter({
   name = brand.name,
+  handle = brand.handle,
   socials,
-  blogEnabled = true,
   year = new Date().getFullYear(),
 }: SiteFooterProps) {
-  const navLinks = BASE_NAV_LINKS.filter(
-    (link) => !("blogOnly" in link) || blogEnabled,
-  );
-
   return (
-    <footer className="border-t border-border">
-      <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-10 sm:px-6 md:flex-row md:items-center md:justify-between">
-        <div>
-          <p className="font-display text-sm font-semibold tracking-tight text-foreground">
-            {name}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            &copy; {year} {name}. All rights reserved.
-          </p>
+    <footer className="mt-16 border-t border-rule">
+      <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 pb-8 pt-6 font-mono text-xs text-faint sm:px-6 md:flex-row md:items-center md:justify-between">
+        <p>
+          &copy; {year} {name} &middot; {handle}
+        </p>
+
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+          <nav className="flex gap-x-5">
+            {FOOTER_LINKS.map((link) =>
+              "external" in link ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              ),
+            )}
+          </nav>
+          <SocialLinks socials={socials} iconClassName="size-4" className="gap-3.5" />
         </div>
-
-        <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="transition-colors hover:text-foreground"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        <SocialLinks socials={socials} iconClassName="size-4" />
       </div>
     </footer>
   );
