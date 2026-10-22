@@ -5,10 +5,11 @@
 
 export const brand = {
   name: "Harsh Pandey",
+  handle: "Knight Developer",
   initials: "HP",
-  headline: "AI Product Engineer",
+  headline: "AI engineer & builder",
   subline:
-    "I build AI systems that take over work a person used to do — tutors, interviewers, evaluators — live voice and video included, and everything around them.",
+    "I build AI that does the actual work: not chatbots, but interviewers and tutors that run live, on voice and video.",
   email: "harshp6421@gmail.com",
 } as const;
 

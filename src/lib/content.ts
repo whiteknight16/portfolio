@@ -54,13 +54,6 @@ export async function getEnabledSections(): Promise<SiteSection[]> {
   }
 }
 
-/** Whether the Blog is enabled (the `blog` row in `site_sections`). Controls
- * the public Blog nav link and route visibility. */
-export async function isBlogEnabled(): Promise<boolean> {
-  const sections = await getEnabledSections();
-  return sections.some((section) => section.key === "blog");
-}
-
 /** Fetches published projects, ordered by `sort_order` then `created_at`. */
 export async function getPublishedProjects(): Promise<Project[]> {
   try {
@@ -242,4 +235,65 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
   } catch {
     return null;
   }
+}
+
+/** Fetches the most recent published posts, newest first. */
+export async function getLatestPosts(limit = 5): Promise<Post[]> {
+  try {
+    const supabase = await createServerSupabase();
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("status", "published")
+      .order("published_at", { ascending: false })
+      .limit(limit);
+
+    if (error) return [];
+    return data ?? [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Neighbouring published posts by `published_at`: `previous` is the next-older
+ * post, `next` the next-newer one. Either is null at the ends or on failure.
+ */
+export async function getAdjacentPosts(
+  post: Post,
+): Promise<{ previous: Post | null; next: Post | null }> {
+  if (!post.published_at) return { previous: null, next: null };
+  try {
+    const supabase = await createServerSupabase();
+    const [older, newer] = await Promise.all([
+      supabase
+        .from("posts")
+        .select("*")
+        .eq("status", "published")
+        .lt("published_at", post.published_at)
+        .order("published_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("posts")
+        .select("*")
+        .eq("status", "published")
+        .gt("published_at", post.published_at)
+        .order("published_at", { ascending: true })
+        .limit(1)
+        .maybeSingle(),
+    ]);
+    return {
+      previous: older.error ? null : older.data,
+      next: newer.error ? null : newer.data,
+    };
+  } catch {
+    return { previous: null, next: null };
+  }
+}
+
+/** The current (first `is_current`) experience, or null. */
+export async function getCurrentExperience(): Promise<Experience | null> {
+  const experiences = await getExperiences();
+  return experiences.find((e) => e.is_current) ?? null;
 }

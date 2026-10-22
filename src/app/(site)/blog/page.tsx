@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { getPublishedPosts, isBlogEnabled } from "@/lib/content";
+import { getPublishedPosts } from "@/lib/content";
 import { Reveal } from "@/components/public/reveal";
 import { BlogGrid } from "@/components/public/blog-grid";
 import { brand } from "@/lib/config";
@@ -17,7 +16,6 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function BlogPage() {
-  if (!(await isBlogEnabled())) notFound();
   const posts = await getPublishedPosts();
 
   return (
