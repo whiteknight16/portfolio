@@ -68,3 +68,33 @@ export function handleSlug(handle: string): string {
 export function stripEmphasis(text: string): string {
   return text.replaceAll("*", "");
 }
+
+/**
+ * Split text around exactly one non-blank `*…*` pair (the hero's accent
+ * phrase). Returns `null` for anything else, so callers render
+ * `stripEmphasis(text)` as plain text instead.
+ */
+export function splitEmphasis(text: string): { before: string; em: string; after: string } | null {
+  const parts = text.split("*");
+  if (parts.length !== 3 || parts[1].trim() === "") return null;
+  const [before, em, after] = parts;
+  return { before, em, after };
+}
+
+const NOTE_DATE = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+/**
+ * A note's publish date as "Oct 20, 2026", read in UTC so the server render
+ * and a client re-render agree whatever the visitor's timezone. `null` when
+ * unset or unparseable.
+ */
+export function formatNoteDate(iso: string | null): string | null {
+  if (!iso) return null;
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? null : NOTE_DATE.format(date);
+}

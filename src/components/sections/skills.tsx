@@ -13,7 +13,7 @@ export async function Skills() {
     <section id="skills" className="scroll-mt-24 border-t border-border py-20 sm:py-28">
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <Reveal>
-          <SectionHeading eyebrow="Capabilities" title="The stack behind the work" />
+          <SectionHeading title="The stack behind the work" />
         </Reveal>
 
         <div className="mt-12 flex flex-col gap-8">

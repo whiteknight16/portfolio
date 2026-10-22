@@ -1,165 +1,224 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
+import Link from "next/link";
 import { motion, useReducedMotion, type Variants } from "motion/react";
-import { ArrowUpRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { SocialLinks } from "@/components/public/social-icons";
-import { brand } from "@/lib/config";
+import { splitEmphasis, stripEmphasis } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types";
 
+// The server can't know the visitor's motion preference, so both variant sets
+// share the same `hidden` state (identical SSR markup, no hydration mismatch);
+// reduced-motion visitors just get an instant, unstaggered `show`.
 const container: Variants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.08, delayChildren: 0.04 } },
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.04 } },
 };
 
 const item: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
 };
 
-// Portrait lives at public/profile.png; falls back to the spec card if absent.
-const PORTRAIT_SRC = "/profile.png";
+const instantContainer: Variants = { hidden: {}, show: {} };
+
+const instantItem: Variants = {
+  hidden: item.hidden,
+  show: { opacity: 1, y: 0, transition: { duration: 0 } },
+};
+
+/** Everything the hero shows, already resolved on the server (years filled, dates formatted). */
+export type HeroProps = {
+  name: string;
+  /** `title · first location segment`, e.g. "AI engineer & builder · New Delhi". */
+  kicker: string;
+  /** Headline with `{years}` filled; may carry one `*…*` accent phrase. */
+  thesis: string;
+  /** Tagline with `{years}` filled. */
+  lede: string;
+  photoSrc: string;
+  /** Polaroid caption: first segment of the location. */
+  caption: string | null;
+  nowRows: { key: string; text: string }[];
+  /** "Oct 2026" — when the Now card was last updated. */
+  nowMonth: string | null;
+  socials: Profile["socials"] | null;
+};
 
 /**
- * First thing a visitor sees. Left column carries the identity (status line,
- * name, one-line thesis, primary actions, socials); the right column shows the
- * portrait when present, and falls back to a monospace "spec card" otherwise —
- * either way the space is filled deliberately. Reads from `profile` with
- * sensible fallbacks and drops the motion tree for reduced-motion visitors.
+ * Field notes hero (mockup `.hero2`): kicker, name, thesis and lede on the
+ * left; a taped polaroid with the Now card pinned over it on the right (stacked
+ * underneath on mobile). Client component only for the entrance motion and the
+ * photo's error fallback; reduced-motion visitors see it without animation.
  */
-export function Hero({ profile }: { profile: Profile | null }) {
+export function Hero({
+  name,
+  kicker,
+  thesis,
+  lede,
+  photoSrc,
+  caption,
+  nowRows,
+  nowMonth,
+  socials,
+}: HeroProps) {
   const reduceMotion = useReducedMotion();
-  const [showPortrait, setShowPortrait] = useState(true);
+  const [showPhoto, setShowPhoto] = useState(true);
 
-  const name = profile?.full_name ?? brand.name;
-  const title = profile?.title ?? brand.headline;
-  const headline = profile?.headline ?? brand.subline;
-  const location = profile?.location ?? "India";
+  // Always motion elements (never swapped for plain divs): swapping on the
+  // client leaves the server's inline `opacity: 0` in place for reduced-motion
+  // visitors, hiding the hero.
+  const wrapProps = {
+    initial: "hidden",
+    animate: "show",
+    variants: reduceMotion ? instantContainer : container,
+  } as const;
+  const lineProps = { variants: reduceMotion ? instantItem : item } as const;
 
-  const specRows: { k: string; v: string }[] = [
-    { k: "BUILDS", v: "AI agents & the systems around them" },
-    { k: "LIVE", v: "Voice & video over LiveKit / WebRTC" },
-    { k: "STACK", v: "FastAPI · Postgres · Next.js" },
-    { k: "BASED", v: location },
-  ];
-
-  const Wrap = reduceMotion ? "div" : motion.div;
-  const Line = reduceMotion ? "div" : motion.div;
-  const animProps = reduceMotion
-    ? {}
-    : ({ initial: "hidden", animate: "show", variants: container } as const);
-  const lineProps = reduceMotion ? {} : ({ variants: item } as const);
+  const emphasis = splitEmphasis(thesis);
 
   return (
-    <section className="relative overflow-hidden border-b border-border">
-      {/* engineering-paper dot grid, faded toward the edges */}
-      <div
-        aria-hidden
-        className="bg-dot-grid pointer-events-none absolute inset-0 -z-10 opacity-70 mask-[radial-gradient(75%_60%_at_30%_35%,black,transparent)]"
-      />
-
-      <div className="mx-auto grid min-h-[calc(100svh-3.5rem)] max-w-6xl grid-cols-1 items-center gap-14 px-5 py-24 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10">
-        <Wrap {...animProps}>
-          {/* status line */}
-          <Line
+    <section className="overflow-x-clip">
+      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-12 px-4 pt-10 pb-10 sm:px-6 sm:pt-14 lg:grid-cols-[1.25fr_1fr] lg:items-start">
+        <motion.div {...wrapProps}>
+          <motion.div
             {...lineProps}
-            className="inline-flex items-center gap-2.5 rounded-full border border-border bg-card/60 px-3.5 py-1.5 font-mono text-xs text-muted-foreground backdrop-blur"
+            className="font-mono text-[11px] font-medium tracking-[0.12em] text-brand uppercase"
           >
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand opacity-60" />
-              <span className="relative inline-flex size-2 rounded-full bg-brand" />
-            </span>
-            Available for new projects
-          </Line>
+            {kicker}
+          </motion.div>
 
-          <Line
-            {...lineProps}
-            className="mt-7 font-display text-[3.25rem] font-semibold leading-[0.95] tracking-[-0.03em] text-foreground sm:text-7xl lg:text-8xl"
-          >
-            {name}
-          </Line>
+          <motion.div {...lineProps}>
+            <h1 className="mt-3.5 font-display text-[52px] leading-[0.95] font-normal tracking-[-0.035em] text-foreground sm:text-[64px] lg:text-[76px]">
+              {name}
+            </h1>
+          </motion.div>
 
-          <Line
-            {...lineProps}
-            className="mt-5 font-display text-xl font-medium tracking-[-0.01em] text-brand sm:text-2xl"
-          >
-            {title}
-          </Line>
+          <motion.div {...lineProps}>
+            <p className="mt-4.5 font-display text-2xl leading-[1.18] font-[350] tracking-[-0.02em] text-pretty text-foreground sm:text-[30px]">
+              {emphasis ? (
+                <>
+                  {emphasis.before}
+                  <em className="text-brand italic">{emphasis.em}</em>
+                  {emphasis.after}
+                </>
+              ) : (
+                stripEmphasis(thesis)
+              )}
+            </p>
+          </motion.div>
 
-          <Line
-            {...lineProps}
-            className="mt-4 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl"
-          >
-            {headline}
-          </Line>
+          {lede ? (
+            <motion.div {...lineProps}>
+              <p className="mt-4 max-w-125 text-base leading-[1.65] text-pretty text-muted-foreground">
+                {lede}
+              </p>
+            </motion.div>
+          ) : null}
 
-          <Line {...lineProps} className="mt-9 flex flex-wrap items-center gap-3">
-            <Button
-              size="lg"
-              className="bg-brand text-brand-foreground hover:bg-brand/90"
-              render={<a href="#contact" />}
-            >
-              Start a project
-              <ArrowUpRight className="size-4" />
-            </Button>
-            <Button size="lg" variant="outline" render={<a href="#services" />}>
-              What I build
-            </Button>
-            <Button size="lg" variant="ghost" render={<a href="#projects" />}>
-              Selected work
-            </Button>
-          </Line>
+          <motion.div {...lineProps} className="mt-6 flex flex-wrap gap-2.5">
+            <HeroLink href="/projects" solid>
+              See what I&apos;ve built →
+            </HeroLink>
+            <HeroLink href="/notes">Read my notes</HeroLink>
+          </motion.div>
 
-          <Line {...lineProps} className="mt-10">
-            <SocialLinks socials={profile?.socials} />
-          </Line>
-        </Wrap>
+          <motion.div {...lineProps}>
+            <SocialLinks socials={socials} className="mt-5.5 gap-4.5" iconClassName="size-4.5" />
+          </motion.div>
+        </motion.div>
 
-        {/* portrait (preferred) with monospace spec-card fallback */}
-        <Wrap {...animProps} className="hidden lg:block">
-          {showPortrait ? (
-            <Line {...lineProps} className="relative">
-              {/* amber glow behind the portrait */}
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -inset-6 -z-10 rounded-full bg-brand/20 blur-3xl"
-              />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={PORTRAIT_SRC}
-                alt={`${name} — portrait`}
-                onError={() => setShowPortrait(false)}
-                className="w-full rounded-2xl border border-border object-cover shadow-2xl shadow-black/20"
-              />
-            </Line>
-          ) : (
-            <Line
-              {...lineProps}
-              className="rounded-xl border border-border bg-card/70 p-1.5 shadow-sm backdrop-blur"
-            >
-              <div className="flex items-center gap-1.5 border-b border-border px-3 py-2">
-                <span className="size-2.5 rounded-full bg-border" />
-                <span className="size-2.5 rounded-full bg-border" />
-                <span className="size-2.5 rounded-full bg-border" />
-                <span className="ml-2 font-mono text-[11px] text-muted-foreground">
-                  ~/harsh-pandey
-                </span>
-              </div>
-              <dl className="divide-y divide-border font-mono text-sm">
-                {specRows.map((row) => (
-                  <div key={row.k} className="flex gap-4 px-3 py-3">
-                    <dt className="w-14 shrink-0 text-xs uppercase tracking-wider text-muted-foreground">
-                      {row.k}
-                    </dt>
-                    <dd className="text-pretty text-foreground">{row.v}</dd>
-                  </div>
-                ))}
-              </dl>
-            </Line>
-          )}
-        </Wrap>
+        <motion.div {...wrapProps} className="relative mx-auto w-full max-w-100 pt-2 lg:max-w-none">
+          {showPhoto ? (
+            <motion.div {...lineProps}>
+              <figure className="relative ml-auto w-67.5 max-w-[85%] rotate-[2.2deg] border border-rule bg-card p-2.5 pb-8.5 shadow-[4px_6px_0_color-mix(in_oklab,var(--foreground)_85%,transparent)]">
+                <span
+                  aria-hidden
+                  className="absolute -top-3 left-1/2 h-6 w-22.5 -translate-x-1/2 -rotate-4 bg-[#fde68a]/75 dark:bg-[#fde68a]/45"
+                />
+                {/* Plain <img>: avatar_url may be any remote host (Supabase storage). */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  ref={(el) => {
+                    // An error that fired before hydration never reaches onError.
+                    if (el?.complete && el.naturalWidth === 0) setShowPhoto(false);
+                  }}
+                  src={photoSrc}
+                  alt={`Photo of ${name}`}
+                  onError={() => setShowPhoto(false)}
+                  className="block h-72.5 w-full bg-muted object-cover"
+                />
+                {caption ? (
+                  // Right-aligned so it stays visible beside the Now card pinned over the
+                  // bottom-left; below `sm` the card would half-cover it, so it hides there.
+                  <figcaption
+                    className={cn(
+                      "absolute right-3.5 bottom-2.25 font-display text-sm text-muted-foreground italic",
+                      nowRows.length > 0 && "hidden sm:block",
+                    )}
+                  >
+                    {caption}
+                  </figcaption>
+                ) : null}
+              </figure>
+            </motion.div>
+          ) : null}
+
+          {nowRows.length > 0 ? (
+            <motion.div {...lineProps}>
+              <NowCard rows={nowRows} month={nowMonth} overlap={showPhoto} />
+            </motion.div>
+          ) : null}
+        </motion.div>
       </div>
     </section>
+  );
+}
+
+function HeroLink({ href, solid, children }: { href: string; solid?: boolean; children: ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className={
+        solid
+          ? "inline-block rounded-[3px] border-[1.5px] border-foreground bg-foreground px-3.75 py-2.5 font-mono text-[12.5px] font-medium text-background transition-opacity hover:opacity-85"
+          : "inline-block rounded-[3px] border-[1.5px] border-foreground px-3.75 py-2.5 font-mono text-[12.5px] font-medium text-foreground transition-colors hover:bg-foreground/5"
+      }
+    >
+      {children}
+    </Link>
+  );
+}
+
+function NowCard({
+  rows,
+  month,
+  overlap,
+}: {
+  rows: { key: string; text: string }[];
+  month: string | null;
+  overlap: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "relative w-75 max-w-full rotate-[-1.4deg] rounded-[3px] border border-rule bg-card px-4 py-3.5 shadow-ink-lg",
+        overlap && "-mt-15",
+      )}
+    >
+      <p className="flex justify-between font-mono text-[11px] font-medium tracking-widest uppercase">
+        <span className="text-brand">Now</span>
+        {month ? <span className="text-faint">{month}</span> : null}
+      </p>
+      <dl className="mt-2 grid grid-cols-[68px_1fr] gap-x-2.5 gap-y-1.75 text-[13.5px] leading-[1.4]">
+        {rows.map((row) => (
+          <div key={row.key} className="contents">
+            <dt className="pt-0.5 font-mono text-[11.5px] text-faint">{row.key}</dt>
+            <dd className="text-foreground">{row.text}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
   );
 }

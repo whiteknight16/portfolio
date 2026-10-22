@@ -19,9 +19,8 @@ export function Contact({ profile }: { profile: Profile | null }) {
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <Reveal>
           <SectionHeading
-            eyebrow="Contact"
             title="Tell me about your project"
-            description="Describe what you're building and where it's stuck. I'll come back with whether I can help, how I'd approach it, and what it would take."
+            note="Describe what you're building and where it's stuck. I'll come back with whether I can help, how I'd approach it, and what it would take."
           />
         </Reveal>
 

@@ -1,6 +1,16 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { slugify, readingMinutes, dateRange, formatExperienceYears, fillYears, handleSlug, stripEmphasis } from "./format.ts";
+import {
+  slugify,
+  readingMinutes,
+  dateRange,
+  formatExperienceYears,
+  fillYears,
+  handleSlug,
+  stripEmphasis,
+  splitEmphasis,
+  formatNoteDate,
+} from "./format.ts";
 
 test("slugify lowercases and hyphenates", () => {
   assert.equal(slugify("Interview Genie — AI!"), "interview-genie-ai");
@@ -60,4 +70,32 @@ test("stripEmphasis removes asterisk markers only", () => {
     stripEmphasis("I build AI that *does the actual work*: live"),
     "I build AI that does the actual work: live",
   );
+});
+
+test("splitEmphasis splits exactly one *…* pair", () => {
+  assert.deepEqual(splitEmphasis("I build AI that *does the actual work*: live"), {
+    before: "I build AI that ",
+    em: "does the actual work",
+    after: ": live",
+  });
+  assert.deepEqual(splitEmphasis("*all of it*"), { before: "", em: "all of it", after: "" });
+});
+
+test("splitEmphasis returns null unless there is exactly one non-empty pair", () => {
+  assert.equal(splitEmphasis("no markers"), null);
+  assert.equal(splitEmphasis("one * stray"), null);
+  assert.equal(splitEmphasis("*one* and *two*"), null);
+  assert.equal(splitEmphasis("an empty ** pair"), null);
+  assert.equal(splitEmphasis("blank * * pair"), null);
+});
+
+test("formatNoteDate uses the UTC calendar date so server and browser agree", () => {
+  assert.equal(formatNoteDate("2026-10-20T23:30:00+00:00"), "Oct 20, 2026");
+  assert.equal(formatNoteDate("2026-10-21T02:00:00+05:30"), "Oct 20, 2026");
+  assert.equal(formatNoteDate("2026-01-09T08:00:00Z"), "Jan 9, 2026");
+});
+
+test("formatNoteDate returns null when unset or unparseable", () => {
+  assert.equal(formatNoteDate(null), null);
+  assert.equal(formatNoteDate("not a date"), null);
 });
