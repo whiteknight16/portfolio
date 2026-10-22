@@ -53,7 +53,10 @@ gitignored; never commit real secrets.
 
 ## Supabase setup
 
-Full details live in [`supabase/README.md`](supabase/README.md); summary:
+**Quickest path:** paste `supabase/setup.sql` into the SQL editor and run it; see
+[Set up a new Supabase project](supabase/README.md#set-up-a-new-supabase-project).
+The steps below are the older, migration-by-migration route. Full details live
+in [`supabase/README.md`](supabase/README.md); summary:
 
 1. **Create a Supabase project** and copy its URL/keys into `.env.local`
    (see the table above).
@@ -68,8 +71,13 @@ Full details live in [`supabase/README.md`](supabase/README.md); summary:
      bucket used for project/post images and uploads.
    - `supabase/migrations/0004_updated_at.sql` — adds `updated_at`
      triggers.
+   - `supabase/migrations/0005_blog_images_storage.sql` — creates the
+     `blog-images` bucket.
+   - `supabase/migrations/0006_personal_brand.sql` — personal-brand columns,
+     `subscribers` table and the four site sections.
 3. **Run `supabase/seed.sql`** to load starter content (your profile,
-   sample sections, etc. — edit it to taste before or after running).
+   sample sections, etc. — edit it to taste before or after running). Note
+   it resets content tables; `setup.sql` only fills empty ones.
 4. **Set the admin email GUC** so RLS policies know who the admin is. In the
    Supabase SQL editor:
    ```sql

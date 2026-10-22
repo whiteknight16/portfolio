@@ -1,69 +1,56 @@
--- Seed data: Harsh Pandey's real portfolio content.
--- Idempotent: each table is cleared before re-inserting, so this file can be
--- re-run safely against the same database. Wrapped in a single transaction.
+-- =====================================================================
+-- Portfolio — content RESET
+-- OVERWRITES content tables: profile, site_sections, experiences, skills,
+-- projects, achievements, education. Anything you edited in the admin on
+-- those tables is replaced with the values below.
+-- Leaves posts, subscribers and contact_messages alone.
 --
--- The copy here is written for one reader: someone deciding whether to hire
--- Harsh to hand a whole workflow over to an AI system. It states capability and
--- scope of ownership, and deliberately claims no metrics that could not be
--- defended in a sales call.
---
--- Requires the tables from `migrations/0001_schema.sql` to exist first.
+-- HOW TO RUN: Supabase Dashboard -> SQL Editor -> New query -> paste -> Run.
+-- Needs the schema from setup.sql (or migrations 0001-0006) to exist first.
+-- To set up a new project without overwriting anything, use setup.sql instead.
+-- The values here must stay identical to the Content section of setup.sql.
+-- =====================================================================
 
 begin;
 
--- ---------------------------------------------------------------------------
 -- profile (singleton)
--- ---------------------------------------------------------------------------
 delete from public.profile;
 
 insert into public.profile (
-  full_name, title, headline, bio, avatar_url, resume_url, location, email, phone, socials, singleton
+  full_name, title, handle, headline, tagline, bio, avatar_url, resume_url, location, email, phone, career_start_date, now, highlights, socials, singleton
 ) values (
   'Harsh Pandey',
-  'AI Product Engineer',
-  'I build AI systems that take over work a person used to do — tutors, interviewers, evaluators — live voice and video included, and everything around them.',
-  'The interesting AI work right now is not a chatbot bolted onto a product. It is a system that takes over a job a person used to do, end to end. That is what I build: an AI tutor that plans a syllabus, teaches live, sets the assessment, marks it, and moves the learner on. An AI interviewer that runs screening, technical, and behavioural rounds inside one live session and scores the result. It means the live voice and video layer over LiveKit and WebRTC, the agent orchestration and evaluation behind it, and the unglamorous rest — FastAPI and Postgres services, background jobs, retries, migrations, reporting, and the admin surfaces someone actually runs it from. I take this work from an ambiguous first conversation to something that still holds up on its thousandth session, and I stay for the part where it breaks.',
-  null,
+  'AI engineer & builder',
+  'Knight Developer',
+  'I build AI that *does the actual work*: not chatbots, but interviewers and tutors that run live, on voice and video.',
+  'I''ve spent the last {years} years shipping these to production, and owning everything that breaks around them. Here I write about what I''m building, what goes wrong, and what I''m figuring out next.',
+  'I''m Harsh Pandey, known online as Knight Developer. I build AI that does real work: systems that take over a job a person used to do, end to end. Over the last {years} years that has meant an AI interviewer that runs live, multi-round spoken interviews, and an AI tutor that teaches over voice and video, sets the test, marks it and moves the learner on. I care about the whole system around the model as much as the model itself: the real-time voice layer, the FastAPI and Postgres services, the jobs, retries and migrations, and the part where it breaks in production and someone has to fix it. Before that I was the first engineering hire at an early-stage startup, built a GenAI assistant at EY, and reached the Smart India Hackathon 2024 grand finale. This site is where I write about what I''m building, what goes wrong, and what I''m learning next, including machine learning from first principles.',
+  '/profile.png',
   '/resume.pdf',
-  'New Delhi, India · working with teams remotely',
+  'New Delhi, India',
   'harshp6421@gmail.com',
-  null,
+  null::text,
+  '2025-03-01'::date,
+  '{"building":"an AI tutor that teaches live over voice & video","writing":"notes on voice agents and what breaks in production","learning":"ML from first principles"}'::jsonb,
+  '[{"value":"2","label":"live voice & video AI products built"},{"value":"Finalist","label":"Smart India Hackathon 2024, national round"},{"value":"#1 hire","label":"first engineer at an early-stage startup"}]'::jsonb,
   '{"github":"https://github.com/whiteknight16","linkedin":"https://www.linkedin.com/in/harshpandey61/","instagram":"https://www.instagram.com/whiteknight__19/"}'::jsonb,
   true
 );
 
--- ---------------------------------------------------------------------------
--- site_sections
---
--- Order is the argument the page makes: what can be bought, proof that it has
--- been built, the depth behind it, who is behind it, then the ask.
--- `achievements` and `education` are switched off rather than deleted — they
--- are student credentials that undercut a consulting pitch, but they stay one
--- click away in the admin.
--- ---------------------------------------------------------------------------
+-- site_sections: projects, blog, newsletter, experience
 delete from public.site_sections;
 
 insert into public.site_sections (key, label, enabled, sort_order) values
-  ('services',     'Services',     true,  1),
-  ('projects',     'Work',         true,  2),
-  ('experience',   'Experience',   true,  3),
-  ('about',        'About',        true,  4),
-  ('skills',       'Capabilities', true,  5),
-  ('achievements', 'Recognition',  false, 6),
-  ('education',    'Education',    false, 7),
-  ('contact',      'Contact',      true,  8),
-  ('blog',         'Blog',         true,  9);
+  ('projects', 'Things I''ve built', true, 1),
+  ('blog', 'Notes', true, 2),
+  ('newsletter', 'Subscribe', true, 3),
+  ('experience', 'Work', true, 4);
 
--- ---------------------------------------------------------------------------
 -- experiences
---
--- Trimmed from exhaustive task lists to the work that demonstrates hard
--- capability. Everything cut is still on the resume.
--- ---------------------------------------------------------------------------
 delete from public.experiences;
 
 insert into public.experiences (
-  role, company, location, start_date, end_date, is_current, highlights, sort_order
+  role, company, location, start_date, end_date, is_current, highlights, tags, sort_order
 ) values
   (
     'Software Engineer',
@@ -72,7 +59,8 @@ insert into public.experiences (
     '2026-03-01',
     null,
     true,
-    '{"Build an AI tutor that does what a human tutor does: teaches live over voice and video, sets and marks assessments, and moves the learner through the syllabus.","Designed the learning core end to end: syllabus generation, planner agents, coding assessments, mock interviews, verification pipelines, and automated course progression.","Built the backend on FastAPI, PostgreSQL, and Supabase — APIs, background jobs, retry paths, migrations, and deployments.","Built AI proctoring with video capture, live monitoring, secure storage, and candidate evaluation.","Diagnose and fix production failures across voice pipelines, agents, and enterprise deployments — the work that turns a demo into a product teams rely on."}',
+    '{"Building an AI tutor that teaches live over voice and video, sets and marks assessments, and moves learners through a syllabus. Plus AI proctoring and the FastAPI and Postgres backend under it.","Designed the learning core end to end: syllabus generation, planner agents, coding assessments, mock interviews, verification pipelines, and automated course progression.","Built the backend on FastAPI, PostgreSQL, and Supabase — APIs, background jobs, retry paths, migrations, and deployments.","Built AI proctoring with video capture, live monitoring, secure storage, and candidate evaluation.","Diagnose and fix production failures across voice pipelines, agents, and enterprise deployments — the work that turns a demo into a product teams rely on."}',
+    '{"voice agents","FastAPI"}',
     1
   ),
   (
@@ -82,7 +70,8 @@ insert into public.experiences (
     '2025-03-01',
     '2026-02-28',
     false,
-    '{"Designed and shipped an AI interviewer that replaces the human screening loop — multi-round spoken interviews conducted live over LiveKit and WebRTC.","Orchestrated several AI agents across screening, technical, and behavioural rounds inside a single live session.","Owned the real-time voice layer: session lifecycle, low-latency audio streaming, reconnection, and the failure modes that only appear in production.","Built FastAPI services for session coordination, adaptive question generation, and scoring pipelines.","Led a database migration off the legacy schema with minimal production downtime, working directly with the founders."}',
+    '{"Shipped an AI interviewer that replaced the human screening loop: several agents running spoken screening, technical and behavioural rounds in one live LiveKit session. Owned the real-time voice layer.","Owned the real-time voice layer: session lifecycle, low-latency audio streaming, reconnection, and the failure modes that only appear in production.","Built FastAPI services for session coordination, adaptive question generation, and scoring pipelines.","Led a database migration off the legacy schema with minimal production downtime, working directly with the founders."}',
+    '{"LiveKit","multi-agent"}',
     2
   ),
   (
@@ -92,7 +81,8 @@ insert into public.experiences (
     '2024-07-01',
     '2024-08-31',
     false,
-    '{"Built a bench management portal in React to improve utilisation of unassigned staff and reduce hiring spend.","Built an AI assistant over the internal database using FastAPI, the Gemini API, and fine-tuning.","Shipped the interactive reporting layer — filterable workforce statistics and charts."}',
+    '{"Built an AI assistant over internal data with FastAPI and Gemini, and a portal to put unassigned staff back on work.","Shipped the interactive reporting layer — filterable workforce statistics and charts."}',
+    '{"Gemini"}',
     3
   ),
   (
@@ -102,21 +92,17 @@ insert into public.experiences (
     '2023-11-01',
     '2024-05-31',
     false,
-    '{"First engineering hire at an early-stage startup, building the product end to end.","Designed and hardened REST APIs for performance and security, with authentication and data protection.","Worked directly with the founder on schema design and system architecture."}',
+    '{"First engineering hire at an early-stage startup. Built the product end to end, side by side with the founder.","Designed and hardened REST APIs for performance and security, with authentication and data protection.","Worked directly with the founder on schema design and system architecture."}',
+    '{"first hire"}',
     4
   );
 
--- ---------------------------------------------------------------------------
--- skills
---
--- Grouped by capability, AI first, with the real-time layer right behind it
--- as the rarer differentiator. Deliberately omits HTML, CSS, Git,
--- and GitHub: listing them reads as a beginner inventory, and their absence
--- reads as seniority.
--- ---------------------------------------------------------------------------
+-- skills, grouped by capability
 delete from public.skills;
 
-insert into public.skills (name, category, sort_order) values
+insert into public.skills (
+  name, category, sort_order
+) values
   -- AI & Agents
   ('LLMs',                        'AI & Agents', 1),
   ('LangChain',                   'AI & Agents', 2),
@@ -155,16 +141,11 @@ insert into public.skills (name, category, sort_order) values
   ('CI/CD',                       'Infrastructure', 30),
   ('Inngest',                     'Infrastructure', 31);
 
--- ---------------------------------------------------------------------------
--- projects
---
--- Summaries state the problem before the stack. AI work leads; the delivered-
--- for-a-real-organisation work comes second.
--- ---------------------------------------------------------------------------
+-- projects (label = small tag on the card; featured ones appear on the home page)
 delete from public.projects;
 
 insert into public.projects (
-  title, slug, summary, content, cover_image_url, tags, links, featured, status, sort_order, published_at
+  title, slug, summary, content, cover_image_url, tags, links, featured, label, status, sort_order, published_at
 ) values
   (
     'Interview Genie',
@@ -175,6 +156,7 @@ insert into public.projects (
     '{"Next.js","PostgreSQL","Prisma","Gemini","Inngest","Recharts"}',
     '{"repo":"https://github.com/whiteknight16/interview-genie","live":"https://interview-genie-snowy.vercel.app"}'::jsonb,
     true,
+    'AI product',
     'published',
     1,
     now()
@@ -188,6 +170,7 @@ insert into public.projects (
     '{"Web Development","Solo delivery","Stakeholder management"}',
     '{}'::jsonb,
     true,
+    'Delivered solo',
     'published',
     2,
     now()
@@ -200,7 +183,8 @@ insert into public.projects (
     null,
     '{"Next.js","TypeScript","Prisma","PostgreSQL","Stripe"}',
     '{"repo":"https://github.com/whiteknight16/Notes-Nest","live":"https://notes-nest.vercel.app"}'::jsonb,
-    false,
+    true,
+    'SaaS',
     'published',
     3,
     now()
@@ -214,20 +198,18 @@ insert into public.projects (
     '{"MongoDB","Express","React","Node.js"}',
     '{"repo":"https://github.com/whiteknight16/Gymkhana"}'::jsonb,
     false,
+    'Full-stack app',
     'published',
     4,
     now()
   );
 
--- ---------------------------------------------------------------------------
--- achievements
---
--- Section is disabled on the homepage (see site_sections). Kept here so the
--- data survives and the section can be switched back on from the admin.
--- ---------------------------------------------------------------------------
+-- achievements (kept for the admin; no public section)
 delete from public.achievements;
 
-insert into public.achievements (title, description, sort_order) values
+insert into public.achievements (
+  title, description, sort_order
+) values
   (
     'Smart India Hackathon — 2024 Grand Finalist',
     'Reached the national Grand Finale of Smart India Hackathon 2024, after winning the college round in both 2023 and 2024.',
@@ -244,10 +226,7 @@ insert into public.achievements (title, description, sort_order) values
     3
   );
 
--- ---------------------------------------------------------------------------
--- education
--- Section is disabled on the homepage; the detail lives on the resume.
--- ---------------------------------------------------------------------------
+-- education (kept for the admin; no public section)
 delete from public.education;
 
 insert into public.education (
