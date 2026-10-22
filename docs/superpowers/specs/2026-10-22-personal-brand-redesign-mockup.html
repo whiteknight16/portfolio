@@ -1,0 +1,382 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  .tabs { display: flex; gap: 8px; margin: 0 0 14px; }
+  .tabs button { font: 500 13px Inter, sans-serif; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); cursor: pointer; }
+  .tabs button.on { background: var(--text-primary); color: var(--bg-primary); }
+  .browser { border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,0,0,.15); box-shadow: 0 10px 30px rgba(0,0,0,.12); }
+  .chrome { background: #e7e1d5; padding: 8px 12px; display: flex; align-items: center; gap: 6px; font: 12px 'IBM Plex Mono', monospace; color: #6b6257; }
+  .chrome i { width: 10px; height: 10px; border-radius: 99px; background: #cfc6b5; display: inline-block; }
+  .chrome span { margin-left: 10px; background: #f3eee4; border-radius: 6px; padding: 3px 10px; flex: 1; max-width: 360px; }
+  .page { display: none; }
+  .page.on { display: block; }
+
+  /* ---------- shared paper system ---------- */
+  .p { --paper: #f3eee4; --card: #fffaf0; --ink: #1d1a16; --muted: #5d564c; --faint: #8a8074; --rule: #ddd3c2; --accent: #c2410c; --hl: #fde68a;
+       background: var(--paper); color: var(--ink); font-family: Inter, sans-serif; position: relative; }
+  .p::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(#e6dfd0 1px, transparent 1px); background-size: 100% 30px; opacity: .45; pointer-events: none; }
+  .p > * { position: relative; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 40px; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+  .serif { font-family: Fraunces, serif; }
+  .p nav.top { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; border-bottom: 1px solid var(--rule); }
+  .p nav.top .name { font-family: Fraunces, serif; font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+  .p nav.top .name small { font: 11px 'IBM Plex Mono', monospace; color: var(--faint); margin-left: 8px; font-weight: 400; }
+  .p nav.top .links { display: flex; gap: 26px; font-size: 14px; color: var(--muted); align-items: center; }
+  .p nav.top .links b { color: var(--ink); font-weight: 500; }
+  .btn { display: inline-block; font: 500 12.5px 'IBM Plex Mono', monospace; padding: 10px 15px; border: 1.5px solid var(--ink); border-radius: 3px; color: var(--ink); }
+  .btn.solid { background: var(--ink); color: var(--paper); }
+  .btn.sm { padding: 6px 11px; font-size: 12px; }
+  .kicker { font: 500 11px 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: .12em; color: var(--accent); }
+  .mark { background: linear-gradient(transparent 58%, var(--hl) 58%); padding: 0 2px; }
+  .tag { font: 11px 'IBM Plex Mono', monospace; color: var(--muted); border: 1px solid var(--rule); border-radius: 3px; padding: 2px 7px; background: var(--card); }
+  .ann { position: absolute; font: italic 14px Fraunces, serif; color: var(--accent); }
+
+  /* ---------- home ---------- */
+  .hero { display: grid; grid-template-columns: 1.35fr 1fr; gap: 44px; padding: 56px 0 50px; align-items: start; }
+  .hero h1 { font-family: Fraunces, serif; font-weight: 380; font-size: 60px; line-height: 1.0; letter-spacing: -0.025em; margin: 14px 0 0; }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+  .hero .lede { font-size: 16.5px; line-height: 1.65; color: var(--muted); margin-top: 20px; max-width: 500px; }
+  .hero .ctas { display: flex; gap: 10px; margin-top: 24px; }
+  .hero .now { margin-top: 30px; display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font: 12.5px 'IBM Plex Mono', monospace; color: var(--faint); }
+  .hero .now b { color: var(--ink); font-weight: 500; }
+  .log { background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 18px 20px; box-shadow: 5px 5px 0 var(--ink); transform: rotate(0.7deg); margin-top: 12px; }
+  .log .t { display: flex; justify-content: space-between; font: 11px 'IBM Plex Mono', monospace; color: var(--faint); text-transform: uppercase; letter-spacing: .08em; }
+  .log ul { list-style: none; padding: 0; margin: 12px 0 0; }
+  .log li { display: grid; grid-template-columns: 58px 1fr; gap: 10px; padding: 9px 0; border-top: 1px dashed var(--rule); font-size: 14px; line-height: 1.4; }
+  .log li span { font: 11px 'IBM Plex Mono', monospace; color: var(--accent); padding-top: 3px; }
+  .log .all { display: block; margin-top: 10px; font: 12px 'IBM Plex Mono', monospace; color: var(--ink); }
+
+  .sub { background: var(--ink); color: var(--paper); border-radius: 4px; padding: 26px 30px; display: grid; grid-template-columns: 1fr 1.1fr; gap: 30px; align-items: center; }
+  .sub h3 { font: 400 28px/1.1 Fraunces, serif; letter-spacing: -0.02em; margin: 0; }
+  .sub h3 em { color: var(--hl); }
+  .sub p { margin: 8px 0 0; font-size: 13.5px; color: #b9b0a2; line-height: 1.5; }
+  .sub form { display: flex; gap: 8px; }
+  .sub input { flex: 1; background: #2a2620; border: 1px solid #4a443c; color: var(--paper); padding: 11px 13px; border-radius: 3px; font: 14px Inter, sans-serif; }
+  .sub .go { background: var(--hl); color: var(--ink); border: 0; font: 600 12.5px 'IBM Plex Mono', monospace; padding: 0 16px; border-radius: 3px; }
+  .sub small { display: block; margin-top: 8px; font: 11px 'IBM Plex Mono', monospace; color: #8a8074; }
+
+  .sec { padding: 56px 0 0; }
+  .sec-h { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1.5px solid var(--ink); padding-bottom: 10px; }
+  .sec-h h2 { font: 400 30px Fraunces, serif; letter-spacing: -0.02em; margin: 0; }
+  .sec-h a { font: 12px 'IBM Plex Mono', monospace; color: var(--muted); }
+  .topics { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 6px; }
+  .topics .tag.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .note { display: grid; grid-template-columns: 92px 1fr 120px; gap: 22px; padding: 22px 0; border-bottom: 1px solid var(--rule); }
+  .note .d { font: 12px 'IBM Plex Mono', monospace; color: var(--faint); padding-top: 6px; }
+  .note h4 { font: 500 22px/1.2 Fraunces, serif; letter-spacing: -0.01em; margin: 0; }
+  .note p { margin: 7px 0 0; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
+  .note .src { margin-top: 10px; font: 11.5px 'IBM Plex Mono', monospace; color: var(--accent); }
+  .note .r { text-align: right; font: 11.5px 'IBM Plex Mono', monospace; color: var(--faint); padding-top: 6px; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+
+  .builds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
+  .build { background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 16px 18px; }
+  .build h5 { font: 500 17px Fraunces, serif; margin: 0; }
+  .build p { font-size: 13px; color: var(--muted); line-height: 1.5; margin: 6px 0 10px; }
+
+  .who { display: grid; grid-template-columns: 120px 1fr; gap: 26px; align-items: center; margin-top: 20px; }
+  .who .pic { width: 120px; height: 140px; background: linear-gradient(160deg,#d8cdb9,#b9ab94); border: 1px solid var(--rule); border-radius: 3px; transform: rotate(-2deg); box-shadow: 3px 3px 0 var(--ink); display: grid; place-items: center; font: 11px 'IBM Plex Mono', monospace; color: #6b6257; }
+  .who p { font: 300 19px/1.55 Fraunces, serif; margin: 0; }
+  .who .meta { margin-top: 12px; font: 12px 'IBM Plex Mono', monospace; color: var(--faint); display: flex; gap: 18px; }
+
+  .foot { margin-top: 60px; border-top: 1px solid var(--rule); padding: 22px 0 30px; display: flex; justify-content: space-between; font: 12px 'IBM Plex Mono', monospace; color: var(--faint); }
+
+  /* ---------- note page ---------- */
+  .article { max-width: 680px; margin: 0 auto; padding: 44px 0 20px; }
+  .crumb { font: 12px 'IBM Plex Mono', monospace; color: var(--muted); }
+  .article .meta { display: flex; gap: 14px; align-items: center; margin-top: 26px; font: 12px 'IBM Plex Mono', monospace; color: var(--faint); }
+  .article h1 { font: 400 50px/1.04 Fraunces, serif; letter-spacing: -0.025em; margin: 14px 0 0; }
+  .article .dek { font: 300 20px/1.5 Fraunces, serif; color: var(--muted); margin-top: 16px; }
+  .source { margin-top: 24px; display: grid; grid-template-columns: 96px 1fr auto; gap: 14px; align-items: center; background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 12px; }
+  .source .th { height: 54px; border-radius: 3px; background: linear-gradient(135deg,#2b2b2b,#555); display: grid; place-items: center; }
+  .source .th::after { content: ""; border-left: 11px solid #fff; border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
+  .source .l { font: 10.5px 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); }
+  .source .n { font-size: 14px; font-weight: 500; margin-top: 3px; }
+  .source .w { font: 11.5px 'IBM Plex Mono', monospace; color: var(--faint); }
+  .tldr { margin-top: 26px; border-left: 3px solid var(--accent); padding: 4px 0 4px 18px; }
+  .tldr .l { font: 500 11px 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: .12em; color: var(--accent); }
+  .tldr ul { margin: 8px 0 0; padding-left: 18px; font-size: 15px; line-height: 1.6; }
+  .body { position: relative; margin-top: 30px; font: 400 18px/1.75 Fraunces, serif; }
+  .body h2 { font: 500 26px Fraunces, serif; letter-spacing: -0.015em; margin: 34px 0 6px; }
+  .body p { margin: 14px 0; }
+  .body code.i { font: 14.5px 'IBM Plex Mono', monospace; background: var(--card); border: 1px solid var(--rule); padding: 1px 5px; border-radius: 3px; }
+  .body pre { font: 13px/1.6 'IBM Plex Mono', monospace; background: #1d1a16; color: #ece4d4; padding: 16px 18px; border-radius: 4px; overflow: hidden; }
+  .body pre .c { color: #8a8074; } .body pre .k { color: #fdba74; } .body pre .s { color: #fde68a; }
+  .margin { position: absolute; right: -210px; width: 180px; font: italic 14px/1.4 Fraunces, serif; color: var(--accent); border-top: 1px solid var(--accent); padding-top: 6px; }
+  .endsub { margin-top: 40px; background: var(--card); border: 1.5px solid var(--ink); border-radius: 4px; padding: 22px 24px; box-shadow: 5px 5px 0 var(--ink); }
+  .endsub h3 { font: 400 24px Fraunces, serif; margin: 0; letter-spacing: -0.015em; }
+  .endsub p { font-size: 14px; color: var(--muted); margin: 6px 0 14px; }
+  .endsub form { display: flex; gap: 8px; }
+  .endsub input { flex: 1; border: 1px solid var(--rule); background: var(--paper); padding: 10px 12px; border-radius: 3px; font: 14px Inter, sans-serif; }
+  .author { display: flex; gap: 14px; align-items: center; margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--muted); }
+  .author .av { width: 44px; height: 44px; border-radius: 99px; background: linear-gradient(160deg,#d8cdb9,#b9ab94); border: 1px solid var(--rule); }
+  .author b { color: var(--ink); font-weight: 500; }
+  .nextprev { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 26px; }
+  .nextprev div { border: 1px solid var(--rule); border-radius: 4px; padding: 12px 14px; background: var(--card); }
+  .nextprev span { font: 11px 'IBM Plex Mono', monospace; color: var(--faint); display: block; }
+  .nextprev b { font: 500 15px Fraunces, serif; }
+</style>
+
+<h2>Draft v3: your projects and your job, kept apart</h2>
+<p class="subtitle">"Things I've built" now holds only your own projects. Job work moved to its own "Work" section further down, with full detail. Switch pages with the tabs.</p>
+
+<div class="tabs">
+  <button class="on" onclick="showPage('home', this)">Homepage</button>
+  <button onclick="showPage('note', this)">A note (where LinkedIn sends people)</button>
+</div>
+
+<style>
+  .hero2 { display: grid; grid-template-columns: 1.25fr 1fr; gap: 48px; padding: 54px 0 40px; align-items: start; }
+  .hero2 h1 { font: 400 76px/0.95 Fraunces, serif; letter-spacing: -0.035em; margin: 14px 0 0; }
+  .hero2 .thesis { font: 350 30px/1.18 Fraunces, serif; letter-spacing: -0.02em; margin: 18px 0 0; }
+  .hero2 .thesis em { font-style: italic; color: var(--accent); }
+  .hero2 .lede { font-size: 16px; line-height: 1.65; color: var(--muted); margin-top: 16px; max-width: 500px; }
+  .hero2 .ctas { display: flex; gap: 10px; margin-top: 24px; }
+  .hero2 .soc { margin-top: 22px; display: flex; gap: 18px; font: 12.5px 'IBM Plex Mono', monospace; color: var(--muted); }
+  .stack { position: relative; padding-top: 8px; }
+  .polaroid { width: 270px; margin-left: auto; background: var(--card); padding: 10px 10px 34px; border: 1px solid var(--rule); box-shadow: 4px 6px 0 rgba(29,26,22,.85); transform: rotate(2.2deg); position: relative; }
+  .polaroid .ph { height: 290px; background: linear-gradient(160deg,#cfc3ad,#a8987e); display: grid; place-items: center; font: 12px 'IBM Plex Mono', monospace; color: #5d564c; }
+  .polaroid .cap { position: absolute; bottom: 9px; left: 0; right: 0; text-align: center; font: italic 14px Fraunces, serif; color: var(--muted); }
+  .tape { position: absolute; top: -12px; left: 50%; width: 90px; height: 24px; margin-left: -45px; background: rgba(253,230,138,.75); transform: rotate(-4deg); }
+  .nowcard { position: relative; margin-top: -60px; width: 300px; background: var(--card); border: 1px solid var(--rule); border-radius: 3px; padding: 14px 16px; box-shadow: 5px 5px 0 var(--ink); transform: rotate(-1.4deg); }
+  .nowcard .t { font: 500 11px 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); display: flex; justify-content: space-between; }
+  .nowcard .t span:last-child { color: var(--faint); }
+  .nowcard dl { margin: 8px 0 0; display: grid; grid-template-columns: 68px 1fr; gap: 7px 10px; font-size: 13.5px; line-height: 1.4; }
+  .nowcard dt { font: 11.5px 'IBM Plex Mono', monospace; color: var(--faint); padding-top: 2px; }
+  .nowcard dd { margin: 0; }
+
+  .proof { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1.5px solid var(--ink); border-bottom: 1px solid var(--rule); }
+  .proof div { padding: 16px 18px 16px 0; }
+  .proof div + div { padding-left: 18px; border-left: 1px dashed var(--rule); }
+  .proof b { display: block; font: 400 30px Fraunces, serif; letter-spacing: -0.02em; }
+  .proof span { font: 11.5px/1.4 'IBM Plex Mono', monospace; color: var(--muted); }
+
+  .work { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 20px; }
+  .wk { background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 20px 22px; position: relative; }
+  .wk.big { box-shadow: 4px 4px 0 var(--ink); border-color: var(--ink); }
+  .wk .lbl { font: 11px 'IBM Plex Mono', monospace; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; }
+  .wk h5 { font: 450 24px/1.15 Fraunces, serif; letter-spacing: -0.015em; margin: 6px 0 0; }
+  .wk p { font-size: 14px; line-height: 1.55; color: var(--muted); margin: 8px 0 14px; }
+  .wk .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .secnote { margin: 12px 0 0; font: italic 15px Fraunces, serif; color: var(--muted); }
+  .work.three { grid-template-columns: repeat(3, 1fr); }
+  .work.three .wk h5 { font-size: 22px; }
+  .roles { margin-top: 10px; }
+  .role { display: grid; grid-template-columns: 130px 1fr 150px; gap: 22px; padding: 20px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+  .role .when { font: 12px 'IBM Plex Mono', monospace; color: var(--faint); padding-top: 5px; }
+  .role.now .when { color: var(--accent); }
+  .role .rt { font: 450 21px Fraunces, serif; letter-spacing: -0.01em; }
+  .role .rt span { color: var(--muted); font-weight: 300; }
+  .role p { margin: 6px 0 0; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
+  .role .tags { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; padding-top: 5px; }
+  .path { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 22px; position: relative; }
+  .path::before { content: ""; position: absolute; left: 0; right: 0; top: 7px; border-top: 1.5px dashed var(--ink); opacity: .35; }
+  .path div { position: relative; padding-right: 18px; }
+  .path i { display: block; width: 14px; height: 14px; border-radius: 99px; background: var(--paper); border: 2px solid var(--ink); }
+  .path div:last-child i { background: var(--accent); border-color: var(--accent); }
+  .path .y { font: 500 12px 'IBM Plex Mono', monospace; color: var(--accent); margin-top: 12px; }
+  .path .w { font: 450 17px/1.3 Fraunces, serif; margin-top: 4px; }
+  .path .s { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.45; }
+</style>
+
+<!-- ======================= HOME v2 ======================= -->
+<div class="browser page on" id="pg-home">
+  <div class="chrome"><i></i><i></i><i></i><span>knightdeveloper.com</span></div>
+  <div class="p">
+    <div class="wrap">
+      <nav class="top">
+        <div class="name">Harsh Pandey <small>@knightdeveloper</small></div>
+        <div class="links"><span>Notes</span><span>Projects</span><span>About</span><span class="btn sm solid">Subscribe</span><span class="mono" style="font-size:14px">◐</span></div>
+      </nav>
+
+      <div class="hero2">
+        <div>
+          <div class="kicker">AI engineer &amp; builder · New Delhi</div>
+          <h1>Harsh Pandey</h1>
+          <p class="thesis">I build AI that <em>does the actual work</em>: not chatbots, but interviewers and tutors that run live, on voice and video.</p>
+          <p class="lede">I've spent the last 1.5 years shipping these to production, and owning everything that breaks around them. Here I write about what I'm building, what goes wrong, and what I'm figuring out next.</p>
+          <div class="ctas"><span class="btn solid">See what I've built →</span><span class="btn">Read my notes</span></div>
+          <div class="soc"><span>LinkedIn ↗</span><span>GitHub ↗</span><span>YouTube ↗</span><span>Instagram ↗</span></div>
+        </div>
+        <div class="stack">
+          <div class="polaroid"><div class="tape"></div><div class="ph">your photo</div><div class="cap">New Delhi, 2026</div></div>
+          <div class="nowcard">
+            <div class="t"><span>Now</span><span>Oct 2026</span></div>
+            <dl>
+              <dt>building</dt><dd>an AI tutor that teaches live over voice &amp; video</dd>
+              <dt>writing</dt><dd>notes on voice agents and what breaks in production</dd>
+              <dt>learning</dt><dd>ML from first principles</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="proof">
+        <div><b>1.5 yrs</b><span>shipping AI products to production</span></div>
+        <div><b>2</b><span>live voice &amp; video AI products built</span></div>
+        <div><b>Finalist</b><span>Smart India Hackathon 2024, national round</span></div>
+        <div><b>#1 hire</b><span>first engineer at an early-stage startup</span></div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><h2>Things I've built</h2><a>all projects →</a></div>
+        <p class="secnote">My own projects, built outside of work.</p>
+        <div class="work three">
+          <div class="wk big">
+            <div class="lbl">AI product · live</div>
+            <h5>Interview Genie</h5>
+            <p>Turns one specific job posting into a tailored resume, cover letter and practice set, with market data refreshed on a schedule.</p>
+            <div class="tags"><span class="tag">Next.js</span><span class="tag">Gemini</span><span class="tag">Inngest</span><span class="tag">live ↗</span></div>
+          </div>
+          <div class="wk big">
+            <div class="lbl">SaaS · live</div>
+            <h5>Notes Nest</h5>
+            <p>A note app built as a sellable product, not a demo: real auth, real Stripe billing, typed Postgres behind the editor.</p>
+            <div class="tags"><span class="tag">Next.js</span><span class="tag">Stripe</span><span class="tag">Prisma</span><span class="tag">live ↗</span></div>
+          </div>
+          <div class="wk big">
+            <div class="lbl">Delivered solo</div>
+            <h5>REC Mirzapur website</h5>
+            <p>The official site for a government engineering college, from faculty requirements to a handover their staff could run without me.</p>
+            <div class="tags"><span class="tag">solo build</span><span class="tag">stakeholders</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><h2>Notes</h2><a>all notes →</a></div>
+        <div class="topics"><span class="tag on">all</span><span class="tag">voice agents</span><span class="tag">building AI products</span><span class="tag">ML fundamentals</span><span class="tag">tools</span></div>
+        <div class="note">
+          <div class="d">Oct 20</div>
+          <div><h4>Turn-taking is the hardest part of a voice agent</h4><p>The model is the easy part. Knowing when the human has finished talking, and what to do when they interrupt, is where live voice products actually fail.</p><div class="src">↳ from building the AI interviewer</div></div>
+          <div class="r"><span>8 min</span><span class="tag">voice agents</span></div>
+        </div>
+        <div class="note">
+          <div class="d">Oct 14</div>
+          <div><h4>What broke when our AI hit real users</h4><p>Reconnects, silent mics, people talking over the agent. A list of everything that never showed up in the demo.</p><div class="src">↳ from production, the hard way</div></div>
+          <div class="r"><span>6 min</span><span class="tag">building AI products</span></div>
+        </div>
+        <div class="note">
+          <div class="d">Oct 09</div>
+          <div><h4>Building micrograd from scratch, part 1</h4><p>I've shipped AI for 1.5 years without knowing what <span class="mono" style="font-size:13px">loss.backward()</span> does. Fixing that, one line at a time.</p><div class="src">↳ notes on Karpathy · The spelled-out intro to neural networks</div></div>
+          <div class="r"><span>9 min</span><span class="tag">ML fundamentals</span></div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sub">
+          <div>
+            <h3>Get the next note <em>in your inbox.</em></h3>
+            <p>One email when I publish something new. Nothing else.</p>
+          </div>
+          <div>
+            <form onsubmit="return false"><input placeholder="you@email.com"><button class="go">Subscribe</button></form>
+            <small>unsubscribe in one click, any time</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><h2>Work</h2><a>full story on About →</a></div>
+        <p class="secnote">What I've built for the teams I've worked with.</p>
+        <div class="roles">
+          <div class="role now">
+            <div class="when">Mar 2026 – now</div>
+            <div><div class="rt">Software Engineer <span>· BerriBot</span></div><p>Building an AI tutor that teaches live over voice and video, sets and marks assessments, and moves learners through a syllabus. Plus AI proctoring and the FastAPI and Postgres backend under it.</p></div>
+            <div class="tags"><span class="tag">voice agents</span><span class="tag">FastAPI</span></div>
+          </div>
+          <div class="role">
+            <div class="when">2025 – 2026</div>
+            <div><div class="rt">Full Stack Engineer <span>· SkillSync</span></div><p>Shipped an AI interviewer that replaced the human screening loop: several agents running spoken screening, technical and behavioural rounds in one live LiveKit session. Owned the real-time voice layer.</p></div>
+            <div class="tags"><span class="tag">LiveKit</span><span class="tag">multi-agent</span></div>
+          </div>
+          <div class="role">
+            <div class="when">2024</div>
+            <div><div class="rt">Generative AI Intern <span>· EY</span></div><p>Built an AI assistant over internal data with FastAPI and Gemini, and a portal to put unassigned staff back on work.</p></div>
+            <div class="tags"><span class="tag">Gemini</span></div>
+          </div>
+          <div class="role">
+            <div class="when">2023 – 2024</div>
+            <div><div class="rt">Full Stack Developer <span>· Ransh Innovations</span></div><p>First engineering hire at an early-stage startup. Built the product end to end, side by side with the founder.</p></div>
+            <div class="tags"><span class="tag">first hire</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="foot"><span>© 2026 Harsh Pandey · Knight Developer</span><span>work · notes · rss · subscribe</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= NOTE ======================= -->
+<div class="browser page" id="pg-note">
+  <div class="chrome"><i></i><i></i><i></i><span>knightdeveloper.com/notes/building-micrograd-part-1</span></div>
+  <div class="p">
+    <div class="wrap">
+      <nav class="top">
+        <div class="name">Harsh Pandey <small>@knightdeveloper</small></div>
+        <div class="links"><b>Notes</b><span>Projects</span><span>About</span><span class="btn sm solid">Subscribe</span><span class="mono" style="font-size:14px">◐</span></div>
+      </nav>
+
+      <div class="article">
+        <div class="crumb">← all notes</div>
+        <div class="meta"><span>Oct 9, 2026</span><span>·</span><span>9 min read</span><span class="tag">neural nets</span><span class="tag">micrograd</span></div>
+        <h1>Building micrograd from scratch, part 1</h1>
+        <p class="dek">Following Karpathy's video line by line, and writing down every place I had to pause and rewind.</p>
+
+        <div class="source">
+          <div class="th"></div>
+          <div><div class="l">Notes on</div><div class="n">The spelled-out intro to neural networks and backpropagation</div><div class="w">Andrej Karpathy · YouTube · 2h 25m</div></div>
+          <span class="btn sm">watch ↗</span>
+        </div>
+
+        <div class="tldr">
+          <div class="l">The short version</div>
+          <ul>
+            <li>A neural network is just a big math expression. Backprop is the chain rule, applied backwards through it.</li>
+            <li>micrograd fits in about 100 lines, small enough to understand all of it.</li>
+            <li>The part that tripped me up: gradients add up when a value is used twice.</li>
+          </ul>
+        </div>
+
+        <div class="body">
+          <h2>Why I started here</h2>
+          <p>I've shipped AI products for two years and I could not have told you, honestly, what <code class="i">loss.backward()</code> does. That felt like <span class="mark">a crack in the foundation</span>, so I went back to the beginning.</p>
+          <h2>The Value class</h2>
+          <p>Everything starts with one tiny wrapper around a number that remembers how it was made:</p>
+<pre><span class="k">class</span> Value:
+    <span class="k">def</span> __init__(self, data, _children=(), _op=<span class="s">''</span>):
+        self.data = data
+        self.grad = <span class="s">0.0</span>   <span class="c"># how much the output cares about me</span>
+        self._prev = set(_children)</pre>
+          <p>That comment is mine, not Karpathy's. It's the sentence that finally made gradients click.</p>
+        </div>
+
+        <div class="endsub">
+          <h3>Part 2 drops next week.</h3>
+          <p>Get it, and every note after it, in your inbox. One email per note, nothing else.</p>
+          <form onsubmit="return false"><input placeholder="you@email.com"><span class="btn solid">Subscribe</span></form>
+        </div>
+
+        <div class="author"><div class="av"></div><div><b>Harsh Pandey</b> (Knight Developer). Builds AI interviewers and tutors that run live on voice and video. <u>More about me</u></div></div>
+
+        <div class="nextprev">
+          <div><span>← previous</span><b>Day 1: what I already know vs. what I think I know</b></div>
+          <div style="text-align:right"><span>next →</span><b>Gradient descent, drawn instead of derived</b></div>
+        </div>
+      </div>
+
+      <div class="foot"><span>© 2026 Harsh Pandey · Knight Developer</span><span>notes · rss · subscribe</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showPage(id, btn) {
+    document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('on'); });
+    document.querySelectorAll('.tabs button').forEach(function (b) { b.classList.remove('on'); });
+    document.getElementById('pg-' + id).classList.add('on');
+    btn.classList.add('on');
+  }
+</script>
