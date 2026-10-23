@@ -14,3 +14,11 @@ test("toSubscribersCsv escapes quotes and newlines", () => {
   const csv = toSubscribersCsv([{ id: "1", email: "a@b.co", status: "active", source: 'say "hi"\nnow', created_at: "t" }]);
   assert.ok(csv.includes('"say ""hi""\nnow"'));
 });
+test("toSubscribersCsv neutralises cells starting with a tab or carriage return", () => {
+  const csv = toSubscribersCsv([
+    { id: "1", email: "a@b.co", status: "active", source: "\t=1+1", created_at: "t" },
+    { id: "2", email: "c@d.co", status: "active", source: "\r=1+1", created_at: "t" },
+  ]);
+  assert.ok(csv.includes("a@b.co,active,'\t=1+1,t"));
+  assert.ok(csv.includes(`c@d.co,active,"'\r=1+1",t`));
+});

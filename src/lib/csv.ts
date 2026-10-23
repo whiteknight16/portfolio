@@ -1,9 +1,13 @@
 import type { Subscriber } from "./types.ts";
 
-/** One CSV cell: neutralise spreadsheet formulas, then RFC 4180 quote if needed. */
+/**
+ * One CSV cell: neutralise spreadsheet formulas (a leading `=`, `+`, `-`, `@`,
+ * tab or carriage return, per OWASP's CSV injection guidance), then RFC 4180
+ * quote if needed.
+ */
 function cell(value: string | null): string {
   let text = value ?? "";
-  if (/^[=+\-@]/.test(text)) text = `'${text}`;
+  if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`;
   return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 

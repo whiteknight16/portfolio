@@ -32,14 +32,17 @@ const csvToArray = (val: unknown): string[] => {
   return parts.map((s) => s.trim()).filter(Boolean);
 };
 
-/** Optional nullable URL: `""`/missing -> `null`, otherwise must be a valid URL. */
-const optionalUrl = () => z.preprocess(nullifyEmpty, z.string().trim().url().nullable().default(null));
-
 /** A root-relative path, e.g. `/resume.pdf` (but not a protocol-relative `//...`). */
 const isRootRelativePath = (val: string) => val.startsWith("/") && !val.startsWith("//");
 
-/** A valid absolute `http(s)` URL. */
+/** A valid absolute `http(s)` URL (so `javascript:`, `data:`, `vbscript:` never become links or image sources). */
 const isAbsoluteHttpUrl = (val: string) => z.string().url().safeParse(val).success && /^https?:\/\//.test(val);
+
+const HTTP_URL_MESSAGE = "Enter a full http(s) URL, e.g. https://example.com";
+
+/** Optional nullable URL: `""`/missing -> `null`, otherwise must be an absolute http(s) URL. */
+const optionalUrl = () =>
+  z.preprocess(nullifyEmpty, z.string().trim().refine(isAbsoluteHttpUrl, HTTP_URL_MESSAGE).nullable().default(null));
 
 /**
  * Optional nullable URL-or-path: `""`/missing -> `null`, otherwise must be
@@ -159,8 +162,8 @@ export const projectSchema = z.object({
   tags: stringArray(),
   links: z
     .object({
-      live: z.preprocess(undefineEmpty, z.string().trim().url().optional()),
-      repo: z.preprocess(undefineEmpty, z.string().trim().url().optional()),
+      live: z.preprocess(undefineEmpty, z.string().trim().refine(isAbsoluteHttpUrl, HTTP_URL_MESSAGE).optional()),
+      repo: z.preprocess(undefineEmpty, z.string().trim().refine(isAbsoluteHttpUrl, HTTP_URL_MESSAGE).optional()),
     })
     .default({}),
   featured: z.boolean().default(false),
@@ -271,6 +274,8 @@ export type ContactInput = z.infer<typeof contactSchema>;
 // subscribers (+ honeypot, not persisted)
 // ---------------------------------------------------------------------------
 
+const SOURCE_MAX = 200;
+
 export const subscribeSchema = z.object({
   email: z.preprocess(
     (val) => (typeof val === "string" ? val.trim().toLowerCase() : val),
@@ -278,6 +283,12 @@ export const subscribeSchema = z.object({
   ),
   // Spam-trap field, same contract as `contactSchema.honeypot`.
   honeypot: z.string().max(0, "Spam check failed").default(""),
-  source: optionalText(),
+  // The page the form sat on, from a hidden field anyone can rewrite: kept
+  // only as a root-relative path, capped at SOURCE_MAX characters; anything
+  // else is stored as null (never an error, so it can't block a sign-up).
+  source: z.preprocess((val) => {
+    const path = typeof val === "string" ? val.trim() : "";
+    return isRootRelativePath(path) ? path.slice(0, SOURCE_MAX) : null;
+  }, z.string().nullable()),
 });
 export type SubscribeInput = z.infer<typeof subscribeSchema>;

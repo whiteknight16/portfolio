@@ -171,3 +171,52 @@ test("profileSchema keeps only highlights with a value or label, max three", () 
   });
   assert.deepEqual(r.highlights, [{ value: "2", label: "x" }]);
 });
+
+test("optional URL fields only accept absolute http(s) URLs", () => {
+  for (const bad of ["javascript:alert(1)", "data:text/html,x", "vbscript:msgbox(1)", "ftp://example.com/x"]) {
+    assert.equal(postSchema.safeParse({ title: "T", slug: "t", source_url: bad }).success, false, `source_url ${bad}`);
+    assert.equal(postSchema.safeParse({ title: "T", slug: "t", cover_image_url: bad }).success, false, `post cover ${bad}`);
+    assert.equal(
+      projectSchema.safeParse({ title: "T", slug: "t", cover_image_url: bad }).success,
+      false,
+      `project cover ${bad}`,
+    );
+  }
+  const ok = postSchema.parse({
+    title: "T",
+    slug: "t",
+    source_url: " https://youtu.be/VMj-3S1tku0 ",
+    cover_image_url: "http://cdn.example/c.png",
+  });
+  assert.equal(ok.source_url, "https://youtu.be/VMj-3S1tku0");
+  assert.equal(ok.cover_image_url, "http://cdn.example/c.png");
+  assert.equal(projectSchema.parse({ title: "T", slug: "t", cover_image_url: "" }).cover_image_url, null);
+});
+
+test("project links only accept absolute http(s) URLs", () => {
+  assert.equal(projectSchema.safeParse({ title: "T", slug: "t", links: { live: "javascript:alert(1)" } }).success, false);
+  assert.equal(projectSchema.safeParse({ title: "T", slug: "t", links: { repo: "data:text/html,x" } }).success, false);
+  const ok = projectSchema.parse({
+    title: "T",
+    slug: "t",
+    links: { live: "https://ig.example", repo: "" },
+  });
+  assert.equal(ok.links.live, "https://ig.example");
+  assert.equal(ok.links.repo, undefined);
+});
+
+test("subscribeSchema keeps a root-relative source, capped at 200 characters", () => {
+  assert.equal(subscribeSchema.parse({ email: "a@b.co", source: "/notes/hello" }).source, "/notes/hello");
+  const long = subscribeSchema.parse({ email: "a@b.co", source: `/${"x".repeat(300)}` }).source;
+  assert.equal(long?.length, 200);
+  assert.ok(long?.startsWith("/x"));
+});
+
+test("subscribeSchema stores null for a source that isn't a root-relative path", () => {
+  for (const source of ["", "   ", "https://evil.example", "notes", "//evil.example", "javascript:alert(1)"]) {
+    const r = subscribeSchema.safeParse({ email: "a@b.co", source });
+    assert.equal(r.success, true, source);
+    assert.equal(r.data?.source, null, source);
+  }
+  assert.equal(subscribeSchema.parse({ email: "a@b.co" }).source, null);
+});
