@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/public/container";
+import { Emphasis } from "@/components/public/emphasis";
 import { Reveal } from "@/components/public/reveal";
 import { SocialLinks } from "@/components/public/social-icons";
 import { Achievements } from "@/components/sections/achievements";
@@ -84,7 +85,9 @@ export default async function AboutPage() {
             {paragraphs.length > 0 ? (
               <div className="mt-5 max-w-[68ch] space-y-4 font-display text-[19px] leading-[1.55] font-light text-pretty text-foreground">
                 {paragraphs.map((p, i) => (
-                  <p key={i}>{p}</p>
+                  <p key={i}>
+                    <Emphasis text={p} />
+                  </p>
                 ))}
               </div>
             ) : null}

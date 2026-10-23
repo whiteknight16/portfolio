@@ -17,6 +17,8 @@ type RevealProps = {
  * props change): the server can't know the preference, and swapping in a
  * plain `<div>` on the client would leave the server's inline `opacity: 0` in
  * place after hydration, hiding the content for exactly those visitors.
+ * `data-reveal` lets the (site) layout's <noscript> style show it when JS
+ * never runs.
  */
 export function Reveal({ children, delay = 0, className }: RevealProps) {
   const shouldReduceMotion = useReducedMotion();
@@ -32,6 +34,7 @@ export function Reveal({ children, delay = 0, className }: RevealProps) {
             transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as const },
           })}
       className={className}
+      data-reveal=""
     >
       {children}
     </motion.div>

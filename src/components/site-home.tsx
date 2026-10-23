@@ -1,4 +1,4 @@
-import { Fragment, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { format, parseISO } from "date-fns";
 import {
   getEnabledSections,
@@ -9,12 +9,15 @@ import {
 } from "@/lib/content";
 import { brand } from "@/lib/config";
 import { fillYears, formatExperienceYears } from "@/lib/format";
+import { subscribePlacement } from "@/lib/home-view";
 import { nowRows } from "@/lib/profile-view";
 import type { Profile, SiteSection } from "@/lib/types";
+import { Container } from "@/components/public/container";
+import { Reveal } from "@/components/public/reveal";
 import { Hero, type HeroProps } from "@/components/sections/hero";
 import { ProofStrip } from "@/components/sections/proof-strip";
 import { Built } from "@/components/sections/built";
-import { NotesPreview } from "@/components/sections/notes-preview";
+import { NotesPreview, SubscribeCard } from "@/components/sections/notes-preview";
 import { Newsletter } from "@/components/sections/newsletter";
 import { Work } from "@/components/sections/work";
 
@@ -36,25 +39,17 @@ export async function SiteHome() {
     getExperiences(),
   ]);
 
-  const enabled = new Set(sections.map((s) => s.key));
-  // The nav's "Subscribe" targets /#subscribe. Without the Newsletter panel,
-  // park the anchor at the Notes block (its empty state carries a form), or at
-  // the end of the page when Notes is off too.
-  const subscribeAnchor = enabled.has("newsletter") ? null : (
-    <div id="subscribe" className="scroll-mt-24" />
-  );
+  // The nav's "Subscribe" targets /#subscribe: exactly one block carries that
+  // id and a form — the Newsletter panel, else a card in the Notes block, else
+  // a card closing the page.
+  const placement = subscribePlacement(sections.map((s) => s.key));
 
   const renderSection = (section: SiteSection): ReactNode => {
     switch (section.key) {
       case "projects":
         return <Built key={section.id} projects={projects} />;
       case "blog":
-        return (
-          <Fragment key={section.id}>
-            {subscribeAnchor}
-            <NotesPreview posts={posts} inlineSubscribe={!enabled.has("newsletter")} />
-          </Fragment>
-        );
+        return <NotesPreview key={section.id} posts={posts} subscribe={placement.notes ?? "form"} />;
       case "newsletter":
         return <Newsletter key={section.id} />;
       case "experience":
@@ -69,7 +64,15 @@ export async function SiteHome() {
       <Hero {...heroProps(profile)} />
       <ProofStrip profile={profile} />
       {sections.map(renderSection)}
-      {enabled.has("blog") ? null : subscribeAnchor}
+      {placement.target === "end" ? (
+        <section aria-label="Subscribe" className="pt-14">
+          <Container>
+            <Reveal>
+              <SubscribeCard hasNotes={posts.length > 0} />
+            </Reveal>
+          </Container>
+        </section>
+      ) : null}
     </>
   );
 }

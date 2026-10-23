@@ -11,10 +11,15 @@ import {
 import { brand, siteUrl } from "@/lib/config";
 import { buildPersonJsonLd, buildWebsiteJsonLd } from "@/lib/seo";
 
+// Entrance-animated wrappers (`Reveal`, the hero lines) are server-rendered
+// at `opacity: 0` until motion hydrates; without JS they would never appear.
+const NO_JS_STYLE = "[data-reveal]{opacity:1!important;transform:none!important}";
+
 /**
  * Public site chrome. This route group wraps all public pages with the nav,
  * footer and the site-wide Person/WebSite JSON-LD, without touching `/admin`
- * (its layout lives at `src/app/admin/(dashboard)/layout.tsx`).
+ * (its layout lives at `src/app/admin/(dashboard)/layout.tsx`). A <noscript>
+ * style keeps animated content visible when JS is off.
  */
 export default async function SiteLayout({ children }: { children: ReactNode }) {
   const [profile, skillGroups, currentExperience, education] = await Promise.all([
@@ -46,6 +51,9 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <noscript>
+        <style>{NO_JS_STYLE}</style>
+      </noscript>
       <JsonLd data={jsonLd} />
       <SiteNav name={name} handle={handle} />
       <main className="flex-1">{children}</main>

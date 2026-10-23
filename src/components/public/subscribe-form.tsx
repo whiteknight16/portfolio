@@ -11,9 +11,11 @@ type Variant = "ink" | "card";
 
 const styles: Record<Variant, { input: string; button: string; note: string; status: string }> = {
   // Dark ink panel (mockup `.sub`): dark input, highlighter-yellow button.
+  // Yellow focus rings: ~13:1 against the #1d1a16 panel (WCAG 1.4.11 needs 3:1).
   ink: {
-    input: "border-[#4a443c] bg-[#2a2620] text-[#f6f1e7] placeholder:text-[#a39a8c]",
-    button: "bg-[#fde68a] text-[#1d1a16]",
+    input:
+      "border-[#4a443c] bg-[#2a2620] text-[#f6f1e7] placeholder:text-[#a39a8c] focus-visible:outline-[#fde68a]",
+    button: "bg-[#fde68a] text-[#1d1a16] focus-visible:outline-[#fde68a]",
     note: "text-[#a39a8c]",
     status: "text-[#b9b0a2]",
   },

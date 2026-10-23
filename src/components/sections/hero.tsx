@@ -4,8 +4,8 @@ import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion, type Variants } from "motion/react";
 import { Container } from "@/components/public/container";
+import { Emphasis } from "@/components/public/emphasis";
 import { SocialLinks } from "@/components/public/social-icons";
-import { splitEmphasis, stripEmphasis } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types";
 
@@ -36,7 +36,7 @@ export type HeroProps = {
   kicker: string;
   /** Headline with `{years}` filled; may carry one `*…*` accent phrase. */
   thesis: string;
-  /** Tagline with `{years}` filled. */
+  /** Tagline with `{years}` filled; may carry one `*…*` accent phrase. */
   lede: string;
   photoSrc: string;
   /** Polaroid caption: first segment of the location. */
@@ -69,15 +69,14 @@ export function Hero({
 
   // Always motion elements (never swapped for plain divs): swapping on the
   // client leaves the server's inline `opacity: 0` in place for reduced-motion
-  // visitors, hiding the hero.
+  // visitors, hiding the hero. `data-reveal` lets the (site) layout's
+  // <noscript> style show the lines when JS never runs.
   const wrapProps = {
     initial: "hidden",
     animate: "show",
     variants: reduceMotion ? instantContainer : container,
   } as const;
-  const lineProps = { variants: reduceMotion ? instantItem : item } as const;
-
-  const emphasis = splitEmphasis(thesis);
+  const lineProps = { variants: reduceMotion ? instantItem : item, "data-reveal": "" } as const;
 
   return (
     <section className="overflow-x-clip">
@@ -98,22 +97,14 @@ export function Hero({
 
           <motion.div {...lineProps}>
             <p className="mt-4.5 font-display text-2xl leading-[1.18] font-[350] tracking-[-0.02em] text-pretty text-foreground sm:text-[30px] xl:text-[32px] 2xl:text-[36px]">
-              {emphasis ? (
-                <>
-                  {emphasis.before}
-                  <em className="text-brand italic">{emphasis.em}</em>
-                  {emphasis.after}
-                </>
-              ) : (
-                stripEmphasis(thesis)
-              )}
+              <Emphasis text={thesis} />
             </p>
           </motion.div>
 
           {lede ? (
             <motion.div {...lineProps}>
               <p className="mt-4 max-w-[62ch] text-base leading-[1.65] text-pretty text-muted-foreground">
-                {lede}
+                <Emphasis text={lede} />
               </p>
             </motion.div>
           ) : null}
