@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion, type Variants } from "motion/react";
+import { Container } from "@/components/public/container";
 import { SocialLinks } from "@/components/public/social-icons";
 import { splitEmphasis, stripEmphasis } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -80,7 +81,7 @@ export function Hero({
 
   return (
     <section className="overflow-x-clip">
-      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-12 px-4 pt-10 pb-10 sm:px-6 sm:pt-14 lg:grid-cols-[1.25fr_1fr] lg:items-start">
+      <Container className="grid grid-cols-1 gap-12 pt-10 pb-10 sm:pt-14 lg:grid-cols-[1.25fr_1fr] lg:items-start xl:gap-16 xl:pt-16 xl:pb-12">
         <motion.div {...wrapProps}>
           <motion.div
             {...lineProps}
@@ -90,13 +91,13 @@ export function Hero({
           </motion.div>
 
           <motion.div {...lineProps}>
-            <h1 className="mt-3.5 font-display text-[52px] leading-[0.95] font-normal tracking-[-0.035em] text-foreground sm:text-[64px] lg:text-[76px]">
+            <h1 className="mt-3.5 font-display text-[52px] leading-[0.95] font-normal tracking-[-0.035em] text-foreground sm:text-[64px] lg:text-[76px] xl:text-[84px] 2xl:text-[92px]">
               {name}
             </h1>
           </motion.div>
 
           <motion.div {...lineProps}>
-            <p className="mt-4.5 font-display text-2xl leading-[1.18] font-[350] tracking-[-0.02em] text-pretty text-foreground sm:text-[30px]">
+            <p className="mt-4.5 font-display text-2xl leading-[1.18] font-[350] tracking-[-0.02em] text-pretty text-foreground sm:text-[30px] xl:text-[32px] 2xl:text-[36px]">
               {emphasis ? (
                 <>
                   {emphasis.before}
@@ -111,7 +112,7 @@ export function Hero({
 
           {lede ? (
             <motion.div {...lineProps}>
-              <p className="mt-4 max-w-125 text-base leading-[1.65] text-pretty text-muted-foreground">
+              <p className="mt-4 max-w-[62ch] text-base leading-[1.65] text-pretty text-muted-foreground">
                 {lede}
               </p>
             </motion.div>
@@ -129,10 +130,15 @@ export function Hero({
           </motion.div>
         </motion.div>
 
-        <motion.div {...wrapProps} className="relative mx-auto w-full max-w-100 pt-2 lg:max-w-none">
+        {/* Photo + Now card as one composition: capped so the overlap holds as the
+         * column widens, pinned to the right edge, scaling up a little on xl/2xl. */}
+        <motion.div
+          {...wrapProps}
+          className="relative mx-auto w-full max-w-100 pt-2 lg:mr-0 lg:max-w-105 xl:max-w-115 2xl:max-w-125"
+        >
           {showPhoto ? (
             <motion.div {...lineProps}>
-              <figure className="relative ml-auto w-67.5 max-w-[85%] rotate-[2.2deg] border border-rule bg-card p-2.5 pb-8.5 shadow-[4px_6px_0_color-mix(in_oklab,var(--foreground)_85%,transparent)]">
+              <figure className="relative ml-auto w-67.5 max-w-[85%] rotate-[2.2deg] border border-rule bg-card p-2.5 pb-8.5 shadow-[4px_6px_0_color-mix(in_oklab,var(--foreground)_85%,transparent)] xl:w-75 2xl:w-80">
                 <span
                   aria-hidden
                   className="absolute -top-3 left-1/2 h-6 w-22.5 -translate-x-1/2 -rotate-4 bg-[#fde68a]/75 dark:bg-[#fde68a]/45"
@@ -147,7 +153,7 @@ export function Hero({
                   src={photoSrc}
                   alt={`Photo of ${name}`}
                   onError={() => setShowPhoto(false)}
-                  className="block h-72.5 w-full bg-muted object-cover"
+                  className="block h-72.5 w-full bg-muted object-cover xl:h-80 2xl:h-85"
                 />
                 {caption ? (
                   // Right-aligned so it stays visible beside the Now card pinned over the
@@ -171,7 +177,7 @@ export function Hero({
             </motion.div>
           ) : null}
         </motion.div>
-      </div>
+      </Container>
     </section>
   );
 }
@@ -203,7 +209,7 @@ function NowCard({
   return (
     <div
       className={cn(
-        "relative w-75 max-w-full rotate-[-1.4deg] rounded-[3px] border border-rule bg-card px-4 py-3.5 shadow-ink-lg",
+        "relative w-75 max-w-full rotate-[-1.4deg] rounded-[3px] border border-rule bg-card px-4 py-3.5 shadow-ink-lg xl:w-80 2xl:w-85",
         overlap && "-mt-15",
       )}
     >

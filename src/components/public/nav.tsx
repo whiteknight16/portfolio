@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { Container } from "@/components/public/container";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/config";
@@ -41,7 +42,7 @@ export function SiteNav({ name = brand.name, handle = brand.handle }: SiteNavPro
 
   return (
     <header className="sticky top-0 z-50 border-b border-rule bg-background/85 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
+      <Container className="flex h-16 items-center justify-between">
         <Link href="/" onClick={close} className="flex items-baseline">
           <span className="font-display text-[19px] font-semibold tracking-tight text-foreground">
             {name}
@@ -92,7 +93,7 @@ export function SiteNav({ name = brand.name, handle = brand.handle }: SiteNavPro
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </Button>
         </div>
-      </div>
+      </Container>
 
       {/* Mobile drawer */}
       <AnimatePresence initial={false}>
@@ -106,7 +107,7 @@ export function SiteNav({ name = brand.name, handle = brand.handle }: SiteNavPro
             transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: "easeOut" }}
             className="overflow-hidden border-b border-rule bg-background md:hidden"
           >
-            <div className="flex flex-col gap-1 px-4 py-3 sm:px-6">
+            <Container className="flex flex-col gap-1 py-3">
               {LINKS.map((link) => (
                 <Link
                   key={link.href}
@@ -128,7 +129,7 @@ export function SiteNav({ name = brand.name, handle = brand.handle }: SiteNavPro
               >
                 Subscribe
               </Link>
-            </div>
+            </Container>
           </motion.nav>
         ) : null}
       </AnimatePresence>

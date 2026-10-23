@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Container } from "@/components/public/container";
 import { Prose } from "@/components/public/prose";
 import { SourceCard } from "@/components/public/source-card";
 import { SubscribeForm } from "@/components/public/subscribe-form";
@@ -32,7 +33,7 @@ export function NoteArticle({ post, author, previous, next }: NoteArticleProps) 
   const tldr = tldrLines(post.tldr);
 
   return (
-    <article className="px-4 pt-9 pb-5 sm:px-6 sm:pt-11">
+    <Container as="article" className="pt-9 pb-5 sm:pt-11">
       <div className="mx-auto max-w-170">
         <Link
           href="/notes"
@@ -141,7 +142,7 @@ export function NoteArticle({ post, author, previous, next }: NoteArticleProps) 
           </nav>
         ) : null}
       </div>
-    </article>
+    </Container>
   );
 }
 

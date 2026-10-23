@@ -3,13 +3,14 @@ import { Reveal } from "@/components/public/reveal";
 import { SectionHeading } from "@/components/sections/section-heading";
 
 /** About-page achievements: a ruled list of title + description.
- * Self-fetches; renders nothing when there are none recorded yet. */
+ * Self-fetches; renders nothing when there are none recorded yet. No
+ * `Container` of its own: the About page sets it beside Education. */
 export async function Achievements() {
   const achievements = await getAchievements();
   if (achievements.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-5xl px-4 pt-14 sm:px-6">
+    <section className="pt-14">
       <Reveal>
         <SectionHeading title="Achievements" />
       </Reveal>

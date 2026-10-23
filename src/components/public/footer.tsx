@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { brand } from "@/lib/config";
+import { Container } from "@/components/public/container";
 import { SocialLinks } from "@/components/public/social-icons";
 import type { Profile } from "@/lib/types";
 
@@ -25,7 +26,7 @@ export function SiteFooter({
 }: SiteFooterProps) {
   return (
     <footer className="mt-16 border-t border-rule">
-      <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 pb-8 pt-6 font-mono text-xs text-faint sm:px-6 md:flex-row md:items-center md:justify-between">
+      <Container className="flex flex-col gap-4 pt-6 pb-8 font-mono text-xs text-faint md:flex-row md:items-center md:justify-between">
         <p>
           &copy; {year} {name} &middot; {handle}
         </p>
@@ -54,7 +55,7 @@ export function SiteFooter({
           </nav>
           <SocialLinks socials={socials} iconClassName="size-4" className="gap-3.5" />
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }

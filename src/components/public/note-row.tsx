@@ -31,7 +31,9 @@ export function NoteRow({ post }: { post: Post }) {
           </Link>
         </h3>
         {excerpt ? (
-          <p className="mt-1.75 text-[14.5px] leading-[1.55] text-muted-foreground">{excerpt}</p>
+          <p className="mt-1.75 max-w-[72ch] text-[14.5px] leading-[1.55] text-muted-foreground">
+            {excerpt}
+          </p>
         ) : null}
         {source ? (
           <p className="mt-2.5 font-mono text-[11.5px] text-brand">↳ notes on {source}</p>

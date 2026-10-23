@@ -40,7 +40,8 @@ export function ProjectsGrid({ projects }: { projects: Project[] }) {
           No projects match that tag.
         </p>
       ) : (
-        <div className="grid gap-4.5 md:grid-cols-2">
+        // 4 columns only from 2xl, where each card is still well over 300px wide.
+        <div className="grid gap-4.5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {filtered.map((project, i) => (
             <Reveal key={project.id} delay={Math.min(i * 0.06, 0.24)} className="flex">
               <ProjectCard project={project} />

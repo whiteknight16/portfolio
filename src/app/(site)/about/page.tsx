@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Container } from "@/components/public/container";
 import { Reveal } from "@/components/public/reveal";
 import { SocialLinks } from "@/components/public/social-icons";
 import { Achievements } from "@/components/sections/achievements";
@@ -49,9 +50,9 @@ export default async function AboutPage() {
     <>
       <JsonLd data={buildProfilePageJsonLd(siteUrl)} />
 
-      <header className="mx-auto max-w-5xl px-4 pt-12 sm:px-6 sm:pt-16">
-        <Reveal className="grid items-start gap-9 border-b-[1.5px] border-foreground pb-9 md:grid-cols-[250px_1fr] md:gap-12">
-          <figure className="relative mx-auto w-62.5 max-w-[80%] rotate-[-2deg] border border-rule bg-card p-2.5 pb-8.5 shadow-[4px_6px_0_color-mix(in_oklab,var(--foreground)_85%,transparent)] md:mx-0">
+      <Container as="header" className="pt-12 sm:pt-16">
+        <Reveal className="grid items-start gap-9 border-b-[1.5px] border-foreground pb-9 lg:grid-cols-[250px_1fr] lg:gap-12 xl:grid-cols-[280px_1fr] xl:gap-16">
+          <figure className="relative mx-auto w-62.5 max-w-[80%] rotate-[-2deg] border border-rule bg-card p-2.5 pb-8.5 shadow-[4px_6px_0_color-mix(in_oklab,var(--foreground)_85%,transparent)] lg:mx-0 xl:w-70">
             <span
               aria-hidden
               className="absolute -top-3 left-1/2 h-6 w-22.5 -translate-x-1/2 rotate-3 bg-[#fde68a]/75 dark:bg-[#fde68a]/45"
@@ -61,7 +62,7 @@ export default async function AboutPage() {
             <img
               src={photo}
               alt={`Photo of ${name}`}
-              className="block h-65 w-full bg-muted object-cover"
+              className="block h-65 w-full bg-muted object-cover xl:h-73"
             />
             {place ? (
               <figcaption className="absolute right-3.5 bottom-2.25 font-display text-sm text-muted-foreground italic">
@@ -81,7 +82,7 @@ export default async function AboutPage() {
               <p className="mt-3 font-mono text-xs text-faint">known online as {handle}</p>
             ) : null}
             {paragraphs.length > 0 ? (
-              <div className="mt-5 max-w-150 space-y-4 font-display text-[19px] leading-[1.55] font-light text-pretty text-foreground">
+              <div className="mt-5 max-w-[68ch] space-y-4 font-display text-[19px] leading-[1.55] font-light text-pretty text-foreground">
                 {paragraphs.map((p, i) => (
                   <p key={i}>{p}</p>
                 ))}
@@ -90,25 +91,30 @@ export default async function AboutPage() {
             <SocialLinks socials={profile?.socials ?? null} className="mt-5.5 gap-4.5" iconClassName="size-4.5" />
           </div>
         </Reveal>
-      </header>
+      </Container>
 
       <Work experiences={experiences} variant="full" />
       <Skills />
-      <Achievements />
-      <EducationSection />
+      {/* Side by side from lg; either one alone takes the full width. */}
+      <Container className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16 lg:[&>*:only-child]:col-span-2">
+        <Achievements />
+        <EducationSection />
+      </Container>
       <Contact profile={profile} />
 
       {resume ? (
-        <p className="mx-auto mt-10 max-w-5xl px-4 sm:px-6">
-          <a
-            href={resume}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-mono text-xs text-muted-foreground underline decoration-rule underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
-          >
-            Résumé (PDF)
-          </a>
-        </p>
+        <Container className="mt-10">
+          <p>
+            <a
+              href={resume}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs text-muted-foreground underline decoration-rule underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
+            >
+              Résumé (PDF)
+            </a>
+          </p>
+        </Container>
       ) : null}
     </>
   );

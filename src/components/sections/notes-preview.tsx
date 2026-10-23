@@ -1,3 +1,4 @@
+import { Container } from "@/components/public/container";
 import { NoteRow } from "@/components/public/note-row";
 import { Reveal } from "@/components/public/reveal";
 import { SubscribeForm } from "@/components/public/subscribe-form";
@@ -19,37 +20,39 @@ export function NotesPreview({
   inlineSubscribe: boolean;
 }) {
   return (
-    <section id="notes" className="mx-auto max-w-5xl scroll-mt-24 px-4 pt-14 sm:px-6">
-      <Reveal>
-        <SectionHeading title="Notes" href="/notes" linkLabel="all notes →" />
-      </Reveal>
+    <section id="notes" className="scroll-mt-24 pt-14">
+      <Container>
+        <Reveal>
+          <SectionHeading title="Notes" href="/notes" linkLabel="all notes →" />
+        </Reveal>
 
-      {posts.length > 0 ? (
-        <Reveal delay={0.05} className="mt-2">
-          {posts.map((post) => (
-            <NoteRow key={post.id} post={post} />
-          ))}
-        </Reveal>
-      ) : (
-        <Reveal delay={0.05}>
-          {inlineSubscribe ? (
-            <div className="mt-5 grid gap-5 rounded-[4px] border border-rule bg-card px-5 py-5 sm:px-6 md:grid-cols-[1fr_1.1fr] md:items-center md:gap-7.5">
-              <NotesEmptyLine />
-              <SubscribeForm variant="card" source="/" />
-            </div>
-          ) : (
-            <div className="mt-5 rounded-[4px] border border-rule bg-card px-5 py-5 sm:px-6">
-              <NotesEmptyLine />
-              <a
-                href="#subscribe"
-                className="mt-2.5 inline-block font-mono text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-              >
-                Subscribe below ↓
-              </a>
-            </div>
-          )}
-        </Reveal>
-      )}
+        {posts.length > 0 ? (
+          <Reveal delay={0.05} className="mt-2">
+            {posts.map((post) => (
+              <NoteRow key={post.id} post={post} />
+            ))}
+          </Reveal>
+        ) : (
+          <Reveal delay={0.05}>
+            {inlineSubscribe ? (
+              <div className="mt-5 grid gap-5 rounded-[4px] border border-rule bg-card px-5 py-5 sm:px-6 md:grid-cols-[1fr_1.1fr] md:items-center md:gap-7.5 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:gap-12">
+                <NotesEmptyLine />
+                <SubscribeForm variant="card" source="/" />
+              </div>
+            ) : (
+              <div className="mt-5 rounded-[4px] border border-rule bg-card px-5 py-5 sm:px-6">
+                <NotesEmptyLine />
+                <a
+                  href="#subscribe"
+                  className="mt-2.5 inline-block font-mono text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                >
+                  Subscribe below ↓
+                </a>
+              </div>
+            )}
+          </Reveal>
+        )}
+      </Container>
     </section>
   );
 }

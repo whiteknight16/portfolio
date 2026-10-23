@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProfile, getProjectBySlug } from "@/lib/content";
+import { Container } from "@/components/public/container";
 import { Reveal } from "@/components/public/reveal";
 import { Prose } from "@/components/public/prose";
 import { TagChip } from "@/components/public/tag-chip";
@@ -54,7 +55,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const repo = safeHttpUrl(project.links?.repo ?? null);
 
   return (
-    <article className="px-4 pt-9 pb-5 sm:px-6 sm:pt-11">
+    <Container as="article" className="pt-9 pb-5 sm:pt-11">
       <div className="mx-auto max-w-170">
         <Reveal>
           <Link
@@ -127,6 +128,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
         <Prose html={project.content} className="mt-7.5" />
       </div>
-    </article>
+    </Container>
   );
 }

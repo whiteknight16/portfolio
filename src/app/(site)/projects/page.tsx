@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getProfile, getPublishedProjects } from "@/lib/content";
+import { Container } from "@/components/public/container";
 import { Reveal } from "@/components/public/reveal";
 import { ProjectsGrid } from "@/components/public/projects-grid";
 import { brand, rssAlternateTypes } from "@/lib/config";
@@ -27,7 +28,7 @@ export default async function ProjectsPage() {
   const projects = await getPublishedProjects();
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pt-12 pb-4 sm:px-6 sm:pt-16">
+    <Container className="pt-12 pb-4 sm:pt-16">
       <Reveal>
         <header className="border-b-[1.5px] border-foreground pb-6">
           <p className="font-mono text-[11px] font-medium tracking-[0.12em] text-brand uppercase">
@@ -51,6 +52,6 @@ export default async function ProjectsPage() {
           <ProjectsGrid projects={projects} />
         )}
       </div>
-    </div>
+    </Container>
   );
 }

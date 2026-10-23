@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Container } from "@/components/public/container";
 import { NotesList } from "@/components/public/notes-list";
 import { Reveal } from "@/components/public/reveal";
 import { SubscribeForm } from "@/components/public/subscribe-form";
@@ -28,7 +29,7 @@ export default async function NotesPage() {
   const posts = await getPublishedPosts();
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pt-12 sm:px-6 sm:pt-16">
+    <Container className="pt-12 sm:pt-16">
       <Reveal>
         <header className="border-b-[1.5px] border-foreground pb-6">
           <p className="font-mono text-[11px] font-medium tracking-[0.12em] text-brand uppercase">Notes</p>
@@ -48,7 +49,7 @@ export default async function NotesPage() {
             <section
               id="subscribe"
               aria-labelledby="notes-subscribe"
-              className="mt-12 scroll-mt-24 grid gap-5 rounded-[4px] border-[1.5px] border-foreground bg-card px-5 py-5.5 shadow-ink-lg sm:px-6 md:grid-cols-[1fr_1.1fr] md:items-center md:gap-7.5"
+              className="mt-12 scroll-mt-24 grid gap-5 rounded-[4px] border-[1.5px] border-foreground bg-card px-5 py-5.5 shadow-ink-lg sm:px-6 md:grid-cols-[1fr_1.1fr] md:items-center md:gap-7.5 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:gap-12"
             >
               <div>
                 <h2
@@ -70,13 +71,13 @@ export default async function NotesPage() {
           <section
             id="subscribe"
             aria-label="Subscribe"
-            className="mt-8 scroll-mt-24 grid gap-5 rounded-[4px] border border-rule bg-card px-5 py-5 sm:px-6 md:grid-cols-[1fr_1.1fr] md:items-center md:gap-7.5"
+            className="mt-8 scroll-mt-24 grid gap-5 rounded-[4px] border border-rule bg-card px-5 py-5 sm:px-6 md:grid-cols-[1fr_1.1fr] md:items-center md:gap-7.5 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:gap-12"
           >
             <NotesEmptyLine />
             <SubscribeForm variant="card" source="/notes" />
           </section>
         </Reveal>
       )}
-    </div>
+    </Container>
   );
 }

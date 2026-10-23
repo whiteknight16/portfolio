@@ -4,13 +4,14 @@ import { Reveal } from "@/components/public/reveal";
 import { SectionHeading } from "@/components/sections/section-heading";
 
 /** About-page education: date column, degree, institution and optional note
- * per entry. Self-fetches; renders nothing when there are no entries yet. */
+ * per entry. Self-fetches; renders nothing when there are no entries yet. No
+ * `Container` of its own: the About page sets it beside Achievements. */
 export async function EducationSection() {
   const education = await getEducation();
   if (education.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-5xl px-4 pt-14 sm:px-6">
+    <section className="pt-14">
       <Reveal>
         <SectionHeading title="Education" />
       </Reveal>
