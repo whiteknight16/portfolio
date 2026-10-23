@@ -1,3 +1,4 @@
+import { AdminPageHeader } from "@/components/admin/page-header";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { SiteSection } from "@/lib/types";
 import { SectionsManager } from "@/components/admin/sections-manager";
@@ -28,14 +29,11 @@ export default async function AdminSectionsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="font-display text-xl font-semibold tracking-tight">
-          Sections
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Choose which sections appear on your home page, and in what order.
-        </p>
-      </div>
+      <AdminPageHeader
+        kicker="Homepage"
+        title="Sections"
+        description="Choose which sections appear on your home page, and in what order."
+      />
       <SectionsManager sections={sections} />
     </div>
   );

@@ -38,7 +38,7 @@ export default async function EditPostPage({
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="font-display text-xl font-semibold tracking-tight">
-          Edit post
+          Edit note
         </h1>
         <p className="text-sm text-muted-foreground">
           Update details for &quot;{post.title}&quot;.

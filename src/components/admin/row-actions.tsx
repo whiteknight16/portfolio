@@ -57,6 +57,7 @@ export function RowActions({
       <Button
         variant="ghost"
         size="icon-sm"
+        nativeButton={false}
         render={<Link href={editHref} />}
         aria-label="Edit"
       >

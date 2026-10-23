@@ -1,4 +1,5 @@
 import { format, parseISO } from "date-fns";
+import { AdminPageHeader } from "@/components/admin/page-header";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { ContactMessage } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,14 +35,15 @@ export default async function AdminMessagesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="font-display text-xl font-semibold tracking-tight">Messages</h1>
-        <p className="text-sm text-muted-foreground">
-          {unreadCount > 0
+      <AdminPageHeader
+        kicker="Inbox"
+        title="Messages"
+        description={
+          unreadCount > 0
             ? `${unreadCount} unread message${unreadCount === 1 ? "" : "s"} out of ${messages.length}.`
-            : "Submissions from your contact form."}
-        </p>
-      </div>
+            : "Submissions from your contact form."
+        }
+      />
 
       {messages.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">

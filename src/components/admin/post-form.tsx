@@ -69,7 +69,7 @@ export function PostForm({ post }: { post?: Post | null }) {
               id="excerpt"
               name="excerpt"
               rows={2}
-              placeholder="One or two sentences shown in the post list"
+              placeholder="One or two sentences shown in the notes list"
               defaultValue={post?.excerpt ?? ""}
             />
           </div>
@@ -89,7 +89,7 @@ export function PostForm({ post }: { post?: Post | null }) {
         <CardHeader>
           <CardTitle>Content</CardTitle>
           <CardDescription>
-            Full write-up shown on the post&apos;s detail page.
+            Full write-up shown on the note&apos;s page.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -108,7 +108,7 @@ export function PostForm({ post }: { post?: Post | null }) {
         <CardHeader>
           <CardTitle>Cover image</CardTitle>
           <CardDescription>
-            Shown at the top of the post and in the blog list.
+            Shown at the top of the note and in the notes list.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -146,7 +146,7 @@ export function PostForm({ post }: { post?: Post | null }) {
       </Card>
 
       <div className="flex items-center gap-3">
-        <SubmitButton>{post ? "Save changes" : "Create post"}</SubmitButton>
+        <SubmitButton>{post ? "Save changes" : "Create note"}</SubmitButton>
         {state.ok ? (
           <p role="status" className="text-sm text-muted-foreground">
             Saved.

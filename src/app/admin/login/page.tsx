@@ -20,11 +20,13 @@ export default async function LoginPage() {
 
   return (
     <div className="flex min-h-svh items-center justify-center px-4">
-      <Card className="w-full max-w-sm">
+      <Card className="w-full max-w-sm shadow-ink-lg">
         <CardHeader>
-          <CardTitle>Admin sign in</CardTitle>
-          <CardDescription>
-            Sign in with your admin account to continue.
+          <CardTitle className="font-display text-[28px] font-semibold tracking-tight">
+            Admin
+          </CardTitle>
+          <CardDescription className="font-mono text-xs uppercase tracking-[0.12em]">
+            Harsh Pandey · Knight Developer
           </CardDescription>
         </CardHeader>
         <CardContent>

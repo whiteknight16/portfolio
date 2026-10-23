@@ -1,3 +1,4 @@
+import { AdminPageHeader } from "@/components/admin/page-header";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
 import { ProfileForm } from "@/components/admin/profile-form";
@@ -28,15 +29,12 @@ export default async function AdminProfilePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="font-display text-xl font-semibold tracking-tight">
-          Profile
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          This information powers the hero, contact card, and resume link on
-          the public site.
-        </p>
-      </div>
+      <AdminPageHeader
+        kicker="You"
+        title="Profile"
+        description="This information powers the hero, contact card, and resume link on
+          the public site."
+      />
       <ProfileForm profile={profile} />
     </div>
   );

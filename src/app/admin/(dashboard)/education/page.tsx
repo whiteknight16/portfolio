@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminPageHeader } from "@/components/admin/page-header";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { Education } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -49,19 +50,16 @@ export default async function AdminEducationPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="font-display text-xl font-semibold tracking-tight">
-            Education
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Manage the education history shown in your portfolio.
-          </p>
-        </div>
-        <Button render={<Link href="/admin/education/new" />}>
-          New education
-        </Button>
-      </div>
+      <AdminPageHeader
+        kicker="Career"
+        title="Education"
+        description="Manage the education history shown in your portfolio."
+        actions={
+          <Button nativeButton={false} render={<Link href="/admin/education/new" />}>
+            New education
+          </Button>
+        }
+      />
       <EntityTable
         columns={columns}
         rows={education}

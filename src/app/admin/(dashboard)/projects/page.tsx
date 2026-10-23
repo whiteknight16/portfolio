@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminPageHeader } from "@/components/admin/page-header";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { Project } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
@@ -54,19 +55,16 @@ export default async function AdminProjectsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="font-display text-xl font-semibold tracking-tight">
-            Projects
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Manage the projects shown in your portfolio.
-          </p>
-        </div>
-        <Button render={<Link href="/admin/projects/new" />}>
-          New project
-        </Button>
-      </div>
+      <AdminPageHeader
+        kicker="Your projects"
+        title="Projects"
+        description="Manage the projects shown in your portfolio."
+        actions={
+          <Button nativeButton={false} render={<Link href="/admin/projects/new" />}>
+            New project
+          </Button>
+        }
+      />
       <EntityTable
         columns={columns}
         rows={projects}

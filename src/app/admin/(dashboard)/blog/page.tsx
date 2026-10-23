@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
+import { AdminPageHeader } from "@/components/admin/page-header";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { Post } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
@@ -49,31 +50,28 @@ const columns: EntityTableColumn<Post>[] = [
   },
 ];
 
-export default async function AdminBlogPage() {
+export default async function AdminNotesPage() {
   const posts = await getPosts();
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="font-display text-xl font-semibold tracking-tight">
-            Blog
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Manage the posts shown on your blog.
-          </p>
-        </div>
-        <Button render={<Link href="/admin/blog/new" />}>
-          New post
-        </Button>
-      </div>
+      <AdminPageHeader
+        kicker="Writing"
+        title="Notes"
+        description="Manage the notes published on your site."
+        actions={
+          <Button nativeButton={false} render={<Link href="/admin/blog/new" />}>
+            New note
+          </Button>
+        }
+      />
       <EntityTable
         columns={columns}
         rows={posts}
         editHref={(post) => `/admin/blog/${post.id}`}
         onDelete={deletePostAction}
         describeRow={(post) => post.title}
-        emptyMessage="No posts yet. Create your first one to get started."
+        emptyMessage="No notes yet. Write your first one to get started."
       />
     </div>
   );

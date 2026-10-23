@@ -5,10 +5,10 @@ export default function NewPostPage() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="font-display text-xl font-semibold tracking-tight">
-          New post
+          New note
         </h1>
         <p className="text-sm text-muted-foreground">
-          Add a new post to your blog.
+          Write a new note for your site.
         </p>
       </div>
       <PostForm />

@@ -1,4 +1,7 @@
-import { FolderKanban, Newspaper, MailWarning } from "lucide-react";
+import Link from "next/link";
+import { FileText, FolderKanban, MailWarning, NotebookPen, Users } from "lucide-react";
+import { AdminPageHeader } from "@/components/admin/page-header";
+import { Button } from "@/components/ui/button";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { ContactMessage } from "@/lib/types";
 import {
@@ -39,19 +42,40 @@ async function safeLatestMessages(
 export default async function AdminDashboardPage() {
   const supabase = await createServerSupabase();
 
-  const [projectsCount, postsCount, unreadCount, latestMessages] =
-    await Promise.all([
+  const [
+    publishedCount,
+    draftCount,
+    projectsCount,
+    unreadCount,
+    subscribersCount,
+    latestMessages,
+  ] = await Promise.all([
       safeCount(
-        supabase.from("projects").select("*", { count: "exact", head: true }),
+        supabase
+          .from("posts")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "published"),
       ),
       safeCount(
-        supabase.from("posts").select("*", { count: "exact", head: true }),
+        supabase
+          .from("posts")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "draft"),
+      ),
+      safeCount(
+        supabase.from("projects").select("*", { count: "exact", head: true }),
       ),
       safeCount(
         supabase
           .from("contact_messages")
           .select("*", { count: "exact", head: true })
           .eq("is_read", false),
+      ),
+      safeCount(
+        supabase
+          .from("subscribers")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "active"),
       ),
       safeLatestMessages(
         supabase
@@ -63,31 +87,35 @@ export default async function AdminDashboardPage() {
     ]);
 
   const stats = [
+    { label: "Published notes", value: publishedCount, icon: NotebookPen },
+    { label: "Drafts", value: draftCount, icon: FileText },
     { label: "Projects", value: projectsCount, icon: FolderKanban },
-    { label: "Blog posts", value: postsCount, icon: Newspaper },
     { label: "Unread messages", value: unreadCount, icon: MailWarning },
+    { label: "Active subscribers", value: subscribersCount, icon: Users },
   ];
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="font-display text-xl font-semibold tracking-tight">
-          Dashboard
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          A quick look at your content and inbox.
-        </p>
-      </div>
+      <AdminPageHeader
+        kicker="Overview"
+        title="Dashboard"
+        description="A quick look at your content and inbox."
+        actions={
+          <Button nativeButton={false} render={<Link href="/admin/blog/new" />}>
+            Write a note
+          </Button>
+        }
+      />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-5">
         {stats.map(({ label, value, icon: Icon }) => (
           <Card key={label}>
             <CardHeader>
-              <CardDescription className="flex items-center gap-1.5">
+              <CardDescription className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.1em]">
                 <Icon className="size-4" />
                 {label}
               </CardDescription>
-              <CardTitle className="text-2xl">{value}</CardTitle>
+              <CardTitle className="font-display text-3xl">{value}</CardTitle>
             </CardHeader>
           </Card>
         ))}

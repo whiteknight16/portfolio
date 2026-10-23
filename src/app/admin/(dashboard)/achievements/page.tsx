@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminPageHeader } from "@/components/admin/page-header";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { Achievement } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -48,19 +49,16 @@ export default async function AdminAchievementsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="font-display text-xl font-semibold tracking-tight">
-            Achievements
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Manage the achievements shown in your portfolio.
-          </p>
-        </div>
-        <Button render={<Link href="/admin/achievements/new" />}>
-          New achievement
-        </Button>
-      </div>
+      <AdminPageHeader
+        kicker="Career"
+        title="Achievements"
+        description="Manage the achievements shown in your portfolio."
+        actions={
+          <Button nativeButton={false} render={<Link href="/admin/achievements/new" />}>
+            New achievement
+          </Button>
+        }
+      />
       <EntityTable
         columns={columns}
         rows={achievements}
