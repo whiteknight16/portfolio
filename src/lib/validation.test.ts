@@ -121,6 +121,25 @@ test("profileSchema rejects an invalid resume_url", () => {
   assert.equal(result.success, false);
 });
 
+test("profileSchema accepts a root-relative avatar_url (the seeded /profile.png)", () => {
+  const result = profileSchema.safeParse({
+    full_name: "Ada Lovelace",
+    avatar_url: "/profile.png",
+  });
+  assert.equal(result.success, true);
+  assert.equal(result.data?.avatar_url, "/profile.png");
+});
+
+test("profileSchema accepts an uploaded https avatar_url and rejects junk", () => {
+  const ok = profileSchema.safeParse({
+    full_name: "Ada Lovelace",
+    avatar_url: "https://abc.supabase.co/storage/v1/object/public/media/avatar/x.png",
+  });
+  assert.equal(ok.success, true);
+  const bad = profileSchema.safeParse({ full_name: "Ada Lovelace", avatar_url: "javascript:alert(1)" });
+  assert.equal(bad.success, false);
+});
+
 test("subscribeSchema trims and lowercases the email", () => {
   const r = subscribeSchema.parse({ email: "  Ada@Example.com ", honeypot: "" });
   assert.equal(r.email, "ada@example.com");

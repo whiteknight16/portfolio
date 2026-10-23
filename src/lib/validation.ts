@@ -44,8 +44,8 @@ const isAbsoluteHttpUrl = (val: string) => z.string().url().safeParse(val).succe
 /**
  * Optional nullable URL-or-path: `""`/missing -> `null`, otherwise must be
  * either an absolute http(s) URL or a root-relative path (e.g. `/resume.pdf`).
- * Used for `profile.resume_url`, which the seed populates with a root-relative
- * default served from `public/`.
+ * Used for `profile.resume_url` and `profile.avatar_url`, which the seed
+ * populates with root-relative defaults served from `public/`.
  */
 const optionalUrlOrPath = () =>
   z.preprocess(
@@ -92,7 +92,8 @@ export const profileSchema = z.object({
   title: defaultedText(),
   headline: defaultedText(),
   bio: defaultedText(),
-  avatar_url: optionalUrl(),
+  // The seed stores a root-relative default (`/profile.png`); uploads store an absolute URL.
+  avatar_url: optionalUrlOrPath(),
   resume_url: optionalUrlOrPath(),
   location: optionalText(),
   email: z.preprocess(nullifyEmpty, z.email().nullable().default(null)),
