@@ -4,6 +4,7 @@ import {
   noteAuthor,
   noteImageUrl,
   noteMetadata,
+  noteRowData,
   ogTitleSize,
   safeHttpUrl,
   sourceCard,
@@ -77,6 +78,11 @@ test("tldrLines trims, drops blank lines and keeps at most three", () => {
   assert.deepEqual(tldrLines([]), []);
   assert.deepEqual(tldrLines(["  a ", "", "   "]), ["a"]);
   assert.deepEqual(tldrLines(["a", "b", "c", "d"]), ["a", "b", "c"]);
+});
+
+test("tldrLines treats a missing pre-0006 tldr column as empty", () => {
+  assert.deepEqual(tldrLines(undefined), []);
+  assert.deepEqual(tldrLines(null), []);
 });
 
 test("ogTitleSize shrinks titles longer than 70 characters", () => {
@@ -221,4 +227,32 @@ test("noteMetadata for a bare note leaves out description and tags", () => {
       alt: "Building micrograd from scratch, part 1",
     },
   ]);
+});
+
+test("noteMetadata and sourceCard survive a note row from before 0006 (no tldr/source columns)", () => {
+  const legacy = { ...post } as Partial<Post>;
+  delete legacy.tldr;
+  delete legacy.source_url;
+  delete legacy.source_title;
+  delete legacy.source_kind;
+  assert.equal(sourceCard(legacy as Post), null);
+  assert.deepEqual(tldrLines((legacy as Post).tldr), []);
+  assert.equal(noteMetadata(legacy as Post, site).title, "Building micrograd from scratch, part 1 — Harsh Pandey");
+});
+
+test("noteRowData keeps only what a note row renders (no body HTML)", () => {
+  assert.deepEqual(noteRowData({ ...post, source_title: "Karpathy" }), {
+    id: "p1",
+    slug: "building-micrograd-part-1",
+    title: "Building micrograd from scratch, part 1",
+    excerpt: "Following Karpathy's video line by line.",
+    published_at: "2026-10-09T10:00:00Z",
+    reading_minutes: 9,
+    source_title: "Karpathy",
+    tags: ["neural nets", "micrograd"],
+  });
+  const legacy = { ...post } as Partial<Post>;
+  delete legacy.source_title;
+  assert.equal(noteRowData(legacy as Post).source_title, null);
+  assert.equal("content" in noteRowData(post), false);
 });

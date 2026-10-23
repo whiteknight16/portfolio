@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { TagChip } from "@/components/public/tag-chip";
-import { projectKicker } from "@/lib/profile-view";
-import type { Project } from "@/lib/types";
+import { projectKicker, type ProjectCardData } from "@/lib/profile-view";
 
 const MAX_TAGS = 4;
 
@@ -10,7 +9,7 @@ const MAX_TAGS = 4;
  * summary and tags on a card with a hard ink shadow, linking to
  * `/projects/[slug]`. Shared by the homepage "Things I've built" and /projects.
  */
-export function ProjectCard({ project }: { project: Project }) {
+export function ProjectCard({ project }: { project: ProjectCardData }) {
   const kicker = projectKicker(project.label, Boolean(project.links?.live));
   const tags = project.tags.slice(0, MAX_TAGS);
 

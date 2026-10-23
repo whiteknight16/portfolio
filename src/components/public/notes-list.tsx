@@ -4,14 +4,15 @@ import { useMemo, useState } from "react";
 import { NoteRow } from "@/components/public/note-row";
 import { Reveal } from "@/components/public/reveal";
 import { TagFilter } from "@/components/public/tag-filter";
-import type { Post } from "@/lib/types";
+import type { NoteRowData } from "@/lib/note-view";
 
 /**
  * The `/notes` list: a mono topic filter (shown once there are at least two
  * tags to choose between) over `NoteRow`s. Takes every published note from
- * the server page and filters on the client.
+ * the server page, trimmed to what a row shows (`noteRowData`, no body HTML),
+ * and filters on the client.
  */
-export function NotesList({ posts }: { posts: Post[] }) {
+export function NotesList({ posts }: { posts: NoteRowData[] }) {
   const [tag, setTag] = useState<string | null>(null);
 
   const tags = useMemo(() => {

@@ -4,6 +4,7 @@ import { Container } from "@/components/public/container";
 import { Reveal } from "@/components/public/reveal";
 import { ProjectsGrid } from "@/components/public/projects-grid";
 import { brand, rssAlternateTypes, defaultOgImages } from "@/lib/config";
+import { projectCardData } from "@/lib/profile-view";
 
 // Reads published projects straight from the database on every request —
 // there's nothing here worth prerendering or caching.
@@ -49,7 +50,7 @@ export default async function ProjectsPage() {
             No projects published yet. Check back soon.
           </p>
         ) : (
-          <ProjectsGrid projects={projects} />
+          <ProjectsGrid projects={projects.map(projectCardData)} />
         )}
       </div>
     </Container>

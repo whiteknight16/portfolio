@@ -6,6 +6,7 @@ import { SubscribeForm } from "@/components/public/subscribe-form";
 import { NotesEmptyLine } from "@/components/sections/notes-preview";
 import { getProfile, getPublishedPosts } from "@/lib/content";
 import { brand, rssAlternateTypes, defaultOgImages } from "@/lib/config";
+import { noteRowData } from "@/lib/note-view";
 
 // Reads published notes straight from the database on every request.
 export const dynamic = "force-dynamic";
@@ -44,7 +45,7 @@ export default async function NotesPage() {
 
       {posts.length > 0 ? (
         <>
-          <NotesList posts={posts} />
+          <NotesList posts={posts.map(noteRowData)} />
           <Reveal>
             <section
               id="subscribe"

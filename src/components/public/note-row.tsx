@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { TagChip } from "@/components/public/tag-chip";
 import { formatNoteDate } from "@/lib/format";
-import type { Post } from "@/lib/types";
+import type { NoteRowData } from "@/lib/note-view";
 
 /**
  * One note in a list (mockup `.note`): date | title, excerpt and an optional
@@ -9,7 +9,7 @@ import type { Post } from "@/lib/types";
  * the note. Safe inside client components (no server-only imports; the date is
  * formatted in UTC so it hydrates identically everywhere).
  */
-export function NoteRow({ post }: { post: Post }) {
+export function NoteRow({ post }: { post: NoteRowData }) {
   const date = formatNoteDate(post.published_at);
   const excerpt = post.excerpt.trim();
   const source = post.source_title?.trim();

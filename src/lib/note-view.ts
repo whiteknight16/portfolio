@@ -61,12 +61,32 @@ export function sourceCard(
   };
 }
 
-/** "The short version" bullets: trimmed, non-blank, at most three. */
-export function tldrLines(tldr: string[]): string[] {
-  return tldr
+/** "The short version" bullets: trimmed, non-blank, at most three (none when the pre-0006 `tldr` column is missing). */
+export function tldrLines(tldr: string[] | null | undefined): string[] {
+  return (tldr ?? [])
     .map((line) => line.trim())
     .filter(Boolean)
     .slice(0, MAX_TLDR);
+}
+
+/** The fields a `NoteRow` renders: what a client component is sent instead of the whole row. */
+export type NoteRowData = Pick<
+  Post,
+  "id" | "slug" | "title" | "excerpt" | "published_at" | "reading_minutes" | "source_title" | "tags"
+>;
+
+/** A note trimmed to `NoteRowData` (no body HTML). */
+export function noteRowData(post: Post): NoteRowData {
+  return {
+    id: post.id,
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt,
+    published_at: post.published_at,
+    reading_minutes: post.reading_minutes,
+    source_title: post.source_title ?? null,
+    tags: post.tags,
+  };
 }
 
 /** OG card title size in px: 64, or 52 for titles over 70 characters. */

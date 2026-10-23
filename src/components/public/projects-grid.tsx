@@ -1,17 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Project } from "@/lib/types";
+import type { ProjectCardData } from "@/lib/profile-view";
 import { Reveal } from "@/components/public/reveal";
 import { TagFilter } from "@/components/public/tag-filter";
 import { ProjectCard } from "@/components/public/project-card";
 
 /**
- * Client-side tag filter + grid for the `/projects` list. Takes the full
- * published-projects array from the server page and derives the distinct
- * tag set itself, so the server page stays a plain fetch-and-render.
+ * Client-side tag filter + grid for the `/projects` list. Takes the
+ * published projects from the server page, trimmed to what a card shows
+ * (`projectCardData`, no case-study HTML), and derives the distinct tag set
+ * itself, so the server page stays a plain fetch-and-render.
  */
-export function ProjectsGrid({ projects }: { projects: Project[] }) {
+export function ProjectsGrid({ projects }: { projects: ProjectCardData[] }) {
   const [tag, setTag] = useState<string | null>(null);
 
   const tags = useMemo(() => {

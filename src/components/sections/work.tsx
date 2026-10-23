@@ -38,7 +38,9 @@ export function Work({
 
         <ol className="mt-2.5">
           {experiences.map((exp) => {
-            const tags = home ? exp.tags.slice(0, HOME_TAGS) : exp.tags;
+            // `tags` arrived in migration 0006; a database without it has no tags.
+            const allTags = exp.tags ?? [];
+            const tags = home ? allTags.slice(0, HOME_TAGS) : allTags;
             const highlights = home ? exp.highlights.slice(0, 1) : exp.highlights;
 
             return (
