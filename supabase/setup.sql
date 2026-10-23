@@ -471,6 +471,20 @@ select
   v.published_at::timestamptz
 from (values
   (
+    'IVF Assistant',
+    'ivf-assistant',
+    'A live copilot for IVF clinic counsellors: it listens to the counselling conversation and prompts the relationship manager with the right thing to say at the right moment, so more consultations turn into treatment.',
+    '<p>IVF clinics rely on counsellors and relationship managers (RMs) to guide patients through one of the biggest decisions of their lives. How that conversation goes decides whether a patient moves ahead with treatment, and the quality of it varies a lot from one RM to the next.</p><p>The IVF Assistant sits in on the conversation and helps the RM in the moment.</p><ul><li><strong>Live prompting:</strong> it listens to the whole counselling conversation and suggests what to say next: the question to ask, the concern to address, the information the patient still needs.</li><li><strong>Gamification for RMs:</strong> streaks and progress, so using the assistant becomes a daily habit rather than a chore.</li><li><strong>Multi-level admin panel:</strong> every stakeholder sees what the people reporting to them are doing, from individual RMs up to clinic leadership.</li></ul>',
+    null,
+    '{"Real-time AI","Conversation intelligence","Gamification","Multi-level admin"}',
+    '{}'::jsonb,
+    true,
+    'AI product',
+    'published',
+    0,
+    now()
+  ),
+  (
     'Interview Genie',
     'interview-genie',
     'Career advice is generic because it is cheap to produce. This turns one specific role into a tailored resume, cover letter, and practice set — and keeps the market data behind it fresh on a schedule.',
@@ -492,7 +506,7 @@ from (values
     null,
     '{"Web Development","Solo delivery","Stakeholder management"}',
     '{}'::jsonb,
-    true,
+    false,
     'Delivered solo',
     'published',
     2,

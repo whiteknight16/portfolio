@@ -37,6 +37,7 @@ Migrations are applied in order:
 4. `0004_updated_at.sql` — Adds `updated_at` triggers
 5. `0005_blog_images_storage.sql` — Creates the public `blog-images` bucket and its policies
 6. `0006_personal_brand.sql` — Adds the personal-brand columns (`profile.handle/tagline/career_start_date/now/now_updated_at/highlights`, `posts.source_*/tldr`, `experiences.tags`, `projects.label`), the `subscribers` table with its policies, and limits `site_sections` to `projects`, `blog`, `newsletter`, `experience`
+7. `0007_ivf_assistant.sql` — Adds the IVF Assistant project (idempotent; safe to run twice) and un-features REC Mirzapur; paste it into the SQL editor on a project that already ran `setup.sql`
 
 ## Manual Setup Steps
 

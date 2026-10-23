@@ -45,7 +45,7 @@ counts() {
   expect "$1" "select count(*) from public.profile" 1 "profile rows"
   expect "$1" "select count(*) from public.site_sections" 4 "site_sections rows"
   expect "$1" "select count(*) from public.experiences" 4 "experiences rows"
-  expect "$1" "select count(*) from public.projects" 4 "projects rows"
+  expect "$1" "select count(*) from public.projects" 5 "projects rows"
   expect "$1" "select count(*) from storage.buckets" 2 "storage buckets"
 }
 
@@ -74,7 +74,7 @@ run_file "$A" "$DIR/tests/stubs.sql"
 run_file "$A" "$DIR/setup.sql"
 counts "$A"
 expect "$A" "select count(*) from public.projects where featured" 3 "featured projects"
-expect "$A" "select count(*) from public.projects where label is not null" 4 "labelled projects"
+expect "$A" "select count(*) from public.projects where label is not null" 5 "labelled projects"
 expect "$A" "select count(*) from public.experiences where cardinality(tags) > 0" 4 "tagged experiences"
 dump "$A" > "$TMP/setup-fresh.dump"
 
@@ -136,5 +136,23 @@ for X in "$A" "$C"; do
   expect "$X" "select string_agg(policyname,',' order by policyname) from pg_policies where tablename='subscribers'" "admin_all_subscribers,pub_insert_subscribers" "subscribers policies"
   expect "$X" "select with_check from pg_policies where policyname='pub_insert_subscribers'" "(status = 'active'::text)" "subscribe policy check"
 done
+
+echo "== 6. migration 0007 (IVF Assistant) is idempotent"
+start; D="$CONTAINER"
+run_file "$D" "$DIR/tests/stubs.sql"
+run_file "$D" "$DIR/setup.sql"
+q "$D" "delete from public.projects where slug='ivf-assistant'; update public.projects set featured=true where slug='rec-mirzapur'" >/dev/null
+run_file "$D" "$DIR/migrations/0007_ivf_assistant.sql"
+run_file "$D" "$DIR/migrations/0007_ivf_assistant.sql"
+expect "$D" "select count(*) from public.projects where slug='ivf-assistant'" 1 "ivf-assistant rows after 0007 x2"
+expect "$D" "select featured from public.projects where slug='rec-mirzapur'" f "rec-mirzapur featured"
+expect "$D" "select count(*) from public.projects" 5 "projects after 0007 x2"
+q "$D" "delete from public.projects where slug='ivf-assistant'" >/dev/null
+run_file "$D" "$DIR/migrations/0007_ivf_assistant.sql"
+run_file "$D" "$DIR/migrations/0007_ivf_assistant.sql"
+dump "$D" > "$TMP/mig7.dump"
+grep -c '"slug":"ivf-assistant"' "$TMP/mig7.dump" | grep -qx 1 || fail "0007 row count in dump"
+diff <(grep '"slug":"ivf-assistant"' "$TMP/mig7.dump") <(grep '"slug":"ivf-assistant"' "$TMP/setup2.dump") >/dev/null || fail "0007 row differs from setup.sql row"
+echo "  ok: 0007 row == setup.sql row"
 
 echo "SMOKE OK"
