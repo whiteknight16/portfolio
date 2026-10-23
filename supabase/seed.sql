@@ -218,7 +218,7 @@ insert into public.projects (
     now()
   );
 
--- achievements (kept for the admin; no public section)
+-- achievements (shown on /about)
 delete from public.achievements;
 
 insert into public.achievements (
@@ -240,7 +240,7 @@ insert into public.achievements (
     3
   );
 
--- education (kept for the admin; no public section)
+-- education (shown on /about)
 delete from public.education;
 
 insert into public.education (

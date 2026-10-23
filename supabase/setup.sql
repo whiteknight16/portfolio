@@ -542,7 +542,7 @@ from (values
   )) as v(title, slug, summary, content, cover_image_url, tags, links, featured, label, status, sort_order, published_at)
 where not exists (select 1 from public.projects);
 
--- achievements (kept for the admin; no public section)
+-- achievements (shown on /about)
 insert into public.achievements (
   title, description, sort_order
 )
@@ -568,7 +568,7 @@ from (values
   )) as v(title, description, sort_order)
 where not exists (select 1 from public.achievements);
 
--- education (kept for the admin; no public section)
+-- education (shown on /about)
 insert into public.education (
   degree, institution, location, start_date, end_date, description, sort_order
 )

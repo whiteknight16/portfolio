@@ -17,7 +17,10 @@ This directory contains the database setup for the portfolio + admin CMS.
 `setup.sql` is safe to re-run. It re-applies the schema, policies and storage
 buckets, and only inserts starter content into tables that are empty, so it
 never overwrites edits you made in the admin. It never touches `posts`,
-`subscribers` or `contact_messages`.
+`subscribers` or `contact_messages`. Re-running it refills a content table
+only if that table is completely empty (e.g. if you deleted every project),
+and it removes `site_sections` rows whose key isn't one of `projects`, `blog`,
+`newsletter` or `experience`.
 
 `seed.sql` is different: it **resets** content. It deletes and re-inserts
 `profile`, `site_sections`, `experiences`, `skills`, `projects`,

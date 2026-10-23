@@ -1,18 +1,19 @@
 # Portfolio + Admin CMS
 
 A personal portfolio site built on Next.js 16, backed by a single-admin
-Supabase content management system. The public site (home, projects, blog)
-is fully data-driven; you edit everything through `/admin` — no code changes
-needed to update content.
+Supabase content management system. The public site (home, about, notes,
+projects) is fully data-driven; you edit everything through `/admin` — no code
+changes needed to update content.
 
 ## Features
 
-- **Public site**: home, project case studies, blog with tags, contact form,
-  résumé link, light/dark theme, motion, fully responsive.
+- **Public site**: home, about, project case studies, Notes (short write-ups
+  with tags, an RSS feed and generated share cards), a newsletter subscribe
+  form, contact form, résumé link, light/dark theme, motion, fully responsive.
 - **Admin CMS** (`/admin`): single-user Supabase Auth login. Manage profile
   and socials, toggle/reorder homepage sections, projects, work experience,
-  skills, achievements, education, blog posts (rich-text editor), and
-  incoming contact messages.
+  skills, achievements, education, notes (rich-text editor), newsletter
+  subscribers (with CSV export), and incoming contact messages.
 - **Contact form**: submissions are stored in Supabase and emailed to you
   via Resend.
 
@@ -32,8 +33,9 @@ cp .env.example .env.local   # then fill in the values, see below
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the live site;
-`/admin` is reachable at [http://localhost:3000/admin](http://localhost:3000/admin).
+Open [http://localhost:3002](http://localhost:3002) to see the live site
+(`npm run dev` runs on port 3002); `/admin` is reachable at
+[http://localhost:3002/admin](http://localhost:3002/admin).
 
 ## Environment variables
 
@@ -42,11 +44,11 @@ gitignored; never commit real secrets.
 
 | Variable | What it is | Where to get it |
 |---|---|---|
-| `NEXT_PUBLIC_SITE_URL` | Public origin of the site, no trailing slash. Used for SEO metadata, sitemap, and absolute links. | Your domain (e.g. `https://harshpandey.dev`), or `http://localhost:3000` in dev. |
+| `NEXT_PUBLIC_SITE_URL` | Public origin of the site, no trailing slash. Used for SEO metadata, sitemap, and absolute links. | Your domain (e.g. `https://harshpandey.dev`), or `http://localhost:3002` in dev. |
 | `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project's API URL. Safe to expose to the browser. | Supabase dashboard → Project Settings → API. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous/publishable key. Safe to expose to the browser; RLS policies restrict what it can do. | Supabase dashboard → Project Settings → API. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service-role key. **Server only** — grants full DB access, bypassing RLS. Never prefix with `NEXT_PUBLIC_` or ship to the client. | Supabase dashboard → Project Settings → API. |
-| `ADMIN_EMAIL` | The single email address allowed to log into `/admin`. Enforced both in app logic and by the `app.admin_email` Postgres GUC used in RLS policies. | Pick the email you'll use for the admin Supabase Auth user. |
+| `ADMIN_EMAIL` | The single email address allowed to log into `/admin` (checked by the login action and the `/admin` proxy). Row Level Security doesn't read it: `public.is_admin()` in `supabase/setup.sql` hardcodes the admin email, so this value must match that literal. | The email of the admin Supabase Auth user (the one in `is_admin()`). |
 | `RESEND_API_KEY` | API key used to send contact-form notification emails. | Resend dashboard → API Keys. |
 | `CONTACT_NOTIFICATION_EMAIL` | Address that receives an email whenever someone submits the contact form. | Usually the same as `ADMIN_EMAIL`. |
 | `CONTACT_FROM_EMAIL` | The "from" address for outgoing contact-notification emails. Must be a Resend-verified sender (their shared `onboarding@resend.dev` works without domain verification; use a verified address on your own domain for production). | Resend dashboard → Domains, or use `onboarding@resend.dev`. |
@@ -75,15 +77,16 @@ in [`supabase/README.md`](supabase/README.md); summary:
      `blog-images` bucket.
    - `supabase/migrations/0006_personal_brand.sql` — personal-brand columns,
      `subscribers` table and the four site sections.
+   - `supabase/migrations/0007_ivf_assistant.sql` — adds the IVF Assistant
+     project.
 3. **Run `supabase/seed.sql`** to load starter content (your profile,
    sample sections, etc. — edit it to taste before or after running). Note
    it resets content tables; `setup.sql` only fills empty ones.
-4. **Set the admin email GUC** so RLS policies know who the admin is. In the
-   Supabase SQL editor:
-   ```sql
-   alter database postgres set app.admin_email = '<ADMIN_EMAIL>';
-   ```
-   Use the same address as `ADMIN_EMAIL` in `.env.local`.
+4. **Match the admin email.** RLS policies call `public.is_admin()`, which
+   hardcodes the admin email (`harshp6421@gmail.com`, in `setup.sql` and
+   `0002_rls.sql`). Set `ADMIN_EMAIL` in `.env.local` to that same address. To
+   use a different admin, edit the literal in `is_admin()` and re-run that
+   function definition.
 5. **Disable public sign-ups**: Authentication → Providers → turn off
    sign-ups for the Email provider (or whichever provider you use). This is
    a single-admin app — nobody else should be able to register.
@@ -103,22 +106,25 @@ elsewhere, set `resume_url` on the profile in `/admin` to a full URL.
 
 1. Log in at `/admin/login` with the admin account you created in Supabase.
 2. From the dashboard you can manage:
-   - **Profile** — name, bio, socials, résumé URL.
+   - **Profile** — name, headline, tagline, bio, Now card, highlights,
+     socials, avatar, résumé URL.
    - **Sections** — toggle homepage sections on/off and reorder them.
    - **Projects** — case studies, images, tags, published/draft state.
    - **Experience** — work history entries.
    - **Skills** — grouped skill tags.
    - **Achievements** — notable accomplishments.
    - **Education** — schools/degrees.
-   - **Blog** — posts with a rich-text (Tiptap) editor, tags, and
-     published/draft state.
+   - **Notes** — notes with a rich-text (Tiptap) editor, tags, an optional
+     source and "short version", and published/draft state.
    - **Messages** — contact-form submissions.
+   - **Subscribers** — newsletter sign-ups: mark unsubscribed/active, export
+     as CSV.
 
 ## Scripts
 
 | Command | Does |
 |---|---|
-| `npm run dev` | Start the dev server at `localhost:3000`. |
+| `npm run dev` | Start the dev server at `localhost:3002`. |
 | `npm run build` | Production build. |
 | `npm start` | Run the production build (run `build` first). |
 | `npm run lint` | ESLint. |
@@ -132,3 +138,24 @@ elsewhere, set `resume_url` on the profile in `/admin` to a full URL.
 3. Set `NEXT_PUBLIC_SITE_URL` to your production domain (e.g.
    `https://harshpandey.dev`), not `localhost`.
 4. Deploy — the site is always live, no additional switch to flip.
+
+## Deploy / cutover
+
+Moving the live site to this version on a new Supabase project (one set up
+with `supabase/setup.sql`, plus `0007` if it was created before that existed):
+
+1. **Switch the env vars first.** In Vercel → Settings → Environment
+   Variables, point `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   and `SUPABASE_SERVICE_ROLE_KEY` at the new project (Production, and Preview
+   if you use it).
+2. **Redeploy.** `NEXT_PUBLIC_*` values are baked into the build, so saving
+   them changes nothing until the next build: redeploy the current production
+   deployment (Deployments → ⋯ → Redeploy).
+3. **Then merge and deploy this version** (the `feat/personal-brand-redesign`
+   branch into `main`).
+4. **Verify** on the production URL: `/`, a note (`/notes/<slug>`), and
+   `/admin/login` (sign in).
+
+If the public pages ever run against a database without migration 0006, they
+degrade instead of crashing (no Now card, highlights, work tags or "short
+version"); the admin's new fields and Subscribers do need 0006.

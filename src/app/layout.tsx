@@ -25,10 +25,11 @@ const fraunces = Fraunces({
 });
 
 // This root default is a real fallback: per-page `generateMetadata`
-// (home/projects/blog) overrides this with the richer, live profile/content
-// copy. Deliberately a plain string `title` (not a `{ default, template }`
-// object) — the detail pages already build their own full "X — Harsh Pandey"
-// titles, and a parent template would double-suffix them.
+// (home, about, notes, projects) overrides this with the richer, live
+// profile/content copy. Deliberately a plain string `title` (not a
+// `{ default, template }` object) — the detail pages already build their own
+// full "X — Harsh Pandey" titles, and a parent template would double-suffix
+// them.
 const defaultTitle = `${brand.name} (${brand.handle}) — ${brand.headline}`;
 const defaultDescription = brand.subline;
 
