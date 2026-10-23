@@ -1,18 +1,27 @@
 import { ImageResponse } from "next/og";
+import {
+  ACCENT,
+  HEIGHT,
+  INK,
+  MUTED,
+  PAPER,
+  RULED_LINES,
+  RULE_LINE,
+  WIDTH,
+} from "@/components/og/note-og-card";
 import { brand } from "@/lib/config";
+import { loadOgFonts } from "@/lib/og-fonts";
 
 /**
- * Site-wide default OG/Twitter card. Colocated at the app root so it applies
- * to every route that doesn't define a more specific `opengraph-image` —
- * Next.js auto-injects the `og:image`/`twitter:image` tags, no manual wiring
- * needed in `layout.tsx`'s `metadata`. Kept deliberately simple (no remote
- * fonts, no data fetching) so it stays statically generated at build time.
+ * Site-wide default OG/Twitter card in the Field notes style. Pages that set
+ * their own `openGraph` metadata reference it explicitly (`defaultOgImages`).
+ * Static: no data fetching, rendered once at build time.
  */
-export const alt = `${brand.name} — portfolio`;
-export const size = { width: 1200, height: 630 };
+export const alt = `${brand.name} (${brand.handle}) — ${brand.headline}`;
+export const size = { width: WIDTH, height: HEIGHT };
 export const contentType = "image/png";
 
-export default function Image() {
+export default async function Image() {
   return new ImageResponse(
     (
       <div
@@ -20,47 +29,57 @@ export default function Image() {
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          justifyContent: "center",
-          padding: "80px",
-          background: "#141518",
-          color: "#ffffff",
-          fontFamily: "Helvetica, Arial, sans-serif",
+          position: "relative",
+          background: PAPER,
+          color: INK,
+          fontFamily: "Fraunces",
         }}
       >
+        {RULED_LINES.map((top) => (
+          <div
+            key={top}
+            style={{ position: "absolute", left: 0, right: 0, top, height: 1, background: RULE_LINE }}
+          />
+        ))}
+        <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 6, background: ACCENT }} />
+
         <div
           style={{
             display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: 96,
-            height: 96,
-            borderRadius: 22,
-            border: "3px solid rgba(255,255,255,0.14)",
-            fontSize: 42,
-            fontWeight: 700,
-            letterSpacing: -1,
-            marginBottom: 48,
+            flexDirection: "column",
+            justifyContent: "space-between",
+            width: "100%",
+            height: "100%",
+            padding: "76px 84px 58px 90px",
           }}
         >
-          {brand.initials}
-        </div>
-        <div style={{ display: "flex", fontSize: 68, fontWeight: 700, letterSpacing: -2 }}>
-          {brand.name}
-        </div>
-        <div
-          style={{
-            display: "flex",
-            marginTop: 20,
-            fontSize: 32,
-            color: "rgba(255,255,255,0.7)",
-          }}
-        >
-          {brand.headline}
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ display: "flex", fontFamily: "IBM Plex Mono", fontSize: 22, letterSpacing: 3, color: ACCENT }}>
+              AI ENGINEER &amp; BUILDER
+            </div>
+            <div style={{ display: "flex", marginTop: 30, fontSize: 72, lineHeight: 1.08, letterSpacing: -1.8 }}>
+              {brand.name}
+            </div>
+            <div style={{ display: "flex", marginTop: 26, fontSize: 30, lineHeight: 1.3, color: MUTED }}>
+              I build AI that does the actual work.
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              borderTop: `2px solid ${INK}`,
+              paddingTop: 22,
+              fontFamily: "IBM Plex Mono",
+              fontSize: 22,
+              color: MUTED,
+            }}
+          >
+            @knightdeveloper · knightdeveloper.com
+          </div>
         </div>
       </div>
     ),
-    { ...size },
+    { ...size, fonts: await loadOgFonts() },
   );
 }

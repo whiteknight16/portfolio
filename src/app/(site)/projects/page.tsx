@@ -3,7 +3,7 @@ import { getProfile, getPublishedProjects } from "@/lib/content";
 import { Container } from "@/components/public/container";
 import { Reveal } from "@/components/public/reveal";
 import { ProjectsGrid } from "@/components/public/projects-grid";
-import { brand, rssAlternateTypes } from "@/lib/config";
+import { brand, rssAlternateTypes, defaultOgImages } from "@/lib/config";
 
 // Reads published projects straight from the database on every request —
 // there's nothing here worth prerendering or caching.
@@ -19,8 +19,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description: SUB,
     alternates: { canonical: "/projects", types: rssAlternateTypes },
-    openGraph: { title, description: SUB, type: "website", url: "/projects", siteName: name },
-    twitter: { card: "summary_large_image", title, description: SUB },
+    openGraph: { title, description: SUB, type: "website", url: "/projects", siteName: name, images: defaultOgImages },
+    twitter: { card: "summary_large_image", title, images: defaultOgImages, description: SUB },
   };
 }
 

@@ -2,14 +2,14 @@ import { ImageResponse } from "next/og";
 import { ogTitleSize } from "@/lib/note-view";
 import { loadOgFonts } from "@/lib/og-fonts";
 
-const WIDTH = 1200;
-const HEIGHT = 630;
-const PAPER = "#f3eee4";
-const RULE_LINE = "#e6dfd0";
-const INK = "#1d1a16";
-const MUTED = "#5d564c";
-const ACCENT = "#b53c0b";
-const RULED_LINES = Array.from({ length: Math.ceil(HEIGHT / 30) }, (_, i) => i * 30);
+export const WIDTH = 1200;
+export const HEIGHT = 630;
+export const PAPER = "#f3eee4";
+export const RULE_LINE = "#e6dfd0";
+export const INK = "#1d1a16";
+export const MUTED = "#5d564c";
+export const ACCENT = "#b53c0b";
+export const RULED_LINES = Array.from({ length: Math.ceil(HEIGHT / 30) }, (_, i) => i * 30);
 
 export type NoteOgValues = {
   title: string;

@@ -30,3 +30,10 @@ export const siteUrl = rawSiteUrl.replace(/\/+$/, "");
  */
 export const rssFeed = { url: "/notes/rss.xml", title: `Notes by ${brand.name}` };
 export const rssAlternateTypes = { "application/rss+xml": [rssFeed] };
+
+/**
+ * The site default card (src/app/opengraph-image.tsx). A page that sets its
+ * own `openGraph`/`twitter` metadata loses the root file-based image, so such
+ * pages pass this explicitly. Resolved against `metadataBase`.
+ */
+export const defaultOgImages = ["/opengraph-image"];

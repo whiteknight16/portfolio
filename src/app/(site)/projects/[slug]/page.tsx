@@ -6,7 +6,7 @@ import { Container } from "@/components/public/container";
 import { Reveal } from "@/components/public/reveal";
 import { Prose } from "@/components/public/prose";
 import { TagChip } from "@/components/public/tag-chip";
-import { brand, rssAlternateTypes } from "@/lib/config";
+import { brand, rssAlternateTypes, defaultOgImages } from "@/lib/config";
 import { safeHttpUrl } from "@/lib/note-view";
 import { projectKicker } from "@/lib/profile-view";
 
@@ -25,6 +25,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   const name = profile?.full_name || brand.name;
   const title = `${project.title} — ${name}`;
   const path = `/projects/${project.slug}`;
+  const images = project.cover_image_url ? [project.cover_image_url] : defaultOgImages;
   return {
     title,
     description: project.summary,
@@ -35,9 +36,9 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
       type: "article",
       url: path,
       siteName: name,
-      images: project.cover_image_url ? [project.cover_image_url] : undefined,
+      images,
     },
-    twitter: { card: "summary_large_image", title, description: project.summary },
+    twitter: { card: "summary_large_image", title, description: project.summary, images },
   };
 }
 

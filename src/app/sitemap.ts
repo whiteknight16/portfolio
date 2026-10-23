@@ -16,8 +16,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: siteUrl, changeFrequency: "monthly", priority: 1 },
+    { url: `${siteUrl}/about`, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${siteUrl}/notes`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${siteUrl}/projects`, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${siteUrl}/blog`, changeFrequency: "weekly", priority: 0.8 },
   ];
 
   const projectRoutes: MetadataRoute.Sitemap = projects.map((project) => ({
@@ -28,7 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
-    url: `${siteUrl}/blog/${post.slug}`,
+    url: `${siteUrl}/notes/${post.slug}`,
     lastModified: post.updated_at,
     changeFrequency: "monthly",
     priority: 0.6,

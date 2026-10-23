@@ -9,7 +9,7 @@ import { Skills } from "@/components/sections/skills";
 import { Work } from "@/components/sections/work";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getExperiences, getProfile } from "@/lib/content";
-import { brand, rssAlternateTypes, siteUrl } from "@/lib/config";
+import { brand, rssAlternateTypes, defaultOgImages, siteUrl } from "@/lib/config";
 import { fillYears, firstSentence, formatExperienceYears } from "@/lib/format";
 import { buildProfilePageJsonLd } from "@/lib/seo";
 
@@ -29,8 +29,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description,
     alternates: { canonical: "/about", types: rssAlternateTypes },
-    openGraph: { title, description, type: "profile", url: "/about", siteName: name },
-    twitter: { card: "summary_large_image", title, description },
+    openGraph: { title, description, type: "profile", url: "/about", siteName: name, images: defaultOgImages },
+    twitter: { card: "summary_large_image", title, description, images: defaultOgImages },
   };
 }
 

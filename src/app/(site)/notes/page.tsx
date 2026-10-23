@@ -5,7 +5,7 @@ import { Reveal } from "@/components/public/reveal";
 import { SubscribeForm } from "@/components/public/subscribe-form";
 import { NotesEmptyLine } from "@/components/sections/notes-preview";
 import { getProfile, getPublishedPosts } from "@/lib/content";
-import { brand, rssAlternateTypes } from "@/lib/config";
+import { brand, rssAlternateTypes, defaultOgImages } from "@/lib/config";
 
 // Reads published notes straight from the database on every request.
 export const dynamic = "force-dynamic";
@@ -20,8 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description: DESCRIPTION,
     alternates: { canonical: "/notes", types: rssAlternateTypes },
-    openGraph: { title, description: DESCRIPTION, type: "website", url: "/notes", siteName: name },
-    twitter: { card: "summary_large_image", title, description: DESCRIPTION },
+    openGraph: { title, description: DESCRIPTION, type: "website", url: "/notes", siteName: name, images: defaultOgImages },
+    twitter: { card: "summary_large_image", title, images: defaultOgImages, description: DESCRIPTION },
   };
 }
 
