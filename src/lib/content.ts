@@ -54,8 +54,8 @@ export async function getEnabledSections(): Promise<SiteSection[]> {
   }
 }
 
-/** Fetches published projects, ordered by `sort_order` then `created_at`. */
-export async function getPublishedProjects(): Promise<Project[]> {
+/** Fetches published projects, ordered by `sort_order` then `created_at`. Cached per-request. */
+export const getPublishedProjects = cache(async (): Promise<Project[]> => {
   try {
     const supabase = await createServerSupabase();
     const { data, error } = await supabase
@@ -70,7 +70,7 @@ export async function getPublishedProjects(): Promise<Project[]> {
   } catch {
     return [];
   }
-}
+});
 
 /**
  * Fetches published projects for the home-page preview: featured first,
@@ -113,8 +113,11 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   }
 }
 
-/** Fetches all experiences, ordered by `sort_order`. */
-export async function getExperiences(): Promise<Experience[]> {
+/**
+ * Fetches all experiences, ordered by `sort_order`. Cached per-request: the
+ * (site) layout (via `getCurrentExperience`) and the page both read it.
+ */
+export const getExperiences = cache(async (): Promise<Experience[]> => {
   try {
     const supabase = await createServerSupabase();
     const { data, error } = await supabase
@@ -127,7 +130,7 @@ export async function getExperiences(): Promise<Experience[]> {
   } catch {
     return [];
   }
-}
+});
 
 /**
  * Groups skills into categories, preserving the first-seen category order
@@ -152,10 +155,13 @@ export function groupByCategory(
   return groups;
 }
 
-/** Fetches all skills ordered by `sort_order`, grouped by category. */
-export async function getSkillsByCategory(): Promise<
+/**
+ * Fetches all skills ordered by `sort_order`, grouped by category. Cached
+ * per-request: the (site) layout and the About page both read it.
+ */
+export const getSkillsByCategory = cache(async (): Promise<
   { category: string; items: Skill[] }[]
-> {
+> => {
   try {
     const supabase = await createServerSupabase();
     const { data, error } = await supabase
@@ -168,7 +174,7 @@ export async function getSkillsByCategory(): Promise<
   } catch {
     return [];
   }
-}
+});
 
 /** Fetches all achievements, ordered by `sort_order`. */
 export async function getAchievements(): Promise<Achievement[]> {
@@ -186,8 +192,11 @@ export async function getAchievements(): Promise<Achievement[]> {
   }
 }
 
-/** Fetches all education entries, ordered by `sort_order`. */
-export async function getEducation(): Promise<Education[]> {
+/**
+ * Fetches all education entries, ordered by `sort_order`. Cached per-request:
+ * the (site) layout and the About page both read it.
+ */
+export const getEducation = cache(async (): Promise<Education[]> => {
   try {
     const supabase = await createServerSupabase();
     const { data, error } = await supabase
@@ -200,10 +209,10 @@ export async function getEducation(): Promise<Education[]> {
   } catch {
     return [];
   }
-}
+});
 
-/** Fetches published posts, ordered by `published_at` descending. */
-export async function getPublishedPosts(): Promise<Post[]> {
+/** Fetches published posts, ordered by `published_at` descending. Cached per-request. */
+export const getPublishedPosts = cache(async (): Promise<Post[]> => {
   try {
     const supabase = await createServerSupabase();
     const { data, error } = await supabase
@@ -217,7 +226,7 @@ export async function getPublishedPosts(): Promise<Post[]> {
   } catch {
     return [];
   }
-}
+});
 
 /** Fetches a single published post by slug. */
 export async function getPostBySlug(slug: string): Promise<Post | null> {

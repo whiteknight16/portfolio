@@ -121,7 +121,15 @@ export function NoteArticle({ post, author, previous, next }: NoteArticleProps) 
           <span className="size-11 shrink-0 overflow-hidden rounded-full border border-rule bg-linear-160 from-[#d8cdb9] to-[#b9ab94]">
             {/* Plain <img>: avatar_url may be any remote host. Decorative, the name sits beside it. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={author.avatarUrl} alt="" className="size-full object-cover" />
+            <img
+              src={author.avatarUrl}
+              alt=""
+              width={44}
+              height={44}
+              loading="lazy"
+              decoding="async"
+              className="size-full object-cover"
+            />
           </span>
           <p>
             <b className="font-medium text-foreground">{author.name}</b> ({author.handle})
