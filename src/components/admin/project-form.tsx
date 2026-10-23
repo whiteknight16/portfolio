@@ -67,6 +67,18 @@ export function ProjectForm({ project }: { project?: Project | null }) {
             />
           </div>
           <div className="flex flex-col gap-1.5 sm:col-span-2">
+            <Label htmlFor="label">Label</Label>
+            <Input
+              id="label"
+              name="label"
+              placeholder="e.g. AI product"
+              defaultValue={project?.label ?? ""}
+            />
+            <p className="text-xs text-muted-foreground">
+              Short kicker, e.g. AI product, SaaS. ‘· live’ is added automatically.
+            </p>
+          </div>
+          <div className="flex flex-col gap-1.5 sm:col-span-2">
             <Label htmlFor="summary">Summary</Label>
             <Textarea
               id="summary"

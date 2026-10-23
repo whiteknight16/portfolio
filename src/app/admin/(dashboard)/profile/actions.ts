@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { profileSchema } from "@/lib/validation";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/auth";
+import { nowChanged, readHighlights } from "@/lib/profile-form";
 
 export type ProfileFormState = {
   ok?: boolean;
@@ -38,8 +39,19 @@ export async function updateProfileAction(
       github: formData.get("socials.github"),
       linkedin: formData.get("socials.linkedin"),
       twitter: formData.get("socials.twitter"),
+      youtube: formData.get("socials.youtube"),
+      instagram: formData.get("socials.instagram"),
       website: formData.get("socials.website"),
     },
+    handle: formData.get("handle"),
+    tagline: formData.get("tagline"),
+    career_start_date: formData.get("career_start_date"),
+    now: {
+      building: formData.get("now.building"),
+      writing: formData.get("now.writing"),
+      learning: formData.get("now.learning"),
+    },
+    highlights: readHighlights(formData),
   });
 
   if (!parsed.success) {
@@ -48,9 +60,21 @@ export async function updateProfileAction(
 
   try {
     const supabase = await createServerSupabase();
+    const { data: existing } = await supabase
+      .from("profile")
+      .select("now")
+      .eq("singleton", true)
+      .maybeSingle();
+
+    // Stamp "now" freshness only when a (trimmed) value actually changed.
+    const payload: Record<string, unknown> = { ...parsed.data, singleton: true };
+    if (nowChanged(existing?.now, parsed.data.now)) {
+      payload.now_updated_at = new Date().toISOString();
+    }
+
     const { error } = await supabase
       .from("profile")
-      .upsert({ ...parsed.data, singleton: true }, { onConflict: "singleton" });
+      .upsert(payload, { onConflict: "singleton" });
 
     if (error) {
       return { error: error.message };
@@ -60,5 +84,6 @@ export async function updateProfileAction(
   }
 
   revalidatePath("/");
+  revalidatePath("/about");
   return { ok: true };
 }

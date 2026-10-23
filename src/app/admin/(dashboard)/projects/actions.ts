@@ -55,6 +55,7 @@ function parseProjectForm(formData: FormData) {
     title: rawTitle,
     slug: rawSlug || slugify(rawTitle),
     summary: formData.get("summary"),
+    label: formData.get("label"),
     content: formData.get("content"),
     cover_image_url: formData.get("cover_image_url"),
     tags: formData.get("tags"),

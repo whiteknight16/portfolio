@@ -32,7 +32,8 @@ export function RowActions({
   label,
 }: {
   id: string;
-  editHref: string;
+  /** Omit for entities without an edit page (e.g. subscribers). */
+  editHref?: string;
   onDelete: (id: string) => Promise<EntityActionResult>;
   label: string;
 }) {
@@ -54,15 +55,17 @@ export function RowActions({
 
   return (
     <div className="flex items-center justify-end gap-1">
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        nativeButton={false}
-        render={<Link href={editHref} />}
-        aria-label="Edit"
-      >
-        <Pencil />
-      </Button>
+      {editHref ? (
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          nativeButton={false}
+          render={<Link href={editHref} />}
+          aria-label="Edit"
+        >
+          <Pencil />
+        </Button>
+      ) : null}
       <AlertDialog
         open={open}
         onOpenChange={(next) => {

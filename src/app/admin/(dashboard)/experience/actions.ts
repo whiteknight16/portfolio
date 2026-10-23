@@ -26,6 +26,7 @@ function parseExperienceForm(formData: FormData) {
     end_date: formData.get("end_date"),
     is_current: formData.get("is_current") === "on",
     highlights,
+    tags: formData.get("tags"),
     sort_order: formData.get("sort_order"),
   });
 }

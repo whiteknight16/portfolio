@@ -6,7 +6,8 @@ import {
   updatePostAction,
   type PostFormState,
 } from "@/app/admin/(dashboard)/blog/actions";
-import type { Post } from "@/lib/types";
+import Link from "next/link";
+import { SOURCE_KINDS, type Post } from "@/lib/types";
 import {
   Card,
   CardContent,
@@ -87,6 +88,70 @@ export function PostForm({ post }: { post?: Post | null }) {
 
       <Card>
         <CardHeader>
+          <CardTitle>Source (optional)</CardTitle>
+          <CardDescription>
+            What this note is based on, e.g. a video or paper you learned from.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="source_title">Source title</Label>
+            <Input
+              id="source_title"
+              name="source_title"
+              defaultValue={post?.source_title ?? ""}
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="source_url">Source URL</Label>
+            <Input
+              id="source_url"
+              name="source_url"
+              placeholder="https://…"
+              defaultValue={post?.source_url ?? ""}
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="source_kind">Source kind</Label>
+            <Select name="source_kind" defaultValue={post?.source_kind ?? "none"}>
+              <SelectTrigger id="source_kind" className="w-full">
+                <SelectValue placeholder="None" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None</SelectItem>
+                {SOURCE_KINDS.map((kind) => (
+                  <SelectItem key={kind} value={kind}>
+                    {kind.charAt(0).toUpperCase() + kind.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>The short version (optional)</CardTitle>
+          <CardDescription>
+            Up to three one-line takeaways shown above the note.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          {[0, 1, 2].map((i) => (
+            <Input
+              key={i}
+              name="tldr"
+              aria-label={`Takeaway ${i + 1}`}
+              placeholder={`Takeaway ${i + 1}`}
+              defaultValue={post?.tldr?.[i] ?? ""}
+            />
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Content</CardTitle>
           <CardDescription>
             Full write-up shown on the note&apos;s page.
@@ -127,7 +192,21 @@ export function PostForm({ post }: { post?: Post | null }) {
       <Card>
         <CardHeader>
           <CardTitle>Publishing</CardTitle>
-          <CardDescription>Visibility of this post.</CardDescription>
+          <CardDescription>
+            Visibility of this post.
+            {post && post.status === "published" ? (
+              <>
+                {" "}
+                <Link
+                  href={`/notes/${post.slug}`}
+                  target="_blank"
+                  className="underline underline-offset-2"
+                >
+                  View on site ↗
+                </Link>
+              </>
+            ) : null}
+          </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="flex flex-col gap-1.5">

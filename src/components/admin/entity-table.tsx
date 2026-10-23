@@ -24,7 +24,7 @@ export type EntityTableProps<T extends { id: string }> = {
   columns: EntityTableColumn<T>[];
   rows: T[];
   /** Edit link destination for a row. */
-  editHref: (row: T) => string;
+  editHref?: (row: T) => string;
   /** Deletes the row with the given id. The list re-renders via the caller's
    * revalidated route on success; on `{ error }` the dialog stays open and
    * surfaces the message instead. */
@@ -34,6 +34,8 @@ export type EntityTableProps<T extends { id: string }> = {
   /** Optional row-specific label for the delete confirmation, e.g. the
    * item's title. Defaults to a generic "this item". */
   describeRow?: (row: T) => string;
+  /** Extra per-row controls rendered before the built-in actions. */
+  extraActions?: (row: T) => ReactNode;
 };
 
 /**
@@ -54,6 +56,7 @@ export function EntityTable<T extends { id: string }>({
   onDelete,
   emptyMessage = "Nothing here yet.",
   describeRow,
+  extraActions,
 }: EntityTableProps<T>) {
   if (rows.length === 0) {
     return (
@@ -85,12 +88,15 @@ export function EntityTable<T extends { id: string }>({
                 </TableCell>
               ))}
               <TableCell className="text-right">
-                <RowActions
-                  id={row.id}
-                  editHref={editHref(row)}
-                  onDelete={onDelete}
-                  label={describeRow?.(row) ?? "this item"}
-                />
+                <div className="flex items-center justify-end gap-1">
+                  {extraActions?.(row)}
+                  <RowActions
+                    id={row.id}
+                    editHref={editHref?.(row)}
+                    onDelete={onDelete}
+                    label={describeRow?.(row) ?? "this item"}
+                  />
+                </div>
               </TableCell>
             </TableRow>
           ))}

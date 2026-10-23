@@ -50,6 +50,10 @@ function parsePostForm(formData: FormData) {
     content: formData.get("content"),
     cover_image_url: formData.get("cover_image_url"),
     tags: formData.get("tags"),
+    source_title: formData.get("source_title"),
+    source_url: formData.get("source_url"),
+    source_kind: formData.get("source_kind") === "none" ? "" : formData.get("source_kind"),
+    tldr: formData.getAll("tldr"),
     status: formData.get("status"),
   });
 }

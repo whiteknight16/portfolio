@@ -129,6 +129,29 @@ export function ExperienceForm({ experience }: { experience?: Experience | null 
 
       <Card>
         <CardHeader>
+          <CardTitle>Tags</CardTitle>
+          <CardDescription>
+            1–2 short tags shown on the homepage.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="tags">Tags</Label>
+            <Input
+              id="tags"
+              name="tags"
+              placeholder="e.g. Voice AI, Founding"
+              defaultValue={experience?.tags?.join(", ") ?? ""}
+            />
+            <p className="text-xs text-muted-foreground">
+              Comma-separated. 1–2 short tags shown on the homepage.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Ordering</CardTitle>
         </CardHeader>
         <CardContent>

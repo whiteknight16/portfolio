@@ -28,9 +28,9 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
     <form action={formAction} className="flex flex-col gap-6">
       <Card>
         <CardHeader>
-          <CardTitle>Basic info</CardTitle>
+          <CardTitle>Who you are</CardTitle>
           <CardDescription>
-            Name and title shown at the top of your site.
+            Name, title and the copy shown at the top of your site.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -44,6 +44,15 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
             />
           </div>
           <div className="flex flex-col gap-1.5">
+            <Label htmlFor="handle">Handle</Label>
+            <Input
+              id="handle"
+              name="handle"
+              placeholder="e.g. harsh"
+              defaultValue={profile?.handle ?? ""}
+            />
+          </div>
+          <div className="flex flex-col gap-1.5 sm:col-span-2">
             <Label htmlFor="title">Title</Label>
             <Input
               id="title"
@@ -60,19 +69,22 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
               placeholder="One-line summary shown under your name"
               defaultValue={profile?.headline ?? ""}
             />
+            <p className="text-xs text-muted-foreground">
+              Wrap one phrase in *asterisks* to italicise it. Use {"{years}"} for your live years of experience.
+            </p>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Bio</CardTitle>
-          <CardDescription>
-            Longer description shown in the About section.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1.5 sm:col-span-2">
+            <Label htmlFor="tagline">Tagline</Label>
+            <Input
+              id="tagline"
+              name="tagline"
+              defaultValue={profile?.tagline ?? ""}
+            />
+            <p className="text-xs text-muted-foreground">
+              Wrap one phrase in *asterisks* to italicise it. Use {"{years}"} for your live years of experience.
+            </p>
+          </div>
+          <div className="flex flex-col gap-1.5 sm:col-span-2">
             <Label htmlFor="bio">Bio</Label>
             <Textarea
               id="bio"
@@ -80,7 +92,72 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
               rows={6}
               defaultValue={profile?.bio ?? ""}
             />
+            <p className="text-xs text-muted-foreground">
+              Wrap one phrase in *asterisks* to italicise it. Use {"{years}"} for your live years of experience.
+            </p>
           </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="career_start_date">Career start date</Label>
+            <Input
+              id="career_start_date"
+              name="career_start_date"
+              type="date"
+              defaultValue={profile?.career_start_date ?? ""}
+            />
+            <p className="text-xs text-muted-foreground">
+              First full-time role. Years on the site are counted from here.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Now</CardTitle>
+          <CardDescription>
+            What you are up to right now. Saving a change stamps the “updated” date.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {(["building", "writing", "learning"] as const).map((key) => (
+            <div key={key} className="flex flex-col gap-1.5">
+              <Label htmlFor={`now.${key}`} className="capitalize">
+                {key}
+              </Label>
+              <Input
+                id={`now.${key}`}
+                name={`now.${key}`}
+                defaultValue={profile?.now?.[key] ?? ""}
+              />
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Highlights</CardTitle>
+          <CardDescription>
+            The first cell, years of experience, is automatic.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="grid grid-cols-1 gap-3 sm:grid-cols-[8rem_1fr]">
+              <Input
+                name={`highlights.${i}.value`}
+                aria-label={`Highlight ${i + 1} value`}
+                placeholder="Value, e.g. 3"
+                defaultValue={profile?.highlights?.[i]?.value ?? ""}
+              />
+              <Input
+                name={`highlights.${i}.label`}
+                aria-label={`Highlight ${i + 1} label`}
+                placeholder="Label, e.g. products shipped"
+                defaultValue={profile?.highlights?.[i]?.label ?? ""}
+              />
+            </div>
+          ))}
         </CardContent>
       </Card>
 
@@ -153,6 +230,24 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
               name="socials.twitter"
               placeholder="https://x.com/…"
               defaultValue={profile?.socials?.twitter ?? ""}
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="socials.youtube">YouTube</Label>
+            <Input
+              id="socials.youtube"
+              name="socials.youtube"
+              placeholder="https://youtube.com/@…"
+              defaultValue={profile?.socials?.youtube ?? ""}
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="socials.instagram">Instagram</Label>
+            <Input
+              id="socials.instagram"
+              name="socials.instagram"
+              placeholder="https://instagram.com/…"
+              defaultValue={profile?.socials?.instagram ?? ""}
             />
           </div>
           <div className="flex flex-col gap-1.5">
