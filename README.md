@@ -44,7 +44,7 @@ gitignored; never commit real secrets.
 
 | Variable | What it is | Where to get it |
 |---|---|---|
-| `NEXT_PUBLIC_SITE_URL` | Public origin of the site, no trailing slash. Used for SEO metadata, sitemap, and absolute links. | Your domain (e.g. `https://harshpandey.dev`), or `http://localhost:3002` in dev. |
+| `NEXT_PUBLIC_SITE_URL` | Canonical public origin of the site, no trailing slash. Used for SEO metadata (canonical links), sitemap, and absolute links. | `https://www.knightdeveloper.com` in production (the host the apex redirects to), or `http://localhost:3002` in dev. |
 | `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project's API URL. Safe to expose to the browser. | Supabase dashboard → Project Settings → API. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous/publishable key. Safe to expose to the browser; RLS policies restrict what it can do. | Supabase dashboard → Project Settings → API. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service-role key. **Server only** — grants full DB access, bypassing RLS. Never prefix with `NEXT_PUBLIC_` or ship to the client. | Supabase dashboard → Project Settings → API. |
@@ -136,8 +136,8 @@ elsewhere, set `resume_url` on the profile in `/admin` to a full URL.
 1. Import the repo into Vercel.
 2. Set all environment variables from the table above in the Vercel project
    settings (Production, and Preview if you want previews working too).
-3. Set `NEXT_PUBLIC_SITE_URL` to your production domain (e.g.
-   `https://harshpandey.dev`), not `localhost`.
+3. Set `NEXT_PUBLIC_SITE_URL` to the canonical production origin,
+   `https://www.knightdeveloper.com`, not `localhost`.
 4. Deploy — the site is always live, no additional switch to flip.
 
 ## Deploy / cutover
@@ -156,6 +156,11 @@ with `supabase/setup.sql`, plus `0007` if it was created before that existed):
    branch into `main`).
 4. **Verify** on the production URL: `/`, a note (`/notes/<slug>`), and
    `/admin/login` (sign in).
+5. **One canonical host.** The apex `knightdeveloper.com` 308-redirects to
+   `www`, so canonical links must use `www` too: set `NEXT_PUBLIC_SITE_URL`
+   to exactly `https://www.knightdeveloper.com` (Production) and redeploy, then
+   check that `view-source:` of `/` shows
+   `<link rel="canonical" href="https://www.knightdeveloper.com">`.
 
 If the public pages ever run against a database without migration 0006, they
 degrade instead of crashing (no Now card, highlights, work tags or "short

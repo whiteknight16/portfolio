@@ -9,7 +9,9 @@ import {
   RULE_LINE,
   WIDTH,
 } from "@/components/og/note-og-card";
-import { brand } from "@/lib/config";
+import { brand, siteUrl } from "@/lib/config";
+import { handleSlug } from "@/lib/format";
+import { urlHost } from "@/lib/note-view";
 import { loadOgFonts } from "@/lib/og-fonts";
 
 /**
@@ -75,7 +77,7 @@ export default async function Image() {
               color: MUTED,
             }}
           >
-            @knightdeveloper · knightdeveloper.com
+            {`@${handleSlug(brand.handle)} · ${urlHost(siteUrl) ?? siteUrl}`}
           </div>
         </div>
       </div>
