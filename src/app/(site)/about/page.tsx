@@ -7,13 +7,16 @@ import { SocialLinks } from "@/components/public/social-icons";
 import { Achievements } from "@/components/sections/achievements";
 import { Contact } from "@/components/sections/contact";
 import { EducationSection } from "@/components/sections/education";
+import { InBrief } from "@/components/sections/in-brief";
+import { QuickFacts } from "@/components/sections/quick-facts";
 import { Skills } from "@/components/sections/skills";
 import { Work } from "@/components/sections/work";
 import { JsonLd } from "@/components/seo/json-ld";
-import { getExperiences, getProfile } from "@/lib/content";
+import { getExperiences, getProfile, getPublishedPosts, getPublishedProjects } from "@/lib/content";
 import { brand, rssAlternateTypes, defaultOgImages, openGraphBase, siteUrl } from "@/lib/config";
+import { buildInBrief, buildQuickFacts } from "@/lib/facts";
 import { fillYears, firstSentence, formatExperienceYears } from "@/lib/format";
-import { buildBreadcrumbJsonLd, buildProfilePageJsonLd } from "@/lib/seo";
+import { buildBreadcrumbJsonLd, buildFaqPageJsonLd, buildProfilePageJsonLd } from "@/lib/seo";
 
 // Reads the profile and every About block straight from the database per request.
 export const dynamic = "force-dynamic";
@@ -37,7 +40,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [profile, experiences] = await Promise.all([getProfile(), getExperiences()]);
+  const [profile, experiences, projects, posts] = await Promise.all([
+    getProfile(),
+    getExperiences(),
+    getPublishedProjects(),
+    getPublishedPosts(),
+  ]);
 
   const name = profile?.full_name || brand.name;
   const handle = profile?.handle || brand.handle;
@@ -47,11 +55,15 @@ export default async function AboutPage() {
   const place = profile?.location?.trim() || null;
   const photo = profile?.avatar_url || FALLBACK_PHOTO;
   const resume = profile?.resume_url?.trim() || null;
+  const noteCount = posts.length;
+  const facts = buildQuickFacts({ profile, projects, noteCount });
+  const inBrief = buildInBrief({ siteUrl, profile, projects, experiences, noteCount });
 
   return (
     <>
       <JsonLd data={buildProfilePageJsonLd(siteUrl)} />
       <JsonLd data={buildBreadcrumbJsonLd(siteUrl, [{ name: "About", path: "/about" }])} />
+      {inBrief.length > 0 ? <JsonLd data={buildFaqPageJsonLd(inBrief)} /> : null}
 
       <Container as="header" className="pt-12 sm:pt-16">
         <Reveal className="grid items-start gap-9 border-b-[1.5px] border-foreground pb-9 lg:grid-cols-[250px_1fr] lg:gap-12 xl:grid-cols-[280px_1fr] xl:gap-16">
@@ -100,6 +112,8 @@ export default async function AboutPage() {
         </Reveal>
       </Container>
 
+      <QuickFacts facts={facts} />
+      <InBrief qas={inBrief} />
       <Work experiences={experiences} variant="full" />
       <Skills />
       {/* Side by side from lg; either one alone takes the full width. */}

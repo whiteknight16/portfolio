@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import { Globe } from "lucide-react";
+import { socialLinks, type SocialKey } from "@/lib/socials";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types";
 
@@ -50,18 +51,14 @@ export function YouTubeIcon({ className }: { className?: string }) {
   );
 }
 
-const SOCIAL_META: {
-  key: string;
-  label: string;
-  Icon: ComponentType<{ className?: string }>;
-}[] = [
-  { key: "github", label: "GitHub", Icon: GitHubIcon },
-  { key: "linkedin", label: "LinkedIn", Icon: LinkedInIcon },
-  { key: "instagram", label: "Instagram", Icon: InstagramIcon },
-  { key: "youtube", label: "YouTube", Icon: YouTubeIcon },
-  { key: "twitter", label: "X", Icon: XIcon },
-  { key: "website", label: "Website", Icon: Globe },
-];
+const ICONS: Record<SocialKey, ComponentType<{ className?: string }>> = {
+  github: GitHubIcon,
+  linkedin: LinkedInIcon,
+  instagram: InstagramIcon,
+  youtube: YouTubeIcon,
+  twitter: XIcon,
+  website: Globe,
+};
 
 type SocialLinksProps = {
   socials?: Profile["socials"] | null;
@@ -72,10 +69,7 @@ type SocialLinksProps = {
 /** Row of icon links built from a `Profile.socials` record. Renders nothing
  * (not even an empty wrapper) when no known social keys have a value. */
 export function SocialLinks({ socials, className, iconClassName }: SocialLinksProps) {
-  const links = SOCIAL_META.flatMap(({ key, label, Icon }) => {
-    const href = socials?.[key];
-    return href ? [{ key, label, Icon, href }] : [];
-  });
+  const links = socialLinks(socials).map((link) => ({ ...link, Icon: ICONS[link.key] }));
 
   if (links.length === 0) return null;
 

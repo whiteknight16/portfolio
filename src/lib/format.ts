@@ -105,3 +105,26 @@ export function firstSentence(text: string): string {
   const match = flat.match(/^.*?[.!?](?=\s|$)/);
   return match ? match[0] : flat;
 }
+
+// Letters whose spoken name starts with a vowel sound ("an ML engineer").
+const VOWEL_SOUND_LETTERS = "AEFHILMNORSX";
+
+/**
+ * "a" or "an" for a phrase, by the sound of its first word: acronyms by their
+ * first letter's name ("an AI engineer", "a UX designer"), other words by
+ * spelling with the usual exceptions ("a university", "an honest").
+ */
+export function indefiniteArticle(phrase: string): "a" | "an" {
+  const word = phrase.trim().split(/[\s-]/)[0] ?? "";
+  if (/^[A-Z]{2,}s?$/.test(word)) return VOWEL_SOUND_LETTERS.includes(word[0]) ? "an" : "a";
+  const lower = word.toLowerCase();
+  if (/^(hour|honest|honou?r|heir)/.test(lower)) return "an";
+  if (/^(uni|use|usu|ure|euro?|one|once|ubiq)/.test(lower)) return "a";
+  return /^[aeiou]/.test(lower) ? "an" : "a";
+}
+
+/** "A", "A and B", "A, B and C". */
+export function naturalList(items: string[]): string {
+  if (items.length <= 1) return items[0] ?? "";
+  return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+}

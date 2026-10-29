@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   buildBlogPostingJsonLd,
   buildBreadcrumbJsonLd,
+  buildFaqPageJsonLd,
   buildLlmsTxt,
   buildPersonJsonLd,
   buildProfilePageJsonLd,
@@ -187,4 +188,14 @@ test("project JSON-LD leaves out empty description, keywords and links", () => {
     imageUrl: I,
   });
   for (const key of ["description", "keywords", "sameAs"]) assert.equal(key in ld, false, key);
+});
+
+test("FAQPage JSON-LD carries each question with its accepted answer", () => {
+  assert.deepEqual(buildFaqPageJsonLd([{ question: "Who?", answer: "Him." }]), {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      { "@type": "Question", name: "Who?", acceptedAnswer: { "@type": "Answer", text: "Him." } },
+    ],
+  });
 });

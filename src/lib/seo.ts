@@ -3,6 +3,7 @@
  * origin as a parameter so it stays framework-free and unit-testable.
  */
 
+import type { QA } from "./facts.ts";
 import {
   fillYears,
   formatExperienceYears,
@@ -254,6 +255,19 @@ export function buildLlmsTxt(args: {
   if (socials.length) blocks.push(["## Elsewhere", ...socials.map((u) => `- ${u}`)].join("\n"));
 
   return blocks.join("\n\n") + "\n";
+}
+
+/** `FAQPage` JSON-LD for the About page's "In brief" questions and answers. */
+export function buildFaqPageJsonLd(qas: QA[]): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: qas.map(({ question, answer }) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: { "@type": "Answer", text: answer },
+    })),
+  };
 }
 
 /** JSON for a `<script type="application/ld+json">` tag; `<` is escaped so content can't close the tag. */

@@ -11,6 +11,8 @@ import {
   splitEmphasis,
   formatNoteDate,
   firstSentence,
+  indefiniteArticle,
+  naturalList,
 } from "./format.ts";
 
 test("slugify lowercases and hyphenates", () => {
@@ -110,4 +112,22 @@ test("firstSentence returns the first sentence, flattened and without emphasis m
 test("firstSentence falls back to the whole text, or empty", () => {
   assert.equal(firstSentence("no full stop here"), "no full stop here");
   assert.equal(firstSentence("   "), "");
+});
+
+test("indefiniteArticle follows the sound of the first word", () => {
+  assert.equal(indefiniteArticle("AI engineer & builder"), "an");
+  assert.equal(indefiniteArticle("ML engineer"), "an");
+  assert.equal(indefiniteArticle("engineer"), "an");
+  assert.equal(indefiniteArticle("Software engineer"), "a");
+  assert.equal(indefiniteArticle("UX designer"), "a");
+  assert.equal(indefiniteArticle("university lecturer"), "a");
+  assert.equal(indefiniteArticle("honest builder"), "an");
+  assert.equal(indefiniteArticle("full-stack developer"), "a");
+});
+
+test("naturalList joins with commas and a final 'and'", () => {
+  assert.equal(naturalList([]), "");
+  assert.equal(naturalList(["A"]), "A");
+  assert.equal(naturalList(["A", "B"]), "A and B");
+  assert.equal(naturalList(["A", "B", "C", "D"]), "A, B, C and D");
 });
