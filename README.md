@@ -129,6 +129,7 @@ elsewhere, set `resume_url` on the profile in `/admin` to a full URL.
 | `npm start` | Run the production build (run `build` first). |
 | `npm run lint` | ESLint. |
 | `npm test` | Run the test suite (`node --test`). |
+| `node scripts/generate-icons.mjs` | Regenerate the favicon, apple icon and manifest icons from `scripts/icon-source.svg`. |
 
 ## Deploy (Vercel)
 

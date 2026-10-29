@@ -6,7 +6,6 @@
 export const brand = {
   name: "Harsh Pandey",
   handle: "Knight Developer",
-  initials: "HP",
   headline: "AI engineer & builder",
   subline:
     "I build AI that does the actual work: not chatbots, but interviewers and tutors that run live, on voice and video.",
