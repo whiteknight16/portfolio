@@ -4,12 +4,13 @@
 
 import type { Metadata } from "next";
 import { brand, openGraphBase, rssAlternateTypes } from "./config.ts";
-import { fillYears, formatExperienceYears, stripEmphasis } from "./format.ts";
+import { fillYears, formatExperienceYears, formatNoteDate, stripEmphasis } from "./format.ts";
 import type { Post, Profile } from "./types.ts";
 
 const MAX_TLDR = 3;
 const OG_TITLE_LONG = 70;
 const FALLBACK_AVATAR = "/profile.png";
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** The URL, trimmed, when it is an absolute http(s) URL; `null` otherwise (so `javascript:` never becomes a link). */
 export function safeHttpUrl(url: string | null): string | null {
@@ -87,6 +88,16 @@ export function noteRowData(post: Post): NoteRowData {
     source_title: post.source_title ?? null,
     tags: post.tags,
   };
+}
+
+/**
+ * "Oct 22, 2026" when the note was last edited more than a day after it was
+ * published (so a same-day typo fix doesn't count); `null` otherwise.
+ */
+export function noteUpdatedDate(post: Pick<Post, "published_at" | "updated_at">): string | null {
+  if (!post.published_at) return null;
+  const edited = Date.parse(post.updated_at) - Date.parse(post.published_at);
+  return edited > DAY_MS ? formatNoteDate(post.updated_at) : null;
 }
 
 /** OG card title size in px: 64, or 52 for titles over 70 characters. */

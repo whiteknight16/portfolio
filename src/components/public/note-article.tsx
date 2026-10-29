@@ -6,7 +6,7 @@ import { SourceCard } from "@/components/public/source-card";
 import { SubscribeForm } from "@/components/public/subscribe-form";
 import { TagChip } from "@/components/public/tag-chip";
 import { formatNoteDate } from "@/lib/format";
-import { sourceCard, tldrLines, type NoteAuthor } from "@/lib/note-view";
+import { noteUpdatedDate, sourceCard, tldrLines, type NoteAuthor } from "@/lib/note-view";
 import type { Post } from "@/lib/types";
 
 export type NoteLink = { slug: string; title: string };
@@ -28,6 +28,7 @@ type NoteArticleProps = {
  */
 export function NoteArticle({ post, author, previous, next }: NoteArticleProps) {
   const date = formatNoteDate(post.published_at);
+  const updated = noteUpdatedDate(post);
   const dek = post.excerpt.trim();
   const tags = post.tags.filter((tag) => tag.trim());
   const source = sourceCard(post);
@@ -47,6 +48,14 @@ export function NoteArticle({ post, author, previous, next }: NoteArticleProps) 
           {date && post.published_at ? (
             <>
               <time dateTime={post.published_at}>{date}</time>
+              <span aria-hidden>·</span>
+            </>
+          ) : null}
+          {updated ? (
+            <>
+              <span>
+                Updated <time dateTime={post.updated_at}>{updated}</time>
+              </span>
               <span aria-hidden>·</span>
             </>
           ) : null}

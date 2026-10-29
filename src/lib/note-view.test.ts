@@ -5,6 +5,7 @@ import {
   noteImageUrl,
   noteMetadata,
   noteRowData,
+  noteUpdatedDate,
   ogTitleSize,
   safeHttpUrl,
   sourceCard,
@@ -256,4 +257,13 @@ test("noteRowData keeps only what a note row renders (no body HTML)", () => {
   delete legacy.source_title;
   assert.equal(noteRowData(legacy as Post).source_title, null);
   assert.equal("content" in noteRowData(post), false);
+});
+
+test("noteUpdatedDate shows an edit made more than a day after publishing", () => {
+  const published_at = "2026-10-09T10:00:00Z";
+  assert.equal(noteUpdatedDate({ published_at, updated_at: "2026-10-22T08:00:00Z" }), "Oct 22, 2026");
+  assert.equal(noteUpdatedDate({ published_at, updated_at: "2026-10-10T10:00:00Z" }), null);
+  assert.equal(noteUpdatedDate({ published_at, updated_at: "2026-10-09T10:05:00Z" }), null);
+  assert.equal(noteUpdatedDate({ published_at: null, updated_at: "2026-10-22T08:00:00Z" }), null);
+  assert.equal(noteUpdatedDate({ published_at, updated_at: "nope" }), null);
 });
