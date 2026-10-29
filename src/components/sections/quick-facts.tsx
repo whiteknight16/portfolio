@@ -50,7 +50,7 @@ export function QuickFacts({ facts }: { facts: QuickFact[] }) {
                   <dt className="pt-0.75 font-mono text-[11.5px] text-faint">{label}</dt>
                   <dd className="font-display text-[16.5px] leading-snug text-pretty text-foreground">
                     {items.map((item, i) => (
-                      <span key={item.text}>
+                      <span key={i}>
                         {i > 0 ? ", " : null}
                         <FactValue item={item} />
                       </span>
