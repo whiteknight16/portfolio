@@ -76,7 +76,7 @@ export default async function AboutPage() {
               src={photo}
               alt={`Photo of ${name}`}
               width={260}
-              height={292}
+              height={300}
               sizes="(min-width: 1280px) 260px, 230px"
               preload
               className="block h-65 w-full bg-muted object-cover xl:h-73"

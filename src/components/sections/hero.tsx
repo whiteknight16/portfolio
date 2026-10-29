@@ -144,7 +144,7 @@ export function Hero({
                   src={photoSrc}
                   alt={`Photo of ${name}`}
                   width={300}
-                  height={340}
+                  height={330}
                   sizes="(min-width: 1536px) 300px, (min-width: 1280px) 280px, 250px"
                   preload
                   onError={() => setShowPhoto(false)}
