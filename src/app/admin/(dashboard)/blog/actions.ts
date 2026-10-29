@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { postSchema } from "@/lib/validation";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/auth";
+import { pingIndexNowAfterSave } from "@/lib/indexnow-after";
 import { slugify, readingMinutes } from "@/lib/format";
 import { sanitizeHtml } from "@/lib/sanitize";
 import type { EntityActionResult } from "@/components/admin/entity-table";
@@ -75,10 +76,11 @@ export async function createPostAction(
   }
 
   const { slug: desiredSlug, content, status, ...rest } = parsed.data;
+  let slug = desiredSlug;
 
   try {
     const supabase = await createServerSupabase();
-    const slug = await findAvailableSlug(supabase, desiredSlug);
+    slug = await findAvailableSlug(supabase, desiredSlug);
     const sanitizedContent = sanitizeHtml(content);
 
     const { error } = await supabase.from("posts").insert({
@@ -95,6 +97,7 @@ export async function createPostAction(
     return { error: "Could not reach the database. Please try again." };
   }
 
+  pingIndexNowAfterSave("notes", status, slug);
   revalidatePath("/");
   revalidatePath("/notes");
   redirect("/admin/blog");
@@ -156,6 +159,7 @@ export async function updatePostAction(
     return { error: "Could not reach the database. Please try again." };
   }
 
+  pingIndexNowAfterSave("notes", status, slug);
   revalidatePath("/");
   revalidatePath("/notes");
   revalidatePath(`/notes/${slug}`);

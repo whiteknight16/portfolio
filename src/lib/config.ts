@@ -43,3 +43,9 @@ export const defaultOgImages = ["/opengraph-image"];
  * (like `rssAlternateTypes` / `defaultOgImages`).
  */
 export const openGraphBase = { siteName: brand.name, locale: "en_US" } as const;
+
+/**
+ * IndexNow key (src/lib/indexnow.ts). Public by design: search engines verify
+ * it against `public/<key>.txt`, which must contain exactly this value.
+ */
+export const indexNowKey = "2ab8636b0194bc01d27bb1d8f2ea113f";

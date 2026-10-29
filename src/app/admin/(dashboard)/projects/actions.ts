@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { projectSchema } from "@/lib/validation";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/auth";
+import { pingIndexNowAfterSave } from "@/lib/indexnow-after";
 import { slugify } from "@/lib/format";
 import { sanitizeHtml } from "@/lib/sanitize";
 import type { EntityActionResult } from "@/components/admin/entity-table";
@@ -86,10 +87,11 @@ export async function createProjectAction(
   }
 
   const { slug: desiredSlug, links, content, status, ...rest } = parsed.data;
+  let slug = desiredSlug;
 
   try {
     const supabase = await createServerSupabase();
-    const slug = await findAvailableSlug(supabase, desiredSlug);
+    slug = await findAvailableSlug(supabase, desiredSlug);
 
     const { error } = await supabase.from("projects").insert({
       ...rest,
@@ -105,6 +107,7 @@ export async function createProjectAction(
     return { error: "Could not reach the database. Please try again." };
   }
 
+  pingIndexNowAfterSave("projects", status, slug);
   revalidatePath("/");
   revalidatePath("/projects");
   redirect("/admin/projects");
@@ -164,6 +167,7 @@ export async function updateProjectAction(
     return { error: "Could not reach the database. Please try again." };
   }
 
+  pingIndexNowAfterSave("projects", status, slug);
   revalidatePath("/");
   revalidatePath("/projects");
   revalidatePath(`/projects/${slug}`);
