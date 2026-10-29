@@ -189,6 +189,7 @@ test("noteMetadata: title, canonical, article OG with the generated card, large 
       description: "Following Karpathy's video line by line.",
       url: "/notes/building-micrograd-part-1",
       siteName: "Harsh Pandey",
+      locale: "en_US",
       publishedTime: "2026-10-09T10:00:00Z",
       modifiedTime: "2026-10-10T10:00:00Z",
       tags: ["neural nets", "micrograd"],

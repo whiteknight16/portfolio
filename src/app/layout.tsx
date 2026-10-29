@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import { brand, rssAlternateTypes, siteUrl } from "@/lib/config";
+import { brand, openGraphBase, rssAlternateTypes, siteUrl } from "@/lib/config";
 import { ThemeProvider } from "@/components/theme-provider";
 
 // UI text: neutral, highly legible workhorse.
@@ -42,11 +42,11 @@ export const metadata: Metadata = {
     google: "Q8Q_CoQhtJKdaPAKaU4Boo3rNOyqEU_4Fl1i1HYZf0o",
   },
   openGraph: {
+    ...openGraphBase,
     title: defaultTitle,
     description: defaultDescription,
     type: "website",
     url: siteUrl,
-    siteName: brand.name,
   },
   twitter: {
     card: "summary_large_image",

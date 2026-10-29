@@ -36,3 +36,10 @@ export const rssAlternateTypes = { "application/rss+xml": [rssFeed] };
  * pages pass this explicitly. Resolved against `metadataBase`.
  */
 export const defaultOgImages = ["/opengraph-image"];
+
+/**
+ * Open Graph fields every public page shares. A page-level `openGraph`
+ * replaces the root layout's wholesale, so every page spreads this in
+ * (like `rssAlternateTypes` / `defaultOgImages`).
+ */
+export const openGraphBase = { siteName: brand.name, locale: "en_US" } as const;

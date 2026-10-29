@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { SiteHome } from "@/components/site-home";
 import { getProfile } from "@/lib/content";
-import { brand, rssAlternateTypes, defaultOgImages } from "@/lib/config";
+import { brand, rssAlternateTypes, defaultOgImages, openGraphBase } from "@/lib/config";
 import { fillYears, formatExperienceYears, stripEmphasis } from "@/lib/format";
 
 // Reads the profile + enabled sections straight from the database on every
@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description,
     alternates: { canonical: "/", types: rssAlternateTypes },
-    openGraph: { title, description, type: "website", url: "/", siteName: name, images: defaultOgImages },
+    openGraph: { ...openGraphBase, title, description, type: "website", url: "/", images: defaultOgImages },
     twitter: { card: "summary_large_image", title, description, images: defaultOgImages },
   };
 }

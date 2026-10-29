@@ -3,8 +3,10 @@ import { getProfile, getPublishedProjects } from "@/lib/content";
 import { Container } from "@/components/public/container";
 import { Reveal } from "@/components/public/reveal";
 import { ProjectsGrid } from "@/components/public/projects-grid";
-import { brand, rssAlternateTypes, defaultOgImages } from "@/lib/config";
+import { JsonLd } from "@/components/seo/json-ld";
+import { brand, rssAlternateTypes, defaultOgImages, openGraphBase, siteUrl } from "@/lib/config";
 import { projectCardData } from "@/lib/profile-view";
+import { buildBreadcrumbJsonLd } from "@/lib/seo";
 
 // Reads published projects straight from the database on every request —
 // there's nothing here worth prerendering or caching.
@@ -20,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description: SUB,
     alternates: { canonical: "/projects", types: rssAlternateTypes },
-    openGraph: { title, description: SUB, type: "website", url: "/projects", siteName: name, images: defaultOgImages },
+    openGraph: { ...openGraphBase, title, description: SUB, type: "website", url: "/projects", images: defaultOgImages },
     twitter: { card: "summary_large_image", title, images: defaultOgImages, description: SUB },
   };
 }
@@ -30,6 +32,7 @@ export default async function ProjectsPage() {
 
   return (
     <Container className="pt-12 pb-4 sm:pt-16">
+      <JsonLd data={buildBreadcrumbJsonLd(siteUrl, [{ name: "Projects", path: "/projects" }])} />
       <Reveal>
         <header className="border-b-[1.5px] border-foreground pb-6">
           <p className="font-mono text-[11px] font-medium tracking-[0.12em] text-brand uppercase">

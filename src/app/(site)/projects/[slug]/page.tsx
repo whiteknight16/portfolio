@@ -7,9 +7,11 @@ import { ContentImage } from "@/components/public/content-image";
 import { Reveal } from "@/components/public/reveal";
 import { Prose } from "@/components/public/prose";
 import { TagChip } from "@/components/public/tag-chip";
-import { brand, rssAlternateTypes, defaultOgImages } from "@/lib/config";
+import { JsonLd } from "@/components/seo/json-ld";
+import { brand, rssAlternateTypes, defaultOgImages, openGraphBase, siteUrl } from "@/lib/config";
 import { safeHttpUrl } from "@/lib/note-view";
 import { projectKicker } from "@/lib/profile-view";
+import { buildBreadcrumbJsonLd, buildProjectJsonLd } from "@/lib/seo";
 
 // Reads the live project row on every request — never prerender it.
 export const dynamic = "force-dynamic";
@@ -32,11 +34,11 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     description: project.summary,
     alternates: { canonical: path, types: rssAlternateTypes },
     openGraph: {
+      ...openGraphBase,
       title,
       description: project.summary,
       type: "article",
       url: path,
-      siteName: name,
       images,
     },
     twitter: { card: "summary_large_image", title, description: project.summary, images },
@@ -56,8 +58,18 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const live = safeHttpUrl(project.links?.live ?? null);
   const repo = safeHttpUrl(project.links?.repo ?? null);
 
+  const path = `/projects/${project.slug}`;
+  const imageUrl = project.cover_image_url || `${siteUrl}${defaultOgImages[0]}`;
+
   return (
     <Container as="article" className="pt-9 pb-5 sm:pt-11">
+      <JsonLd data={buildProjectJsonLd({ siteUrl, project, imageUrl })} />
+      <JsonLd
+        data={buildBreadcrumbJsonLd(siteUrl, [
+          { name: "Projects", path: "/projects" },
+          { name: project.title, path },
+        ])}
+      />
       <div className="mx-auto max-w-170">
         <Reveal>
           <Link

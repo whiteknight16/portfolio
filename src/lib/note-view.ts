@@ -3,7 +3,7 @@
  */
 
 import type { Metadata } from "next";
-import { brand, rssAlternateTypes } from "./config.ts";
+import { brand, openGraphBase, rssAlternateTypes } from "./config.ts";
 import { fillYears, formatExperienceYears, stripEmphasis } from "./format.ts";
 import type { Post, Profile } from "./types.ts";
 
@@ -128,8 +128,8 @@ export function noteAuthor(profile: Profile | null, now: Date = new Date()): Not
  * A note page's metadata: "{title} — {name}", the excerpt as description
  * (left out when blank), canonical `/notes/{slug}` (plus the RSS feed link,
  * which a page-level `alternates` would otherwise drop), an article Open Graph
- * entry whose image is the cover or the generated card, and a large Twitter
- * card. Relative URLs resolve against the root layout's `metadataBase`.
+ * entry (shared site name/locale, published and modified times) whose image
+ * is the cover or the generated card, and a large Twitter card. Relative URLs resolve against the root layout's `metadataBase`.
  */
 export function noteMetadata(post: Post, site: { siteUrl: string; name: string }): Metadata {
   const title = `${post.title} — ${site.name}`;
@@ -141,11 +141,11 @@ export function noteMetadata(post: Post, site: { siteUrl: string; name: string }
     description,
     alternates: { canonical: path, types: rssAlternateTypes },
     openGraph: {
+      ...openGraphBase,
       type: "article",
       title,
       description,
       url: path,
-      siteName: site.name,
       publishedTime: post.published_at ?? undefined,
       modifiedTime: post.updated_at,
       tags: post.tags.length ? post.tags : undefined,

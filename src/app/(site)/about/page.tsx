@@ -11,9 +11,9 @@ import { Skills } from "@/components/sections/skills";
 import { Work } from "@/components/sections/work";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getExperiences, getProfile } from "@/lib/content";
-import { brand, rssAlternateTypes, defaultOgImages, siteUrl } from "@/lib/config";
+import { brand, rssAlternateTypes, defaultOgImages, openGraphBase, siteUrl } from "@/lib/config";
 import { fillYears, firstSentence, formatExperienceYears } from "@/lib/format";
-import { buildProfilePageJsonLd } from "@/lib/seo";
+import { buildBreadcrumbJsonLd, buildProfilePageJsonLd } from "@/lib/seo";
 
 // Reads the profile and every About block straight from the database per request.
 export const dynamic = "force-dynamic";
@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description,
     alternates: { canonical: "/about", types: rssAlternateTypes },
-    openGraph: { title, description, type: "profile", url: "/about", siteName: name, images: defaultOgImages },
+    openGraph: { ...openGraphBase, title, description, type: "profile", url: "/about", images: defaultOgImages },
     twitter: { card: "summary_large_image", title, description, images: defaultOgImages },
   };
 }
@@ -51,6 +51,7 @@ export default async function AboutPage() {
   return (
     <>
       <JsonLd data={buildProfilePageJsonLd(siteUrl)} />
+      <JsonLd data={buildBreadcrumbJsonLd(siteUrl, [{ name: "About", path: "/about" }])} />
 
       <Container as="header" className="pt-12 sm:pt-16">
         <Reveal className="grid items-start gap-9 border-b-[1.5px] border-foreground pb-9 lg:grid-cols-[250px_1fr] lg:gap-12 xl:grid-cols-[280px_1fr] xl:gap-16">

@@ -2,12 +2,14 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   buildBlogPostingJsonLd,
+  buildBreadcrumbJsonLd,
   buildLlmsTxt,
   buildPersonJsonLd,
   buildProfilePageJsonLd,
+  buildProjectJsonLd,
   buildRssXml,
 } from "./seo.ts";
-import type { Post, Profile } from "./types.ts";
+import type { Post, Profile, Project } from "./types.ts";
 
 const S = "https://k.dev";
 const I = S + "/og.png";
@@ -116,4 +118,73 @@ test("profile text never leaks emphasis markers or {years}", () => {
   }
   const txt = buildLlmsTxt({ siteUrl: S, profile: { ...p, now: { building: "*x* {years}" } }, years: null, posts: [], projects: [] });
   assert.ok(!txt.includes("*") && !txt.includes("{years}"));
+});
+
+test("breadcrumbs start at Home and use absolute URLs", () => {
+  assert.deepEqual(
+    buildBreadcrumbJsonLd(S, [
+      { name: "Notes", path: "/notes" },
+      { name: "Hello", path: "/notes/hello" },
+    ]),
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://k.dev/" },
+        { "@type": "ListItem", position: 2, name: "Notes", item: "https://k.dev/notes" },
+        { "@type": "ListItem", position: 3, name: "Hello", item: "https://k.dev/notes/hello" },
+      ],
+    },
+  );
+});
+test("breadcrumbs for a top-level page are Home › page", () => {
+  const ld = buildBreadcrumbJsonLd(S, [{ name: "About", path: "/about" }]);
+  assert.deepEqual(
+    (ld.itemListElement as { name: string }[]).map((i) => i.name),
+    ["Home", "About"],
+  );
+});
+
+const project: Project = {
+  id: "pr1",
+  title: "IVF Assistant",
+  slug: "ivf-assistant",
+  summary: "A live copilot.",
+  content: "<p>x</p>",
+  cover_image_url: null,
+  tags: ["voice", "ai"],
+  links: { live: "https://ivf.example", repo: "https://github.com/h/ivf" },
+  label: null,
+  featured: true,
+  status: "published",
+  sort_order: 1,
+  published_at: "2026-01-01T00:00:00Z",
+  created_at: "2026-01-01T00:00:00Z",
+  updated_at: "2026-03-01T00:00:00Z",
+};
+
+test("project JSON-LD is a web SoftwareApplication by the person", () => {
+  assert.deepEqual(buildProjectJsonLd({ siteUrl: S, project, imageUrl: I }), {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "IVF Assistant",
+    description: "A live copilot.",
+    url: "https://k.dev/projects/ivf-assistant",
+    applicationCategory: "WebApplication",
+    operatingSystem: "Web",
+    author: { "@id": "https://k.dev/#person" },
+    creator: { "@id": "https://k.dev/#person" },
+    keywords: "voice, ai",
+    image: I,
+    sameAs: ["https://ivf.example", "https://github.com/h/ivf"],
+    dateModified: "2026-03-01T00:00:00Z",
+  });
+});
+test("project JSON-LD leaves out empty description, keywords and links", () => {
+  const ld = buildProjectJsonLd({
+    siteUrl: S,
+    project: { ...project, summary: " ", tags: [], links: { live: "javascript:alert(1)" } },
+    imageUrl: I,
+  });
+  for (const key of ["description", "keywords", "sameAs"]) assert.equal(key in ld, false, key);
 });

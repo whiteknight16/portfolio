@@ -4,9 +4,11 @@ import { NotesList } from "@/components/public/notes-list";
 import { Reveal } from "@/components/public/reveal";
 import { SubscribeForm } from "@/components/public/subscribe-form";
 import { NotesEmptyLine } from "@/components/sections/notes-preview";
+import { JsonLd } from "@/components/seo/json-ld";
 import { getProfile, getPublishedPosts } from "@/lib/content";
-import { brand, rssAlternateTypes, defaultOgImages } from "@/lib/config";
+import { brand, rssAlternateTypes, defaultOgImages, openGraphBase, siteUrl } from "@/lib/config";
 import { noteRowData } from "@/lib/note-view";
+import { buildBreadcrumbJsonLd } from "@/lib/seo";
 
 // Reads published notes straight from the database on every request.
 export const dynamic = "force-dynamic";
@@ -21,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description: DESCRIPTION,
     alternates: { canonical: "/notes", types: rssAlternateTypes },
-    openGraph: { title, description: DESCRIPTION, type: "website", url: "/notes", siteName: name, images: defaultOgImages },
+    openGraph: { ...openGraphBase, title, description: DESCRIPTION, type: "website", url: "/notes", images: defaultOgImages },
     twitter: { card: "summary_large_image", title, images: defaultOgImages, description: DESCRIPTION },
   };
 }
@@ -31,6 +33,7 @@ export default async function NotesPage() {
 
   return (
     <Container className="pt-12 sm:pt-16">
+      <JsonLd data={buildBreadcrumbJsonLd(siteUrl, [{ name: "Notes", path: "/notes" }])} />
       <Reveal>
         <header className="border-b-[1.5px] border-foreground pb-6">
           <p className="font-mono text-[11px] font-medium tracking-[0.12em] text-brand uppercase">Notes</p>

@@ -9,6 +9,7 @@ import {
   handleSlug,
   stripEmphasis,
 } from "./format.ts";
+import { safeHttpUrl } from "./note-view.ts";
 import type { Post, Profile, Project } from "./types.ts";
 
 const DEFAULT_HANDLE = "Knight Developer";
@@ -95,6 +96,53 @@ export function buildBlogPostingJsonLd(args: {
   if (post.tags.length) ld.keywords = post.tags.join(", ");
   ld.mainEntityOfPage = url;
   if (post.source_url) ld.isBasedOn = post.source_url;
+  return ld;
+}
+
+/** A `BreadcrumbList` from Home through `trail` (site-relative paths, e.g. `/notes/hello`). */
+export function buildBreadcrumbJsonLd(
+  siteUrl: string,
+  trail: { name: string; path: string }[],
+): Record<string, unknown> {
+  const crumbs = [{ name: "Home", path: "/" }, ...trail];
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((crumb, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: crumb.name,
+      item: `${siteUrl}${crumb.path}`,
+    })),
+  };
+}
+
+/** A personal project as a web `SoftwareApplication` made by the site's Person. */
+export function buildProjectJsonLd(args: {
+  siteUrl: string;
+  project: Project;
+  imageUrl: string;
+}): Record<string, unknown> {
+  const { siteUrl, project, imageUrl } = args;
+  const person = { "@id": `${siteUrl}/#person` };
+  const ld: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: project.title,
+  };
+  if (project.summary.trim()) ld.description = project.summary.trim();
+  ld.url = `${siteUrl}/projects/${project.slug}`;
+  ld.applicationCategory = "WebApplication";
+  ld.operatingSystem = "Web";
+  ld.author = person;
+  ld.creator = person;
+  if (project.tags.length) ld.keywords = project.tags.join(", ");
+  ld.image = imageUrl;
+  const links = [project.links?.live, project.links?.repo]
+    .map((url) => safeHttpUrl(url ?? null))
+    .filter((url): url is string => url !== null);
+  if (links.length) ld.sameAs = links;
+  ld.dateModified = project.updated_at;
   return ld;
 }
 

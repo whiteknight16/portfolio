@@ -6,7 +6,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { getAdjacentPosts, getPostBySlug, getProfile } from "@/lib/content";
 import { brand, siteUrl } from "@/lib/config";
 import { noteAuthor, noteImageUrl, noteMetadata } from "@/lib/note-view";
-import { buildBlogPostingJsonLd } from "@/lib/seo";
+import { buildBlogPostingJsonLd, buildBreadcrumbJsonLd } from "@/lib/seo";
 import type { Post } from "@/lib/types";
 
 // Reads the live note row on every request — never prerender it.
@@ -37,6 +37,12 @@ export default async function NotePage({ params }: NotePageProps) {
   return (
     <>
       <JsonLd data={buildBlogPostingJsonLd({ siteUrl, post, imageUrl: noteImageUrl(siteUrl, post) })} />
+      <JsonLd
+        data={buildBreadcrumbJsonLd(siteUrl, [
+          { name: "Notes", path: "/notes" },
+          { name: post.title, path: `/notes/${post.slug}` },
+        ])}
+      />
       <NoteArticle
         post={post}
         author={noteAuthor(profile)}
