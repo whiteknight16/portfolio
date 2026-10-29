@@ -1,17 +1,20 @@
 /**
- * Pure SEO builders: JSON-LD, RSS and llms.txt. Every function takes the site
+ * Pure SEO builders: JSON-LD, RSS, llms.txt and llms-full.txt. Every function takes the site
  * origin as a parameter so it stays framework-free and unit-testable.
  */
 
-import type { QA } from "./facts.ts";
+import type { QA, QuickFact } from "./facts.ts";
 import {
+  dateRange,
   fillYears,
   formatExperienceYears,
+  formatNoteDate,
   handleSlug,
   stripEmphasis,
 } from "./format.ts";
-import { safeHttpUrl } from "./note-view.ts";
-import type { Post, Profile, Project } from "./types.ts";
+import { htmlToMarkdown } from "./html-text.ts";
+import { noteUpdatedDate, safeHttpUrl, sourceCard, tldrLines } from "./note-view.ts";
+import type { Experience, Post, Profile, Project } from "./types.ts";
 
 const DEFAULT_HANDLE = "Knight Developer";
 const SOCIAL_ORDER = ["linkedin", "github", "youtube", "instagram", "twitter", "website"] as const;
@@ -226,6 +229,7 @@ export function buildLlmsTxt(args: {
       `- [About](${siteUrl}/about)`,
       `- [Notes](${siteUrl}/notes)`,
       `- [Projects](${siteUrl}/projects)`,
+      `- [Full text](${siteUrl}/llms-full.txt): every note and project in full, plus quick facts and Q&A`,
     ].join("\n"),
   );
 
@@ -268,6 +272,108 @@ export function buildFaqPageJsonLd(qas: QA[]): Record<string, unknown> {
       acceptedAnswer: { "@type": "Answer", text: answer },
     })),
   };
+}
+
+/** Lines for a block, skipping empty ones (`null`, `false`, `""`). */
+const lines = (...items: (string | null | false | undefined)[]) => items.filter(Boolean).join("\n");
+
+/** Content HTML as Markdown whose headings sit below an `###` item heading. */
+const body = (html: string) => htmlToMarkdown(html, { headingOffset: 2 });
+
+/**
+ * /llms-full.txt: everything in llms.txt, then the About page's quick facts
+ * and Q&A, the work history, and every project and note in full (bodies
+ * converted from sanitized HTML to Markdown). Empty sections are left out.
+ */
+export function buildLlmsFullTxt(args: {
+  siteUrl: string;
+  profile: Profile | null;
+  years: string | null;
+  posts: Post[];
+  projects: Project[];
+  experiences: Experience[];
+  facts: QuickFact[];
+  inBrief: QA[];
+}): string {
+  const { siteUrl, profile, years, posts, projects, experiences, facts, inBrief } = args;
+  const sections = [buildLlmsTxt({ siteUrl, profile, years, posts, projects }).trimEnd()];
+
+  if (facts.length) {
+    sections.push(
+      lines(
+        "## Quick facts",
+        ...facts.map(({ label, items }) => {
+          const values = items.map(({ text, href }) => (href ? `[${text}](${absolute(siteUrl, href)})` : text));
+          return `- ${label}: ${values.join(", ")}`;
+        }),
+      ),
+    );
+  }
+
+  if (inBrief.length) {
+    sections.push(
+      ["## In brief", ...inBrief.map(({ question, answer }) => `### ${question}\n${answer}`)].join("\n\n"),
+    );
+  }
+
+  if (experiences.length) {
+    const roles = experiences.map((exp) =>
+      lines(
+        `### ${exp.role} · ${exp.company}`,
+        [dateRange(exp.start_date, exp.end_date, exp.is_current), exp.location?.trim()].filter(Boolean).join(" · "),
+        ...exp.highlights.map((h) => `- ${clean(h, years)}`),
+      ),
+    );
+    sections.push(["## Work", ...roles].join("\n\n"));
+  }
+
+  if (projects.length) {
+    const full = projects.map((project) => {
+      const live = safeHttpUrl(project.links?.live ?? null);
+      const repo = safeHttpUrl(project.links?.repo ?? null);
+      return [
+        lines(
+          `### ${project.title}`,
+          `URL: ${siteUrl}/projects/${project.slug}`,
+          project.tags.length > 0 && `Tags: ${project.tags.join(", ")}`,
+          live && `Live site: ${live}`,
+          repo && `Source code: ${repo}`,
+        ),
+        project.summary.trim(),
+        body(project.content),
+      ]
+        .filter(Boolean)
+        .join("\n\n");
+    });
+    sections.push(["## Projects in full", ...full].join("\n\n"));
+  }
+
+  if (posts.length) {
+    const full = posts.map((post) => {
+      const published = formatNoteDate(post.published_at);
+      const updated = noteUpdatedDate(post);
+      const source = sourceCard(post);
+      const kind = post.source_kind && post.source_kind !== "other" ? ` (${post.source_kind})` : "";
+      const tldr = tldrLines(post.tldr);
+      return [
+        lines(
+          `### ${post.title}`,
+          `URL: ${noteUrl(siteUrl, post.slug)}`,
+          published && `Published: ${published}${updated ? ` · Updated: ${updated}` : ""}`,
+          post.tags.length > 0 && `Tags: ${post.tags.join(", ")}`,
+          source && `Source${kind}: [${source.title}](${source.url})`,
+        ),
+        post.excerpt.trim(),
+        tldr.length > 0 && lines("The short version:", ...tldr.map((line) => `- ${line}`)),
+        body(post.content),
+      ]
+        .filter(Boolean)
+        .join("\n\n");
+    });
+    sections.push(["## Notes in full", ...full].join("\n\n"));
+  }
+
+  return sections.join("\n\n") + "\n";
 }
 
 /** JSON for a `<script type="application/ld+json">` tag; `<` is escaped so content can't close the tag. */

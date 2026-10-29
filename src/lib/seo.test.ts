@@ -4,13 +4,14 @@ import {
   buildBlogPostingJsonLd,
   buildBreadcrumbJsonLd,
   buildFaqPageJsonLd,
+  buildLlmsFullTxt,
   buildLlmsTxt,
   buildPersonJsonLd,
   buildProfilePageJsonLd,
   buildProjectJsonLd,
   buildRssXml,
 } from "./seo.ts";
-import type { Post, Profile, Project } from "./types.ts";
+import type { Experience, Post, Profile, Project } from "./types.ts";
 
 const S = "https://k.dev";
 const I = S + "/og.png";
@@ -190,6 +191,11 @@ test("project JSON-LD leaves out empty description, keywords and links", () => {
   for (const key of ["description", "keywords", "sameAs"]) assert.equal(key in ld, false, key);
 });
 
+test("llms.txt points to the full-text version", () => {
+  const txt = buildLlmsTxt({ siteUrl: S, profile: p, years: null, posts: [], projects: [] });
+  assert.ok(txt.includes("](https://k.dev/llms-full.txt)"));
+});
+
 test("FAQPage JSON-LD carries each question with its accepted answer", () => {
   assert.deepEqual(buildFaqPageJsonLd([{ question: "Who?", answer: "Him." }]), {
     "@context": "https://schema.org",
@@ -198,4 +204,72 @@ test("FAQPage JSON-LD carries each question with its accepted answer", () => {
       { "@type": "Question", name: "Who?", acceptedAnswer: { "@type": "Answer", text: "Him." } },
     ],
   });
+});
+
+const job: Experience = {
+  id: "e1",
+  role: "AI Engineer",
+  company: "BerriBot",
+  location: "Remote",
+  start_date: "2025-03-01",
+  end_date: null,
+  is_current: true,
+  highlights: ["Built the *live* interviewer"],
+  tags: [],
+  sort_order: 1,
+};
+
+test("llms-full.txt: llms.txt plus facts, Q&A, work, full projects and full notes", () => {
+  const txt = buildLlmsFullTxt({
+    siteUrl: S,
+    profile: p,
+    years: "1.5+",
+    posts: [
+      {
+        ...post,
+        source_url: "https://youtu.be/x",
+        source_kind: "video",
+        updated_at: "2026-02-10T00:00:00Z",
+        content: '<h2>Why</h2><p>Because <a href="https://x.dev">this</a> &amp; that.</p><ul><li><p>one</p></li></ul>',
+      },
+    ],
+    projects: [{ ...project, content: "<h2>How</h2><p>Voice <code>LiveKit</code> agents.</p>" }],
+    experiences: [job],
+    facts: [
+      { label: "Name", items: [{ text: "Harsh Pandey" }] },
+      { label: "Built", items: [{ text: "IVF Assistant", href: "/projects/ivf-assistant" }] },
+    ],
+    inBrief: [{ question: "Who is Harsh Pandey?", answer: "Harsh Pandey is an AI engineer." }],
+  });
+  const head = buildLlmsTxt({ siteUrl: S, profile: p, years: "1.5+", posts: [post], projects: [project] });
+  assert.ok(txt.startsWith(head.trimEnd() + "\n\n"));
+  for (const expected of [
+    "## Quick facts\n- Name: Harsh Pandey\n- Built: [IVF Assistant](https://k.dev/projects/ivf-assistant)",
+    "## In brief\n\n### Who is Harsh Pandey?\nHarsh Pandey is an AI engineer.",
+    "### AI Engineer · BerriBot\nMar 2025 – Present · Remote\n- Built the live interviewer",
+    "### IVF Assistant\nURL: https://k.dev/projects/ivf-assistant\nTags: voice, ai\nLive site: https://ivf.example\nSource code: https://github.com/h/ivf\n\nA live copilot.\n\n#### How\n\nVoice `LiveKit` agents.",
+    "### Hello\nURL: https://k.dev/notes/hello\nPublished: Feb 1, 2026 · Updated: Feb 10, 2026\nTags: ai, voice\nSource (video): [Src](https://youtu.be/x)",
+    "The short version:\n- a",
+    "#### Why\n\nBecause [this](https://x.dev) & that.\n\n- one",
+  ]) {
+    assert.ok(txt.includes(expected), `missing:\n${expected}\n---\n${txt}`);
+  }
+  assert.ok(!txt.includes("{years}"));
+});
+
+test("llms-full.txt leaves out empty sections", () => {
+  const txt = buildLlmsFullTxt({
+    siteUrl: S,
+    profile: null,
+    years: null,
+    posts: [],
+    projects: [],
+    experiences: [],
+    facts: [],
+    inBrief: [],
+  });
+  for (const heading of ["## Quick facts", "## In brief", "## Work", "## Projects in full", "## Notes in full"]) {
+    assert.ok(!txt.includes(heading), heading);
+  }
+  assert.ok(txt.endsWith("\n") && !txt.endsWith("\n\n"));
 });
