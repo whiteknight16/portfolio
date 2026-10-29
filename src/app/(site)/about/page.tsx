@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/public/container";
+import { ContentImage } from "@/components/public/content-image";
 import { Emphasis } from "@/components/public/emphasis";
 import { Reveal } from "@/components/public/reveal";
 import { SocialLinks } from "@/components/public/social-icons";
@@ -58,11 +59,13 @@ export default async function AboutPage() {
               aria-hidden
               className="absolute -top-3 left-1/2 h-6 w-22.5 -translate-x-1/2 rotate-3 bg-[#fde68a]/75 dark:bg-[#fde68a]/45"
             />
-            {/* Plain <img>: avatar_url may be any remote host (Supabase storage). */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <ContentImage
               src={photo}
               alt={`Photo of ${name}`}
+              width={260}
+              height={292}
+              sizes="(min-width: 1280px) 260px, 230px"
+              preload
               className="block h-65 w-full bg-muted object-cover xl:h-73"
             />
             {place ? (

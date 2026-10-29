@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProfile, getProjectBySlug } from "@/lib/content";
 import { Container } from "@/components/public/container";
+import { ContentImage } from "@/components/public/content-image";
 import { Reveal } from "@/components/public/reveal";
 import { Prose } from "@/components/public/prose";
 import { TagChip } from "@/components/public/tag-chip";
@@ -119,10 +120,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         </Reveal>
 
         {project.cover_image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element -- remote Supabase storage URL.
-          <img
+          <ContentImage
             src={project.cover_image_url}
             alt=""
+            width={1200}
+            height={630}
+            sizes="(min-width: 768px) 680px, 100vw"
             className="mt-8 w-full rounded-[4px] border border-rule object-cover"
           />
         ) : null}

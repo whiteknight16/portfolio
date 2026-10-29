@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion, type Variants } from "motion/react";
 import { Container } from "@/components/public/container";
+import { ContentImage } from "@/components/public/content-image";
 import { Emphasis } from "@/components/public/emphasis";
 import { SocialLinks } from "@/components/public/social-icons";
 import { cn } from "@/lib/utils";
@@ -134,15 +135,18 @@ export function Hero({
                   aria-hidden
                   className="absolute -top-3 left-1/2 h-6 w-22.5 -translate-x-1/2 -rotate-4 bg-[#fde68a]/75 dark:bg-[#fde68a]/45"
                 />
-                {/* Plain <img>: avatar_url may be any remote host (Supabase storage). */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  ref={(el) => {
+                {/* Above the fold, so preloaded; `sizes` matches the figure's inner width. */}
+                <ContentImage
+                  ref={(el: HTMLImageElement | null) => {
                     // An error that fired before hydration never reaches onError.
                     if (el?.complete && el.naturalWidth === 0) setShowPhoto(false);
                   }}
                   src={photoSrc}
                   alt={`Photo of ${name}`}
+                  width={300}
+                  height={340}
+                  sizes="(min-width: 1536px) 300px, (min-width: 1280px) 280px, 250px"
+                  preload
                   onError={() => setShowPhoto(false)}
                   className="block h-72.5 w-full bg-muted object-cover xl:h-80 2xl:h-85"
                 />

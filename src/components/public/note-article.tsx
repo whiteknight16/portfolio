@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container } from "@/components/public/container";
+import { ContentImage } from "@/components/public/content-image";
 import { Prose } from "@/components/public/prose";
 import { SourceCard } from "@/components/public/source-card";
 import { SubscribeForm } from "@/components/public/subscribe-form";
@@ -90,10 +91,12 @@ export function NoteArticle({ post, author, previous, next }: NoteArticleProps) 
         ) : null}
 
         {post.cover_image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element -- remote Supabase storage URL.
-          <img
+          <ContentImage
             src={post.cover_image_url}
             alt=""
+            width={1200}
+            height={630}
+            sizes="(min-width: 768px) 680px, 100vw"
             className="mt-8 w-full rounded-[4px] border border-rule object-cover"
           />
         ) : null}
@@ -119,15 +122,12 @@ export function NoteArticle({ post, author, previous, next }: NoteArticleProps) 
 
         <div className="mt-7.5 flex items-center gap-3.5 border-t border-rule pt-5.5 text-sm text-muted-foreground">
           <span className="size-11 shrink-0 overflow-hidden rounded-full border border-rule bg-linear-160 from-[#d8cdb9] to-[#b9ab94]">
-            {/* Plain <img>: avatar_url may be any remote host. Decorative, the name sits beside it. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            {/* Decorative: the name sits beside it. */}
+            <ContentImage
               src={author.avatarUrl}
               alt=""
               width={44}
               height={44}
-              loading="lazy"
-              decoding="async"
               className="size-full object-cover"
             />
           </span>
